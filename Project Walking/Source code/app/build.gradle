@@ -36,4 +36,7 @@ dependencies {
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    //openstreetmap
+    implementation 'org.mapsforge:mapsforge-map-android:0.16.0'
+    implementation 'com.caverock:androidsvg:1.4'
 }
