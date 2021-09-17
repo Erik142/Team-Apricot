@@ -2,6 +2,7 @@ package com.teamapricot.projectwalking.Navigation.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import com.teamapricot.projectwalking.R;
 
@@ -18,6 +19,8 @@ import org.mapsforge.map.rendertheme.XmlRenderTheme;
 
 //this code is taken from a sample from https://github.com/mapsforge/mapsforge/blob/master/mapsforge-samples-android/src/main/java/org/mapsforge/samples/android/SimplestMapViewer.java
 public class MapActivity extends AppCompatActivity {
+
+
 
     /**
      * This MapViewer uses the built-in default theme.
@@ -65,6 +68,7 @@ public class MapActivity extends AppCompatActivity {
         TileRendererLayer tileRendererLayer = AndroidUtil.createTileRendererLayer(this.tileCaches.get(0),
                 this.mapView.getModel().mapViewPosition, getMapFile(), getRenderTheme(), false, true, false);
         this.mapView.getLayerManager().getLayers().add(tileRendererLayer);
+        //im not sure why it cant read in mapView as it had no problem doing that above(line 47)
     }
 
     @Override
