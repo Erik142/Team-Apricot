@@ -1,53 +1,34 @@
 package com.teamapricot.projectwalking;
 
 import android.content.pm.PackageManager;
-import android.os.SystemClock;
 
-import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import com.teamapricot.projectwalking.handlers.ActivityResultHandler;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @author Erik Wahlberger
- * @version 2021-09-17
+ * @version 2021-09-18
  *
  * PermissionHandler is used to check for already granted permissions, as well as
  * request new permissions in an easier way than by using the standard implementation by Google.
  * Make sure to add each permission to the AndroidManifest.xml using {@literal <uses-permission android:name="..." />}.
  */
-public class PermissionHandler {
+public class PermissionHandler extends ActivityResultHandler<String, Boolean> {
     private final String TAG = "PermissionHandler";
-
-    private ActivityResultLauncher<String> requestPermissionLauncher;
-    private Boolean currentPermissionResult;
-    private ReentrantLock currentPermissionResultLock;
-    private AppCompatActivity activity;
 
     /**
      * Creates a new permission handler for the specified AppCompatActivity.
      * @param activity The activity where the permission handler will be used
      */
     public PermissionHandler(AppCompatActivity activity) {
-        currentPermissionResult = null;
-        currentPermissionResultLock = new ReentrantLock();
-        this.activity = activity;
-
-        requestPermissionLauncher = activity.registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-            // Set currentPermissionResult when a permission has been granted or denied
-            try {
-                if (currentPermissionResultLock.tryLock()) {
-                    currentPermissionResult = isGranted;
-                }
-            } finally {
-                currentPermissionResultLock.unlock();
-            }
-        });
+        super(activity, new ActivityResultContracts.RequestPermission());
     }
 
     /**
@@ -94,29 +75,7 @@ public class PermissionHandler {
      * To check if a permission was granted or not, use the map return value with the searched permission as the key.
      */
     public CompletableFuture<Map<String, Boolean>> requestPermissionsAsync(String[] permissions) {
-        return CompletableFuture.supplyAsync(() -> {
-            Map<String, Boolean> permissionResults = new HashMap<>();
-
-            for (String permission : permissions) {
-                // Launch the permission launcher on the UI thread, otherwise the permission dialog is not shown on the screen
-                this.activity.runOnUiThread(() -> {
-                    requestPermissionLauncher.launch(permission);
-                });
-
-                waitForPermissionResult();
-
-                try {
-                    if (currentPermissionResultLock.tryLock()) {
-                        permissionResults.put(permission, currentPermissionResult);
-                        currentPermissionResult = null;
-                    }
-                } finally {
-                    currentPermissionResultLock.unlock();
-                }
-            }
-
-            return permissionResults;
-        });
+        return this.launch(permissions);
     }
 
     /**
@@ -125,31 +84,6 @@ public class PermissionHandler {
      * @return A {@code CompletableFuture} object containing a {@code Boolean} value that shows if the permission request was granted or rejected
      */
     public CompletableFuture<Boolean> requestPermissionAsync(String permission) {
-        return requestPermissionsAsync(new String[]{permission}).thenApply(permissionResults -> {
-            if (permissionResults.keySet().contains(permission)) {
-                return permissionResults.get(permission);
-            }
-
-            return false;
-        });
-    }
-
-    /**
-     * Wait for the callback to requestPermissionLauncher to be triggered
-     */
-    private void waitForPermissionResult() {
-        while(true) {
-            try {
-                if (currentPermissionResultLock.tryLock()) {
-                    if (currentPermissionResult != null) {
-                        break;
-                    }
-                }
-            } finally {
-                currentPermissionResultLock.unlock();
-            }
-
-            SystemClock.sleep(500);
-        }
+        return this.launchSingle(permission);
     }
 }
