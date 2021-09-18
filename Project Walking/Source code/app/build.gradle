@@ -36,10 +36,4 @@ dependencies {
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
-    //Osm
-    implementation 'org.osmdroid:osmdroid-android:6.1.11'
-    implementation 'org.osmdroid:osmdroid-wms:6.1.11'
-    implementation 'org.osmdroid:osmdroid-mapsforge:6.1.11'
-    implementation 'org.osmdroid:osmdroid-geopackage:6.1.11'
-    implementation 'org.osmdroid:osmdroid-third-party:6.1.11'
 }
