@@ -19,6 +19,7 @@ import java.util.List;
  */
 public class LocationHandler {
     private final String TAG = "LocationHandler";
+    private final String GPS_PERMISSION = Manifest.permission.ACCESS_FINE_LOCATION;
 
     private final PermissionHandler permissionHandler;
 
@@ -44,13 +45,13 @@ public class LocationHandler {
         updateListeners = new ArrayList<>();
         updateInterval = interval;
 
-        if (permissionHandler.checkPermission(Manifest.permission.ACCESS_FINE_LOCATION)) {
+        if (permissionHandler.checkPermission(GPS_PERMISSION)) {
             initializeLocationHandler();
         } else {
-            permissionHandler.requestPermissionAsync(Manifest.permission.ACCESS_FINE_LOCATION)
+            permissionHandler.requestPermissionAsync(GPS_PERMISSION)
                     .thenAccept(permissionGranted -> {
                         if (permissionGranted) {
-                            initializeLocationHandler();
+                            activity.runOnUiThread(this::initializeLocationHandler);
                         } else {
                             PermissionRejectedDialog dialog = new PermissionRejectedDialog(activity,
                                     "Permission to access your device's location is required. Please grant access.");
@@ -103,7 +104,7 @@ public class LocationHandler {
             locationListener = createLocationListener();
         }
 
-        if (permissionHandler.checkPermission(Manifest.permission.ACCESS_FINE_LOCATION)) {
+        if (permissionHandler.checkPermission(GPS_PERMISSION)) {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
                     updateInterval, 0, locationListener);
         }
