@@ -55,25 +55,8 @@ public class LocationHandler {
         }
     }
 
-    public Double getLatitude() {
-        if (position == null) {
-            return null;
-        }
-        return position.getLatitude();
-    }
-
-    public Double getLongitude() {
-        if (position == null) {
-            return null;
-        }
-        return position.getLongitude();
-    }
-
-    public Double getAccuracy() {
-        if (position == null) {
-            return null;
-        }
-        return position.getAccuracy();
+    public Position getPosition() {
+        return position;
     }
 
     /**
