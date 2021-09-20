@@ -21,7 +21,7 @@ public class LocationHandler {
     private Position position = null;
 
     private final LocationManager locationManager;
-    private LocationListener locationListener;
+    private LocationListener locationListener = null;
 
     private final int updateInterval;
 
@@ -103,7 +103,7 @@ public class LocationHandler {
             position = new Position(latitude, longitude, accuracy);
 
             for (UpdateListener l : updateListeners) {
-                l.onPositionUpdated();
+                l.onPositionUpdated(position);
             }
         };
 
@@ -127,7 +127,7 @@ public class LocationHandler {
      * The interface to use for receiving location updates.
      */
     public interface UpdateListener {
-        void onPositionUpdated();
+        void onPositionUpdated(Position position);
     }
 
     /**

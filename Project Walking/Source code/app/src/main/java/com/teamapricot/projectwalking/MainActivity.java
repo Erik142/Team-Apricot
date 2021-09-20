@@ -15,9 +15,9 @@ public class MainActivity extends AppCompatActivity {
 
         locationHandler = new LocationHandler(this, 2000);
 
-        locationHandler.registerUpdateListener(() -> {
+        locationHandler.registerUpdateListener(position -> {
             ((TextView)findViewById(R.id.helloWorld))
-                    .setText("(" + locationHandler.getLatitude() + "," + locationHandler.getLongitude() + ")");
+                    .setText("(" + position.getLatitude() + "," + position.getLongitude() + ")");
         });
     }
 }
