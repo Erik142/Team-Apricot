@@ -10,6 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * @author Daniel Brännvall
+ * @version 2021-09-20
+ *
  * A class for accessing location data.
  */
 public class LocationHandler {
@@ -118,6 +121,9 @@ public class LocationHandler {
     }
 
     /**
+     * @author Daniel Brännvall
+     * @version 2021-09-20*
+     *
      * The interface to use for receiving location updates.
      */
     public interface UpdateListener {
@@ -125,6 +131,9 @@ public class LocationHandler {
     }
 
     /**
+     * @author Daniel Brännvall
+     * @version 2021-09-20
+     *
      * A position.
      */
     public static class Position {
