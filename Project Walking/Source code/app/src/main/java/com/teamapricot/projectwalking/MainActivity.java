@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
 
 import com.teamapricot.projectwalking.handlers.CameraHandler;
 import com.teamapricot.projectwalking.photos.PhotoController;
