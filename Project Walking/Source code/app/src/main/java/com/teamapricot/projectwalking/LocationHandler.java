@@ -6,6 +6,8 @@ import android.location.LocationManager;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.teamapricot.projectwalking.dialogs.PermissionRejectedDialog;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +18,8 @@ import java.util.List;
  * A class for accessing location data.
  */
 public class LocationHandler {
+    private final String TAG = "LocationHandler";
+
     private final PermissionHandler permissionHandler;
 
     private Position position = null;
@@ -48,8 +52,10 @@ public class LocationHandler {
                         if (permissionGranted) {
                             initializeLocationHandler();
                         } else {
-                            // TODO: Permission not granted, do something!
-                            System.out.println("permission not granted");
+                            PermissionRejectedDialog dialog = new PermissionRejectedDialog(activity,
+                                    "Permission to access your device's location is required. Please grant access.");
+
+                            dialog.show(activity.getSupportFragmentManager(), TAG);
                         }
                     });
         }
