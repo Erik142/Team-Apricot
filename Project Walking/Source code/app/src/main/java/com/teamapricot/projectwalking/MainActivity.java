@@ -10,6 +10,7 @@ import com.teamapricot.projectwalking.photos.PhotoController;
 
 public class MainActivity extends AppCompatActivity {
     private PhotoController photoController;
+    LocationHandler locationHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,6 +22,13 @@ public class MainActivity extends AppCompatActivity {
         photoController = new PhotoController(this, permissionHandler, cameraHandler);
 
         setContentView(R.layout.activity_main);
+
+        locationHandler = new LocationHandler(this, 2000);
+
+        locationHandler.registerUpdateListener(position -> {
+            ((TextView)findViewById(R.id.helloWorld))
+                    .setText("(" + position.getLatitude() + "," + position.getLongitude() + ")");
+        });
     }
 
     public void captureImage(View view) {
