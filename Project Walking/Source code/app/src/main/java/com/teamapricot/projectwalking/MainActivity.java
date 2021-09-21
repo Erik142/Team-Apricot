@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.os.Bundle;
+<<<<<<< HEAD
 import android.preference.PreferenceManager;
 
 import org.osmdroid.config.Configuration;
@@ -11,8 +12,12 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.views.MapView;
 
 
+=======
+import android.widget.TextView;
+>>>>>>> origin/master
 
 public class MainActivity extends AppCompatActivity {
+    LocationHandler locationHandler;
 
     MapView map = null;
     @Override public void onCreate(Bundle savedInstanceState) {
@@ -32,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
         //inflate and create the map
         setContentView(R.layout.activity_main);
 
+<<<<<<< HEAD
         map = (MapView) findViewById(R.id.map);
         map.setTileSource(TileSourceFactory.MAPNIK);
     }
@@ -52,5 +58,13 @@ public class MainActivity extends AppCompatActivity {
         //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         //Configuration.getInstance().save(this, prefs);
         map.onPause();  //needed for compass, my location overlays, v6.0.0 and up
+=======
+        locationHandler = new LocationHandler(this, 2000);
+
+        locationHandler.registerUpdateListener(position -> {
+            ((TextView)findViewById(R.id.helloWorld))
+                    .setText("(" + position.getLatitude() + "," + position.getLongitude() + ")");
+        });
+>>>>>>> origin/master
     }
 }
