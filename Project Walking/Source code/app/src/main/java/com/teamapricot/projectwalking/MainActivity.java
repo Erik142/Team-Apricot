@@ -11,10 +11,15 @@ import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
+import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 public class MainActivity extends AppCompatActivity {
     LocationHandler locationHandler;
     IMapController mapController;
+    MyLocationNewOverlay locationOverlay;
+
+    boolean mapInitialized = false;
 
     MapView map = null;
 
@@ -29,15 +34,22 @@ public class MainActivity extends AppCompatActivity {
 
         locationHandler = new LocationHandler(this, 2000);
 
-        map = (MapView) findViewById(R.id.map);
+        map = findViewById(R.id.map);
         map.setTileSource(TileSourceFactory.MAPNIK);
 
         mapController = map.getController();
         mapController.setZoom(19.5);
 
+        locationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(ctx), map);
+        locationOverlay.enableMyLocation();
+        map.getOverlays().add(locationOverlay);
+
         locationHandler.registerUpdateListener(position -> {
             GeoPoint point = new GeoPoint(position.getLatitude(), position.getLongitude());
-            mapController.setCenter(point);
+            if(!mapInitialized) {
+                mapController.setCenter(point);
+                mapInitialized = true;
+            }
         });
     }
 
