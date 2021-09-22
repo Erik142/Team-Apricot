@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.os.Bundle;
-
 import android.preference.PreferenceManager;
 
 import org.osmdroid.config.Configuration;
@@ -13,24 +12,10 @@ import org.osmdroid.views.MapView;
 
 
 
-import android.view.View;
-import android.widget.TextView;
-
-import com.teamapricot.projectwalking.handlers.CameraHandler;
-import com.teamapricot.projectwalking.photos.PhotoController;
-
-import com.teamapricot.projectwalking.Navigation.MapController;
-
 public class MainActivity extends AppCompatActivity {
-    private PhotoController photoController;
-    LocationHandler locationHandler;
 
     MapView map = null;
-    private MapController mapController = null;
-
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
+    @Override public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         //handle permissions first, before map is created. not depicted here
@@ -51,7 +36,6 @@ public class MainActivity extends AppCompatActivity {
         map.setTileSource(TileSourceFactory.MAPNIK);
     }
 
-    @Override
     public void onResume(){
         super.onResume();
         //this will refresh the osmdroid configuration on resuming.
@@ -61,7 +45,6 @@ public class MainActivity extends AppCompatActivity {
         map.onResume(); //needed for compass, my location overlays, v6.0.0 and up
     }
 
-    @Override
     public void onPause(){
         super.onPause();
         //this will refresh the osmdroid configuration on resuming.
@@ -70,26 +53,4 @@ public class MainActivity extends AppCompatActivity {
         //Configuration.getInstance().save(this, prefs);
         map.onPause();  //needed for compass, my location overlays, v6.0.0 and up
     }
-
-    PermissionHandler permissionHandler = new PermissionHandler(this);
-    CameraHandler cameraHandler = new CameraHandler(this);
-
-    photoController = new PhotoController(this, permissionHandler, cameraHandler);
-
-    setContentView(R.layout.activity_main);
-
-    locationHandler = new LocationHandler(this, 2000);
-
-        locationHandler.registerUpdateListener(position -> {
-        ((TextView)findViewById(R.id.helloWorld))
-                .setText("(" + position.getLatitude() + "," + position.getLongitude() + ")");
-    });
-
-
-    public void captureImage(View view) {
-        photoController.captureImageAsync();
-
-    }
-
-
 }
