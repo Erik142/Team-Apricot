@@ -15,7 +15,7 @@ import org.osmdroid.views.MapView;
 public class MainActivity extends AppCompatActivity {
 
     MapView map = null;
-    @Override public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         //handle permissions first, before map is created. not depicted here
@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
         map.setTileSource(TileSourceFactory.MAPNIK);
     }
 
-    public void onResume(){
+    protected void onResume(){
         super.onResume();
         //this will refresh the osmdroid configuration on resuming.
         //if you make changes to the configuration, use
@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
         map.onResume(); //needed for compass, my location overlays, v6.0.0 and up
     }
 
-    public void onPause(){
+    protected void onPause(){
         super.onPause();
         //this will refresh the osmdroid configuration on resuming.
         //if you make changes to the configuration, use
