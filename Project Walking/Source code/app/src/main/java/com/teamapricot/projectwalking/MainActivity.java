@@ -14,7 +14,13 @@ import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
+import android.view.View;
+
+import com.teamapricot.projectwalking.handlers.CameraHandler;
+import com.teamapricot.projectwalking.photos.PhotoController;
+
 public class MainActivity extends AppCompatActivity {
+    private PhotoController photoController;
     LocationHandler locationHandler;
     IMapController mapController;
     MyLocationNewOverlay locationOverlay;
@@ -24,15 +30,20 @@ public class MainActivity extends AppCompatActivity {
     MapView map = null;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        PermissionHandler permissionHandler = new PermissionHandler(this);
+        CameraHandler cameraHandler = new CameraHandler(this);
+
+        photoController = new PhotoController(this, permissionHandler, cameraHandler);
+
+        locationHandler = new LocationHandler(this, 2000);
 
         Context ctx = getApplicationContext();
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
 
         setContentView(R.layout.activity_main);
-
-        locationHandler = new LocationHandler(this, 2000);
 
         map = findViewById(R.id.map);
         map.setTileSource(TileSourceFactory.MAPNIK);
@@ -42,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
 
         locationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(ctx), map);
         locationOverlay.enableMyLocation();
+
         map.getOverlays().add(locationOverlay);
 
         locationHandler.registerUpdateListener(position -> {
@@ -53,7 +65,8 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void onResume() {
+    @Override
+    protected void onResume() {
         super.onResume();
 
         map.onResume();
@@ -63,5 +76,9 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
 
         map.onPause();
+    }
+
+    public void captureImage(View view) {
+        photoController.captureImageAsync();
     }
 }
