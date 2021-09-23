@@ -21,13 +21,13 @@ import com.teamapricot.projectwalking.photos.PhotoController;
 
 public class MainActivity extends AppCompatActivity {
     private PhotoController photoController;
-    LocationHandler locationHandler;
-    IMapController mapController;
-    MyLocationNewOverlay locationOverlay;
+    private LocationHandler locationHandler;
+    private IMapController mapController;
+    private MyLocationNewOverlay locationOverlay;
 
     boolean mapInitialized = false;
 
-    MapView map = null;
+    private MapView map = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
