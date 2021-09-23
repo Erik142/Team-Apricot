@@ -11,14 +11,34 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.views.MapView;
 
 
+import android.view.View;
+import android.widget.TextView;
+
+import com.teamapricot.projectwalking.handlers.CameraHandler;
+import com.teamapricot.projectwalking.photos.PhotoController;
 
 public class MainActivity extends AppCompatActivity {
+    private PhotoController photoController;
+    LocationHandler locationHandler;
 
     MapView map = null;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         //handle permissions first, before map is created. not depicted here
+
+        PermissionHandler permissionHandler = new PermissionHandler(this);
+        CameraHandler cameraHandler = new CameraHandler(this);
+
+        photoController = new PhotoController(this, permissionHandler, cameraHandler);
+
+
+        locationHandler = new LocationHandler(this, 2000);
+
+        locationHandler.registerUpdateListener(position -> {
+            ((TextView)findViewById(R.id.helloWorld))
+                    .setText("(" + position.getLatitude() + "," + position.getLongitude() + ")");
+        });
 
         //load/initialize the osmdroid configuration, this can be done
         Context ctx = getApplicationContext();
@@ -52,5 +72,10 @@ public class MainActivity extends AppCompatActivity {
         //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         //Configuration.getInstance().save(this, prefs);
         map.onPause();  //needed for compass, my location overlays, v6.0.0 and up
+        
+    }
+
+    public void captureImage(View view) {
+        photoController.captureImageAsync();
     }
 }
