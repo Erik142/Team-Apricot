@@ -72,7 +72,8 @@ public class MainActivity extends AppCompatActivity {
         map.onResume();
     }
 
-    public void onPause() {
+    @Override
+    protected void onPause() {
         super.onPause();
 
         map.onPause();
