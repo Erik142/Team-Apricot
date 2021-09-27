@@ -16,7 +16,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         createChannel();
         Reminder GetNotified = new Reminder(MainActivity.this);
-        GetNotified.addNotification("new_spot", "new_challenge", "notify_button", 1);
+        GetNotified.addNotification("new_spot", "new_challenge", "notify_message", 1);
     }
 
     /**
@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
      */
     public void createChannel(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel("notify_button", "new_spot", NotificationManager.IMPORTANCE_DEFAULT);
+            NotificationChannel channel = new NotificationChannel("notify_message", "new_spot", NotificationManager.IMPORTANCE_DEFAULT);
             NotificationManager manager = getSystemService(NotificationManager.class);
             manager.createNotificationChannel(channel);
         }
