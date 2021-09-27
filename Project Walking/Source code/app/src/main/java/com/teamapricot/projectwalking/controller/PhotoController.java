@@ -13,7 +13,7 @@ import androidx.core.content.FileProvider;
 import com.teamapricot.projectwalking.BuildConfig;
 import com.teamapricot.projectwalking.PermissionHandler;
 import com.teamapricot.projectwalking.R;
-import com.teamapricot.projectwalking.dialogs.PermissionRejectedDialog;
+import com.teamapricot.projectwalking.view.dialogs.PermissionRejectedDialog;
 import com.teamapricot.projectwalking.handlers.CameraHandler;
 import com.teamapricot.projectwalking.photos.ImageFileHandler;
 
