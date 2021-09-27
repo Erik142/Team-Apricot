@@ -24,7 +24,7 @@ import com.teamapricot.projectwalking.PermissionHandler;
 import com.teamapricot.projectwalking.R;
 import com.teamapricot.projectwalking.Reminder;
 import com.teamapricot.projectwalking.handlers.CameraHandler;
-import com.teamapricot.projectwalking.photos.PhotoController;
+import com.teamapricot.projectwalking.controller.PhotoController;
 
 public class MainActivity extends AppCompatActivity {
     private PhotoController photoController;

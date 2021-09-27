@@ -1,4 +1,4 @@
-package com.teamapricot.projectwalking.photos;
+package com.teamapricot.projectwalking.controller;
 
 import android.Manifest;
 import android.net.Uri;
@@ -12,6 +12,7 @@ import com.teamapricot.projectwalking.BuildConfig;
 import com.teamapricot.projectwalking.PermissionHandler;
 import com.teamapricot.projectwalking.dialogs.PermissionRejectedDialog;
 import com.teamapricot.projectwalking.handlers.CameraHandler;
+import com.teamapricot.projectwalking.photos.ImageFileHandler;
 
 import java.io.File;
 import java.io.IOException;
