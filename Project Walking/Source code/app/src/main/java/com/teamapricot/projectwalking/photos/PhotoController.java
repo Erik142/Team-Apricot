@@ -29,7 +29,7 @@ public class PhotoController {
 
     private PermissionHandler permissionHandler;
     private CameraHandler cameraHandler;
-    private ImageFileHandler imageFileHandler;
+    private StorageHandler storageHandler;
     private AppCompatActivity activity;
 
     /**
@@ -43,7 +43,7 @@ public class PhotoController {
         this.activity = activity;
         this.permissionHandler = permissionHandler;
         this.cameraHandler = cameraHandler;
-        this.imageFileHandler = new ImageFileHandler(this.activity);
+        this.storageHandler = new StorageHandler(this.activity);
     }
 
     /**
@@ -73,7 +73,7 @@ public class PhotoController {
         Uri uri;
 
         try {
-            tempFile = imageFileHandler.createSharableImageFile();
+            tempFile = storageHandler.createSharableImageFile();
             uri = FileProvider.getUriForFile(this.activity, BuildConfig.APPLICATION_ID + FILE_PROVIDER_SUFFIX, tempFile);
         } catch (IOException | IllegalArgumentException e) {
             Log.e(TAG, "An error occurred while creating temporary image file: " + e.getMessage());
@@ -90,7 +90,7 @@ public class PhotoController {
             if (success) {
                 Log.d(TAG, "Successfully captured image!");
                 try {
-                    File outputFile = imageFileHandler.moveImageToExternalStorage(tempFile);
+                    File outputFile = storageHandler.moveImageToExternalStorage(tempFile);
 
                     this.activity.runOnUiThread(() -> {
                         Toast toast = Toast.makeText(this.activity, "Nice photo!", Toast.LENGTH_LONG);
