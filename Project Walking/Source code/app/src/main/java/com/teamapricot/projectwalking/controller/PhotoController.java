@@ -3,6 +3,8 @@ package com.teamapricot.projectwalking.controller;
 import android.Manifest;
 import android.net.Uri;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -10,6 +12,7 @@ import androidx.core.content.FileProvider;
 
 import com.teamapricot.projectwalking.BuildConfig;
 import com.teamapricot.projectwalking.PermissionHandler;
+import com.teamapricot.projectwalking.R;
 import com.teamapricot.projectwalking.dialogs.PermissionRejectedDialog;
 import com.teamapricot.projectwalking.handlers.CameraHandler;
 import com.teamapricot.projectwalking.photos.ImageFileHandler;
@@ -20,7 +23,7 @@ import java.util.concurrent.CompletableFuture;
 
 /**
  * @author Erik Wahlberger
- * @version 2021-09-18
+ * @version 2021-09-27
  *
  * A controller class (In the MVC sense) for taking photos using the camera of the device
  */
@@ -37,20 +40,28 @@ public class PhotoController {
      * Creates a new {@code PhotoController} instance using the specified {@code AppCompatActivity}, {@code PermissionHandler} and {@code CameraHandler}
      *
      * @param activity The {@code AppCompatActivity} used for creating dialogs, retrieving directory paths and creating {@code Toast}s
-     * @param permissionHandler The {@code PermissionHandler} used to check for, and request app permissions
-     * @param cameraHandler The {@code CameraHandler} used to open the camera app, as well as to capture and save images
      */
-    public PhotoController(AppCompatActivity activity, PermissionHandler permissionHandler, CameraHandler cameraHandler) {
+    public PhotoController(AppCompatActivity activity) {
         this.activity = activity;
-        this.permissionHandler = permissionHandler;
-        this.cameraHandler = cameraHandler;
+        this.permissionHandler = new PermissionHandler(this.activity);
+        this.cameraHandler = new CameraHandler(this.activity);
         this.imageFileHandler = new ImageFileHandler(this.activity);
+    }
+
+    public void registerOnClickListener(View button) {
+        if (!button.hasOnClickListeners()) {
+            button.setOnClickListener(view -> {
+                if (view.getId() == R.id.open_camera_fab) {
+                    captureImageAsync();
+                }
+            });
+        }
     }
 
     /**
      * Requests the necessary permissions, opens the camera applications, captures and saves an image to the device asynchronously
      */
-    public void captureImageAsync() {
+    private void captureImageAsync() {
         requestPermissions().thenAccept(isGranted -> {
             if (isGranted) {
                 Log.d(TAG, "All required permissions have been accepted.");

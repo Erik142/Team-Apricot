@@ -20,10 +20,8 @@ import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 import android.view.View;
 
 import com.teamapricot.projectwalking.LocationHandler;
-import com.teamapricot.projectwalking.PermissionHandler;
 import com.teamapricot.projectwalking.R;
 import com.teamapricot.projectwalking.Reminder;
-import com.teamapricot.projectwalking.handlers.CameraHandler;
 import com.teamapricot.projectwalking.controller.PhotoController;
 
 public class MainActivity extends AppCompatActivity {
@@ -39,12 +37,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        PermissionHandler permissionHandler = new PermissionHandler(this);
-        CameraHandler cameraHandler = new CameraHandler(this);
 
-        photoController = new PhotoController(this, permissionHandler, cameraHandler);
 
         locationHandler = new LocationHandler(this, 2000);
+        init();
 
         Context ctx = getApplicationContext();
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
@@ -99,7 +95,11 @@ public class MainActivity extends AppCompatActivity {
         map.onPause();
     }
 
-    public void captureImage(View view) {
-        photoController.captureImageAsync();
+    private void init() {
+        photoController = new PhotoController(this);
+
+        View openCameraButton = findViewById(R.id.open_camera_fab);
+
+        photoController.registerOnClickListener(openCameraButton);
     }
 }
