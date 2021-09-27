@@ -23,8 +23,8 @@ import java.util.Locale;
 public class ImageFileHandler {
     private static final String TAG = "ImageFileHandler";
 
-    private final String PHOTO_SUBFOLDER = "ProjectWalking";
-    private final String FILE_NAME_FORMAT = "yyyyMMddHHmmssSSS";
+    private static final String PHOTO_SUBFOLDER = "ProjectWalking";
+    private static final String FILE_NAME_FORMAT = "yyyyMMddHHmmssSSS";
 
     private AppCompatActivity activity;
 
@@ -61,8 +61,7 @@ public class ImageFileHandler {
      * @throws IOException If the file cannot be created on the external storage
      */
     public File moveImageToExternalStorage(File file) throws IOException {
-        File cameraDirectoryPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-        File outputDirectoryPath = new File(cameraDirectoryPath, PHOTO_SUBFOLDER);
+        File outputDirectoryPath = getImageDirectory();
 
         outputDirectoryPath.mkdirs();
 
@@ -76,5 +75,15 @@ public class ImageFileHandler {
         file.delete();
 
         return outputFile;
+    }
+
+    /**
+     * Gets the directory where images are stored.
+     *
+     * @return The directory
+     */
+    public static File getImageDirectory() {
+        File cameraDirectoryPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        return new File(cameraDirectoryPath, PHOTO_SUBFOLDER);
     }
 }
