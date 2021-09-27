@@ -38,7 +38,7 @@ public class LocationHandler {
      * @param activity The associated Activity
      * @param interval Interval (in ms) between location updates
      */
-    LocationHandler(AppCompatActivity activity, int interval) {
+    public LocationHandler(AppCompatActivity activity, int interval) {
         permissionHandler = new PermissionHandler(activity);
         locationManager = (LocationManager) activity.getApplicationContext()
                 .getSystemService(AppCompatActivity.LOCATION_SERVICE);

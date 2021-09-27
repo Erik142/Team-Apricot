@@ -1,4 +1,4 @@
-package com.teamapricot.projectwalking;
+package com.teamapricot.projectwalking.view;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -19,8 +19,10 @@ import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 import android.view.View;
 
-import androidx.appcompat.app.AppCompatActivity;
-
+import com.teamapricot.projectwalking.LocationHandler;
+import com.teamapricot.projectwalking.PermissionHandler;
+import com.teamapricot.projectwalking.R;
+import com.teamapricot.projectwalking.Reminder;
 import com.teamapricot.projectwalking.handlers.CameraHandler;
 import com.teamapricot.projectwalking.photos.PhotoController;
 
