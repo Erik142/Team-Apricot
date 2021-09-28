@@ -4,7 +4,6 @@ import android.Manifest;
 import android.net.Uri;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,6 +12,8 @@ import androidx.core.content.FileProvider;
 import com.teamapricot.projectwalking.BuildConfig;
 import com.teamapricot.projectwalking.PermissionHandler;
 import com.teamapricot.projectwalking.R;
+import com.teamapricot.projectwalking.model.CaptureImageModel;
+import com.teamapricot.projectwalking.observe.Observer;
 import com.teamapricot.projectwalking.view.dialogs.PermissionRejectedDialog;
 import com.teamapricot.projectwalking.handlers.CameraHandler;
 import com.teamapricot.projectwalking.photos.ImageFileHandler;
@@ -36,6 +37,8 @@ public class PhotoController {
     private ImageFileHandler imageFileHandler;
     private AppCompatActivity activity;
 
+    private CaptureImageModel captureImageModel;
+
     /**
      * Creates a new {@code PhotoController} instance using the specified {@code AppCompatActivity}, {@code PermissionHandler} and {@code CameraHandler}
      *
@@ -46,6 +49,7 @@ public class PhotoController {
         this.permissionHandler = new PermissionHandler(this.activity);
         this.cameraHandler = new CameraHandler(this.activity);
         this.imageFileHandler = new ImageFileHandler(this.activity);
+        this.captureImageModel = new CaptureImageModel();
     }
 
     public void registerOnClickListener(View button) {
@@ -56,6 +60,10 @@ public class PhotoController {
                 }
             });
         }
+    }
+
+    public void registerObserver(Observer<CaptureImageModel> observer) {
+        captureImageModel.addObserver(observer);
     }
 
     /**
@@ -81,6 +89,8 @@ public class PhotoController {
      * Opens the camera application, captures an image and saves it to the device asynchronously
      */
     private void openCameraAndCaptureImageAsync() {
+        captureImageModel.reset();
+
         File tempFile;
         Uri uri;
 
@@ -104,10 +114,8 @@ public class PhotoController {
                 try {
                     File outputFile = imageFileHandler.moveImageToExternalStorage(tempFile);
 
-                    this.activity.runOnUiThread(() -> {
-                        Toast toast = Toast.makeText(this.activity, "Nice photo!", Toast.LENGTH_LONG);
-                        toast.show();
-                    });
+                    captureImageModel.setImageFile(outputFile);
+                    captureImageModel.setFinished(true);
 
                     Log.d(TAG, "Successfully saved image to external storage: " + outputFile.getAbsolutePath());
                 } catch (IOException e) {

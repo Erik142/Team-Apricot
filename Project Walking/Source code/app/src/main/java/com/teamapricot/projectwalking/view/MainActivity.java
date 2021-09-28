@@ -18,14 +18,18 @@ import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 import android.view.View;
+import android.widget.Toast;
 
 import com.teamapricot.projectwalking.LocationHandler;
 import com.teamapricot.projectwalking.R;
 import com.teamapricot.projectwalking.Reminder;
 import com.teamapricot.projectwalking.controller.PhotoController;
+import com.teamapricot.projectwalking.model.CaptureImageModel;
+import com.teamapricot.projectwalking.observe.Observer;
 
 public class MainActivity extends AppCompatActivity {
     private PhotoController photoController;
+
     private LocationHandler locationHandler;
     private IMapController mapController;
     private MyLocationNewOverlay locationOverlay;
@@ -101,5 +105,19 @@ public class MainActivity extends AppCompatActivity {
         View openCameraButton = findViewById(R.id.open_camera_fab);
 
         photoController.registerOnClickListener(openCameraButton);
+        photoController.registerObserver(createCameraObserver());
+    }
+
+    private Observer<CaptureImageModel> createCameraObserver() {
+        return model -> {
+            if (model.isFinished()) {
+                if (model.isSuccessful()) {
+                    runOnUiThread(() -> {
+                        Toast toast = Toast.makeText(this, "Nice photo!", Toast.LENGTH_LONG);
+                        toast.show();
+                    });
+                }
+            }
+        };
     }
 }
