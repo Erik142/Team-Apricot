@@ -4,16 +4,30 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.os.Build;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.media.ThumbnailUtils;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.teamapricot.projectwalking.handlers.CameraHandler;
+import com.teamapricot.projectwalking.photos.PhotoController;
+import com.teamapricot.projectwalking.photos.StorageHandler;
+import com.teamapricot.projectwalking.photos.StorageHandler.ImageFileData;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.IconOverlay;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
@@ -56,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
         map.setTileSource(TileSourceFactory.MAPNIK);
 
         mapController = map.getController();
-        mapController.setZoom(19.5);
+        mapController.setZoom(16.5);
 
         locationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(ctx), map);
         locationOverlay.enableMyLocation();
@@ -65,17 +79,40 @@ public class MainActivity extends AppCompatActivity {
 
         locationHandler.registerUpdateListener(position -> {
             GeoPoint point = new GeoPoint(position.getLatitude(), position.getLongitude());
-            if(!mapInitialized) {
+            if (!mapInitialized) {
                 mapController.setCenter(point);
                 mapInitialized = true;
             }
         });
+
+        StorageHandler storageHandler = new StorageHandler(this);
+        for (ImageFileData img : storageHandler.listImageFiles()) {
+            final int THUMBNAIL_SIZE = 128;
+            GeoPoint location = new GeoPoint(img.getLatitude(), img.getLongitude());
+            Bitmap image = BitmapFactory.decodeFile(img.getFile().getPath());
+            int width = image.getWidth();
+            int height = image.getHeight();
+            int tnWidth;
+            int tnHeight;
+            if(width > height) {
+                tnWidth = THUMBNAIL_SIZE;
+                tnHeight = height * THUMBNAIL_SIZE / width;
+            } else {
+                tnHeight = THUMBNAIL_SIZE;
+                tnWidth = width * THUMBNAIL_SIZE / height;
+
+            }
+            Bitmap thumbnail = ThumbnailUtils.extractThumbnail(image, tnWidth, tnHeight);
+            Drawable icon = new BitmapDrawable(this.getResources(), thumbnail);
+            IconOverlay iconOverlay = new IconOverlay(location, icon);
+            map.getOverlays().add(iconOverlay);
+        }
     }
 
     /**
      * description: creating the notification_channel for higher versions
      */
-    public void createChannel(){
+    public void createChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel("notify_message", "new_spot", NotificationManager.IMPORTANCE_DEFAULT);
             NotificationManager manager = getSystemService(NotificationManager.class);
