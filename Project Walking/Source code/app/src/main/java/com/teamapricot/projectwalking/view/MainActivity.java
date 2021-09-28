@@ -40,7 +40,6 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
-        locationHandler = new LocationHandler(this, 2000);
         init();
 
         Context ctx = getApplicationContext();
@@ -97,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void init() {
         photoController = new PhotoController(this);
+        locationHandler = new LocationHandler(this, 2000);
 
         View openCameraButton = findViewById(R.id.open_camera_fab);
 
