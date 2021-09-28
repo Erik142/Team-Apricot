@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        setContentView(R.layout.activity_main);
 
         locationHandler = new LocationHandler(this, 2000);
         init();
@@ -45,7 +46,6 @@ public class MainActivity extends AppCompatActivity {
         Context ctx = getApplicationContext();
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
 
-        setContentView(R.layout.activity_main);
         createChannel();
         Reminder GetNotified = new Reminder(MainActivity.this);
         GetNotified.addNotification("new_spot", "new_challenge", "notify_message", 1);
