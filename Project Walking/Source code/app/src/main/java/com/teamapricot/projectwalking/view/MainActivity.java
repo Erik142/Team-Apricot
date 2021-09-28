@@ -18,14 +18,18 @@ import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 import android.view.View;
+import android.widget.Toast;
 
 import com.teamapricot.projectwalking.LocationHandler;
 import com.teamapricot.projectwalking.R;
 import com.teamapricot.projectwalking.Reminder;
 import com.teamapricot.projectwalking.controller.PhotoController;
+import com.teamapricot.projectwalking.model.CaptureImageModel;
+import com.teamapricot.projectwalking.observe.Observer;
 
 public class MainActivity extends AppCompatActivity {
     private PhotoController photoController;
+
     private LocationHandler locationHandler;
     private IMapController mapController;
     private MyLocationNewOverlay locationOverlay;
@@ -38,14 +42,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        setContentView(R.layout.activity_main);
 
-        locationHandler = new LocationHandler(this, 2000);
         init();
 
         Context ctx = getApplicationContext();
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
 
-        setContentView(R.layout.activity_main);
         createChannel();
         Reminder GetNotified = new Reminder(MainActivity.this);
         GetNotified.addNotification("new_spot", "new_challenge", "notify_message", 1);
@@ -97,9 +100,24 @@ public class MainActivity extends AppCompatActivity {
 
     private void init() {
         photoController = new PhotoController(this);
+        locationHandler = new LocationHandler(this, 2000);
 
         View openCameraButton = findViewById(R.id.open_camera_fab);
 
         photoController.registerOnClickListener(openCameraButton);
+        photoController.registerObserver(createCameraObserver());
+    }
+
+    private Observer<CaptureImageModel> createCameraObserver() {
+        return model -> {
+            if (model.isFinished()) {
+                if (model.isSuccessful()) {
+                    runOnUiThread(() -> {
+                        Toast toast = Toast.makeText(this, "Nice photo!", Toast.LENGTH_LONG);
+                        toast.show();
+                    });
+                }
+            }
+        };
     }
 }
