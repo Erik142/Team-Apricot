@@ -11,7 +11,7 @@ import org.osmdroid.util.GeoPoint;
  * Model class for the navigation functionality
  */
 public class NavigationModel extends ObservableBase<NavigationModel> {
-    private GeoPoint currentLocation;
+    private GeoPoint userLocation;
     private double zoomLevel;
 
     /**
@@ -19,7 +19,7 @@ public class NavigationModel extends ObservableBase<NavigationModel> {
      * @return The location as a {@code GeoPoint} object
      */
     public GeoPoint getUserLocation() {
-        return this.currentLocation;
+        return this.userLocation;
     }
 
     /**
@@ -35,7 +35,7 @@ public class NavigationModel extends ObservableBase<NavigationModel> {
      * @param location the value for the user location
      */
     public void setUserLocation(GeoPoint location) {
-        this.currentLocation = currentLocation;
+        this.userLocation = location;
         updateObservers(this);
     }
 

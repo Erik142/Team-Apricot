@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
+import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
@@ -109,6 +110,7 @@ public class MainActivity extends AppCompatActivity {
         map.getOverlays().add(locationOverlay);
 
         navigationController.registerObserver(createNavigationObserver());
+        navigationController.start();
     }
 
     /**
@@ -136,8 +138,10 @@ public class MainActivity extends AppCompatActivity {
         return model -> {
             mapController.setZoom(model.getZoomLevel());
 
-            if (!mapCentered) {
-                mapController.setCenter(model.getUserLocation());
+            GeoPoint location = model.getUserLocation();
+
+            if (!mapCentered && location != null) {
+                mapController.setCenter(location);
                 mapCentered = true;
             }
         };
