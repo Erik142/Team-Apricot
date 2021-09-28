@@ -12,7 +12,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
-import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
@@ -20,21 +19,22 @@ import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 import android.view.View;
 import android.widget.Toast;
 
-import com.teamapricot.projectwalking.LocationHandler;
 import com.teamapricot.projectwalking.R;
 import com.teamapricot.projectwalking.Reminder;
+import com.teamapricot.projectwalking.controller.NavigationController;
 import com.teamapricot.projectwalking.controller.PhotoController;
 import com.teamapricot.projectwalking.model.CaptureImageModel;
+import com.teamapricot.projectwalking.model.NavigationModel;
 import com.teamapricot.projectwalking.observe.Observer;
 
 public class MainActivity extends AppCompatActivity {
+    private NavigationController navigationController;
     private PhotoController photoController;
 
-    private LocationHandler locationHandler;
     private IMapController mapController;
     private MyLocationNewOverlay locationOverlay;
 
-    boolean mapInitialized = false;
+    boolean mapCentered;
 
     private MapView map = null;
 
@@ -46,31 +46,9 @@ public class MainActivity extends AppCompatActivity {
 
         init();
 
-        Context ctx = getApplicationContext();
-        Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
-
         createChannel();
         Reminder GetNotified = new Reminder(MainActivity.this);
         GetNotified.addNotification("new_spot", "new_challenge", "notify_message", 1);
-
-        map = findViewById(R.id.map);
-        map.setTileSource(TileSourceFactory.MAPNIK);
-
-        mapController = map.getController();
-        mapController.setZoom(19.5);
-
-        locationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(ctx), map);
-        locationOverlay.enableMyLocation();
-
-        map.getOverlays().add(locationOverlay);
-
-        locationHandler.registerUpdateListener(position -> {
-            GeoPoint point = new GeoPoint(position.getLatitude(), position.getLongitude());
-            if(!mapInitialized) {
-                mapController.setCenter(point);
-                mapInitialized = true;
-            }
-        });
     }
 
     /**
@@ -99,8 +77,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void init() {
+        initNavigation();
+        initCamera();
+    }
+
+    private void initCamera() {
         photoController = new PhotoController(this);
-        locationHandler = new LocationHandler(this, 2000);
 
         View openCameraButton = findViewById(R.id.open_camera_fab);
 
@@ -108,6 +90,31 @@ public class MainActivity extends AppCompatActivity {
         photoController.registerObserver(createCameraObserver());
     }
 
+    private void initNavigation() {
+        mapCentered = false;
+
+        Context ctx = getApplicationContext();
+        Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
+
+        navigationController = new NavigationController(this);
+
+        map = findViewById(R.id.map);
+        map.setTileSource(TileSourceFactory.MAPNIK);
+
+        mapController = map.getController();
+
+        locationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(ctx), map);
+        locationOverlay.enableMyLocation();
+
+        map.getOverlays().add(locationOverlay);
+
+        navigationController.registerObserver(createNavigationObserver());
+    }
+
+    /**
+     * Creates a new {@code Observer} object for the Camera functionality
+     * @return
+     */
     private Observer<CaptureImageModel> createCameraObserver() {
         return model -> {
             if (model.isFinished()) {
@@ -117,6 +124,21 @@ public class MainActivity extends AppCompatActivity {
                         toast.show();
                     });
                 }
+            }
+        };
+    }
+
+    /**
+     * Creates a new {@code Observer} object for the navigation functionality
+     * @return An {@code Observer<NavigationModel>} object to observe changes in a {@code NavigationModel} and update the UI correspondingly
+     */
+    private Observer<NavigationModel> createNavigationObserver() {
+        return model -> {
+            mapController.setZoom(model.getZoomLevel());
+
+            if (!mapCentered) {
+                mapController.setCenter(model.getUserLocation());
+                mapCentered = true;
             }
         };
     }
