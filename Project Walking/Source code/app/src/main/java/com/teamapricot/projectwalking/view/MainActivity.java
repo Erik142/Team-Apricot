@@ -1,7 +1,5 @@
 package com.teamapricot.projectwalking.view;
 
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.os.Build;
 import android.content.Context;
 import android.os.Bundle;
@@ -22,7 +20,7 @@ import android.widget.Toast;
 
 import com.teamapricot.projectwalking.LocationHandler;
 import com.teamapricot.projectwalking.R;
-import com.teamapricot.projectwalking.Reminder;
+import com.teamapricot.projectwalking.controller.NotificationController;
 import com.teamapricot.projectwalking.controller.PhotoController;
 import com.teamapricot.projectwalking.model.CaptureImageModel;
 import com.teamapricot.projectwalking.observe.Observer;
@@ -33,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     private LocationHandler locationHandler;
     private IMapController mapController;
     private MyLocationNewOverlay locationOverlay;
+    private NotificationController notificationController;
 
     boolean mapInitialized = false;
 
@@ -49,9 +48,8 @@ public class MainActivity extends AppCompatActivity {
         Context ctx = getApplicationContext();
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
 
-        createChannel();
-        Reminder GetNotified = new Reminder(MainActivity.this);
-        GetNotified.addNotification("new_spot", "new_challenge", "notify_message", 1);
+
+        notificationController = new NotificationController(ctx);
 
         map = findViewById(R.id.map);
         map.setTileSource(TileSourceFactory.MAPNIK);
@@ -73,17 +71,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    /**
-     * description: creating the notification_channel for higher versions
-     */
-    public void createChannel(){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel("notify_message", "new_spot", NotificationManager.IMPORTANCE_DEFAULT);
-            NotificationManager manager = getSystemService(NotificationManager.class);
-            manager.createNotificationChannel(channel);
-        }
-    }
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -101,11 +88,14 @@ public class MainActivity extends AppCompatActivity {
     private void init() {
         photoController = new PhotoController(this);
         locationHandler = new LocationHandler(this, 2000);
+       notificationController = new NotificationController(getApplicationContext());
+
 
         View openCameraButton = findViewById(R.id.open_camera_fab);
 
         photoController.registerOnClickListener(openCameraButton);
         photoController.registerObserver(createCameraObserver());
+        notificationController.SendNotification(false);
     }
 
     private Observer<CaptureImageModel> createCameraObserver() {
