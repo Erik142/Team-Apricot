@@ -1,0 +1,19 @@
+{
+  "name": "review-police",
+  "version": "0.0.1",
+  "description": "Review police program to automatically ping users in Discord whenever their review has been requested in GitHub",
+  "main": "src/app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Erik142/Team-Apricot.git"
+  },
+  "author": "Erik Wahlberger",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Erik142/Team-Apricot/issues"
+  },
+  "homepage": "https://github.com/Erik142/Team-Apricot#readme"
+}
