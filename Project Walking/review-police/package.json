@@ -17,6 +17,9 @@
   },
   "homepage": "https://github.com/Erik142/Team-Apricot#readme",
   "dependencies": {
-    "@octokit/webhooks": "^9.15.0"
+    "@discordjs/rest": "^0.1.0-canary.0",
+    "@octokit/webhooks": "^9.15.0",
+    "discord-api-types": "^0.23.1",
+    "discord.js": "^13.1.0"
   }
 }
