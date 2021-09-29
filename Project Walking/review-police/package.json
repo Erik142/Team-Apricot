@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/Erik142/Team-Apricot/issues"
   },
-  "homepage": "https://github.com/Erik142/Team-Apricot#readme"
+  "homepage": "https://github.com/Erik142/Team-Apricot#readme",
+  "dependencies": {
+    "@octokit/webhooks": "^9.15.0"
+  }
 }
