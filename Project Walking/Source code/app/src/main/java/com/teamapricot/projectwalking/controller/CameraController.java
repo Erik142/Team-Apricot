@@ -115,31 +115,23 @@ public class CameraController {
                     File outputFile = imageFileHandler.moveImageToExternalStorage(tempFile);
 
                     cameraModel.setImageFile(outputFile);
-                    cameraModel.setFinished(true);
+                    cameraModel.setStatus(CameraModel.CameraStatus.Done);
 
                     Log.d(TAG, "Successfully saved image to external storage: " + outputFile.getAbsolutePath());
                 } catch (IOException e) {
                     Log.e(TAG, "An error occurred while copying image to external storage: " + e.getMessage());
+                    cameraModel.setStatus(CameraModel.CameraStatus.ErrorSavingFinalPhoto);
 
                     if (tempFile.exists()) {
                         tempFile.delete();
                     }
-
-                    this.activity.runOnUiThread(() -> {
-                        Toast toast = Toast.makeText(this.activity, "An error occurred while copying image to external storage", Toast.LENGTH_LONG);
-                        toast.show();
-                    });
                 }
                 catch (Exception e) {
                     Log.e(TAG, "An error occurred while showing Toast: " + e.getMessage());
                 }
             } else {
-                Log.e(TAG, "Something went wrong when capturing the image");
-
-                this.activity.runOnUiThread(() -> {
-                    Toast toast = Toast.makeText(this.activity, "Something went wrong when capturing the image", Toast.LENGTH_LONG);
-                    toast.show();
-                });
+                Log.d(TAG, "The camera was discarded.");
+                cameraModel.setStatus(CameraModel.CameraStatus.Discarded);
             }
         });
     }

@@ -119,14 +119,25 @@ public class MainActivity extends AppCompatActivity {
      */
     private Observer<CameraModel> createCameraObserver() {
         return model -> {
-            if (model.isFinished()) {
-                if (model.isSuccessful()) {
-                    runOnUiThread(() -> {
-                        Toast toast = Toast.makeText(this, "Nice photo!", Toast.LENGTH_LONG);
-                        toast.show();
-                    });
+            this.runOnUiThread(() -> {
+                String toastMessage = null;
+
+                switch (model.getStatus()) {
+                    case Done:
+                        toastMessage = "Nice photo!";
+                        break;
+                    case ErrorSavingFinalPhoto:
+                        toastMessage = "An error occurred while copying image to external storage";
+                        break;
+                    default:
+                        break;
                 }
-            }
+
+                if (toastMessage != null) {
+                    Toast toast = Toast.makeText(this, toastMessage, Toast.LENGTH_LONG);
+                    toast.show();
+                }
+            });
         };
     }
 
