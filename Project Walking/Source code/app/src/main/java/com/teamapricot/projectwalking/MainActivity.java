@@ -61,27 +61,20 @@ public class MainActivity extends AppCompatActivity {
 
             if(!mapInitialized) {
                 mapController.setCenter(point);
-                mapInitialized = true;
-            }
-            //create a circle around users current location
-            Polygon polygon = new Polygon();
-            final double radius = 50;
-            List<GeoPoint> circlePoints = new ArrayList<>();
-            for (float f = 0; f < 360; f += 1){
-                circlePoints.add(new GeoPoint(position.getLatitude() ,position.getLongitude()).destinationPoint(radius, f));
-            }
-            polygon.setPoints(circlePoints);
-            map.getOverlays().add(polygon);
 
-            //deg is angle and len is distance
-            double len = Math.sqrt(Math.random()) * radius;
-            double deg = Math.random() * 2 * Math.PI;
-            double x = position.getLatitude() + len * Math.cos(deg);
-            double y = position.getLongitude() + len * Math.sin(deg);
-            GeoPoint nextPoint = new GeoPoint(x,y);
+                // Radius in meters
+                final double radius = 50;
+
+                //deg is angle and len is distance
+                double len = Math.sqrt(Math.random()) * radius;
+                double deg = Math.random() * 360;
+
+                GeoPoint nextPoint = point.destinationPoint(len, deg);
 
                 addMarker(ctx, map, nextPoint);
 
+                mapInitialized = true;
+            }
         });
 
     }
