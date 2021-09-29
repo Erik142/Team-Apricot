@@ -1,7 +1,5 @@
 package com.teamapricot.projectwalking.view;
 
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.os.Build;
 import android.content.Context;
 import android.os.Bundle;
@@ -22,11 +20,11 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.teamapricot.projectwalking.R;
-import com.teamapricot.projectwalking.Reminder;
 import com.teamapricot.projectwalking.controller.NavigationController;
 import com.teamapricot.projectwalking.controller.CameraController;
 import com.teamapricot.projectwalking.model.CameraModel;
 import com.teamapricot.projectwalking.model.NavigationModel;
+import com.teamapricot.projectwalking.controller.NotificationController;
 import com.teamapricot.projectwalking.observe.Observer;
 
 public class MainActivity extends AppCompatActivity {
@@ -35,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
 
     private IMapController mapController;
     private MyLocationNewOverlay locationOverlay;
+    private NotificationController notificationController;
 
     boolean mapCentered;
 
@@ -47,21 +46,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         init();
-
-        createChannel();
-        Reminder GetNotified = new Reminder(MainActivity.this);
-        GetNotified.addNotification("new_spot", "new_challenge", "notify_message", 1);
-    }
-
-    /**
-     * description: creating the notification_channel for higher versions
-     */
-    public void createChannel(){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel("notify_message", "new_spot", NotificationManager.IMPORTANCE_DEFAULT);
-            NotificationManager manager = getSystemService(NotificationManager.class);
-            manager.createNotificationChannel(channel);
-        }
     }
 
     @Override
@@ -81,6 +65,8 @@ public class MainActivity extends AppCompatActivity {
     private void init() {
         initNavigation();
         initCamera();
+        notificationController = new NotificationController(getApplicationContext());
+        notificationController.SendNotification(false);
     }
 
     private void initCamera() {
