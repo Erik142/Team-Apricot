@@ -14,6 +14,7 @@ import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
@@ -153,8 +154,27 @@ public class MainActivity extends AppCompatActivity {
 
             if (!mapCentered && location != null) {
                 mapController.setCenter(location);
+
+                GeoPoint destination = model.getDestination();
+
+                if (destination != null) {
+                    addMarker(getApplicationContext(), map, destination);
+                }
+
                 mapCentered = true;
             }
         };
+    }
+
+    /**
+     * description: sets marker at given location on map
+     */
+    public static Marker addMarker(Context context, MapView map, GeoPoint position) {
+        Marker marker = new Marker(map);
+        marker.setPosition(position);
+        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+        map.getOverlays().add(marker);
+        map.invalidate();
+        return marker;
     }
 }

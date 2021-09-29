@@ -11,7 +11,10 @@ import org.osmdroid.util.GeoPoint;
  * Model class for the navigation functionality
  */
 public class NavigationModel extends ObservableBase<NavigationModel> {
+    private final int DESTINATION_RADIUS = 50;
+
     private GeoPoint userLocation;
+    private GeoPoint destination;
     private double zoomLevel;
 
     /**
@@ -22,12 +25,29 @@ public class NavigationModel extends ObservableBase<NavigationModel> {
         return this.userLocation;
     }
 
+    public GeoPoint getDestination() { return this.destination; }
+
     /**
      * Get the zoom level for the map
      * @return The zoom level as a {@code double} value
      */
     public double getZoomLevel() {
         return zoomLevel;
+    }
+
+    public void createDestination() {
+        //deg is angle and len is distance
+        double len = Math.sqrt(Math.random()) * DESTINATION_RADIUS;
+        double deg = Math.random() * 360;
+
+        GeoPoint userLocation = getUserLocation();
+
+        if (userLocation != null) {
+            GeoPoint location = userLocation.destinationPoint(len, deg);
+
+            this.destination = location;
+            updateObservers(this);
+        }
     }
 
     /**
