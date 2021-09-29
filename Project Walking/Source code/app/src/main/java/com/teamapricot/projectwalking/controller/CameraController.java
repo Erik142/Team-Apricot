@@ -28,7 +28,7 @@ import java.util.concurrent.CompletableFuture;
  *
  * A controller class (In the MVC sense) for taking photos using the camera of the device
  */
-public class PhotoController {
+public class CameraController {
     private final String TAG = "PhotoController";
     private final String FILE_PROVIDER_SUFFIX = ".fileprovider";
 
@@ -44,7 +44,7 @@ public class PhotoController {
      *
      * @param activity The {@code AppCompatActivity} used for creating dialogs, retrieving directory paths and creating {@code Toast}s
      */
-    public PhotoController(AppCompatActivity activity) {
+    public CameraController(AppCompatActivity activity) {
         this.activity = activity;
         this.permissionHandler = new PermissionHandler(this.activity);
         this.cameraHandler = new CameraHandler(this.activity);

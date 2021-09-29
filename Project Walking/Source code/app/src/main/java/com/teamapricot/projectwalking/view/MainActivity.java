@@ -23,14 +23,14 @@ import android.widget.Toast;
 import com.teamapricot.projectwalking.R;
 import com.teamapricot.projectwalking.Reminder;
 import com.teamapricot.projectwalking.controller.NavigationController;
-import com.teamapricot.projectwalking.controller.PhotoController;
+import com.teamapricot.projectwalking.controller.CameraController;
 import com.teamapricot.projectwalking.model.CaptureImageModel;
 import com.teamapricot.projectwalking.model.NavigationModel;
 import com.teamapricot.projectwalking.observe.Observer;
 
 public class MainActivity extends AppCompatActivity {
     private NavigationController navigationController;
-    private PhotoController photoController;
+    private CameraController cameraController;
 
     private IMapController mapController;
     private MyLocationNewOverlay locationOverlay;
@@ -83,12 +83,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initCamera() {
-        photoController = new PhotoController(this);
+        cameraController = new CameraController(this);
 
         View openCameraButton = findViewById(R.id.open_camera_fab);
 
-        photoController.registerOnClickListener(openCameraButton);
-        photoController.registerObserver(createCameraObserver());
+        cameraController.registerOnClickListener(openCameraButton);
+        cameraController.registerObserver(createCameraObserver());
     }
 
     private void initNavigation() {
