@@ -145,9 +145,8 @@ public class MainActivity extends AppCompatActivity {
 
                 if (destination != null) {
                     addMarker(getApplicationContext(), map, destination);
+                    mapCentered = true;
                 }
-
-                mapCentered = true;
             }
         };
     }
