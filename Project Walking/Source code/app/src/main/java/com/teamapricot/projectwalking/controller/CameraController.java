@@ -26,7 +26,7 @@ import java.util.concurrent.CompletableFuture;
  * @author Erik Wahlberger
  * @version 2021-09-27
  *
- * A controller class (In the MVC sense) for taking photos using the camera of the device
+ * A controller class (In the MVC sense) for using the camera of the device
  */
 public class CameraController {
     private final String TAG = "PhotoController";
@@ -40,7 +40,7 @@ public class CameraController {
     private CameraModel cameraModel;
 
     /**
-     * Creates a new {@code PhotoController} instance using the specified {@code AppCompatActivity}, {@code PermissionHandler} and {@code CameraHandler}
+     * Creates a new {@code CameraController} instance using the specified {@code AppCompatActivity}, {@code PermissionHandler} and {@code CameraHandler}
      *
      * @param activity The {@code AppCompatActivity} used for creating dialogs, retrieving directory paths and creating {@code Toast}s
      */
