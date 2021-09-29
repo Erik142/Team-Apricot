@@ -20,21 +20,22 @@ import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 import android.view.View;
 import android.widget.Toast;
 
-import com.teamapricot.projectwalking.LocationHandler;
 import com.teamapricot.projectwalking.R;
 import com.teamapricot.projectwalking.Reminder;
-import com.teamapricot.projectwalking.controller.PhotoController;
-import com.teamapricot.projectwalking.model.CaptureImageModel;
+import com.teamapricot.projectwalking.controller.NavigationController;
+import com.teamapricot.projectwalking.controller.CameraController;
+import com.teamapricot.projectwalking.model.CameraModel;
+import com.teamapricot.projectwalking.model.NavigationModel;
 import com.teamapricot.projectwalking.observe.Observer;
 
 public class MainActivity extends AppCompatActivity {
-    private PhotoController photoController;
+    private NavigationController navigationController;
+    private CameraController cameraController;
 
-    private LocationHandler locationHandler;
     private IMapController mapController;
     private MyLocationNewOverlay locationOverlay;
 
-    boolean mapInitialized = false;
+    boolean mapCentered;
 
     private MapView map = null;
 
@@ -46,31 +47,9 @@ public class MainActivity extends AppCompatActivity {
 
         init();
 
-        Context ctx = getApplicationContext();
-        Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
-
         createChannel();
         Reminder GetNotified = new Reminder(MainActivity.this);
         GetNotified.addNotification("new_spot", "new_challenge", "notify_message", 1);
-
-        map = findViewById(R.id.map);
-        map.setTileSource(TileSourceFactory.MAPNIK);
-
-        mapController = map.getController();
-        mapController.setZoom(19.5);
-
-        locationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(ctx), map);
-        locationOverlay.enableMyLocation();
-
-        map.getOverlays().add(locationOverlay);
-
-        locationHandler.registerUpdateListener(position -> {
-            GeoPoint point = new GeoPoint(position.getLatitude(), position.getLongitude());
-            if(!mapInitialized) {
-                mapController.setCenter(point);
-                mapInitialized = true;
-            }
-        });
     }
 
     /**
@@ -99,24 +78,82 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void init() {
-        photoController = new PhotoController(this);
-        locationHandler = new LocationHandler(this, 2000);
+        initNavigation();
+        initCamera();
+    }
+
+    private void initCamera() {
+        cameraController = new CameraController(this);
 
         View openCameraButton = findViewById(R.id.open_camera_fab);
 
-        photoController.registerOnClickListener(openCameraButton);
-        photoController.registerObserver(createCameraObserver());
+        cameraController.registerOnClickListener(openCameraButton);
+        cameraController.registerObserver(createCameraObserver());
     }
 
-    private Observer<CaptureImageModel> createCameraObserver() {
+    private void initNavigation() {
+        mapCentered = false;
+
+        Context ctx = getApplicationContext();
+        Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
+
+        navigationController = new NavigationController(this);
+
+        map = findViewById(R.id.map);
+        map.setTileSource(TileSourceFactory.MAPNIK);
+
+        mapController = map.getController();
+
+        locationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(ctx), map);
+        locationOverlay.enableMyLocation();
+
+        map.getOverlays().add(locationOverlay);
+
+        navigationController.registerObserver(createNavigationObserver());
+        navigationController.start();
+    }
+
+    /**
+     * Creates a new {@code Observer} object for the Camera functionality
+     * @return
+     */
+    private Observer<CameraModel> createCameraObserver() {
         return model -> {
-            if (model.isFinished()) {
-                if (model.isSuccessful()) {
-                    runOnUiThread(() -> {
-                        Toast toast = Toast.makeText(this, "Nice photo!", Toast.LENGTH_LONG);
-                        toast.show();
-                    });
+            this.runOnUiThread(() -> {
+                String toastMessage = null;
+
+                switch (model.getStatus()) {
+                    case Done:
+                        toastMessage = "Nice photo!";
+                        break;
+                    case ErrorSavingFinalPhoto:
+                        toastMessage = "An error occurred while copying image to external storage";
+                        break;
+                    default:
+                        break;
                 }
+
+                if (toastMessage != null) {
+                    Toast toast = Toast.makeText(this, toastMessage, Toast.LENGTH_LONG);
+                    toast.show();
+                }
+            });
+        };
+    }
+
+    /**
+     * Creates a new {@code Observer} object for the navigation functionality
+     * @return An {@code Observer<NavigationModel>} object to observe changes in a {@code NavigationModel} and update the UI correspondingly
+     */
+    private Observer<NavigationModel> createNavigationObserver() {
+        return model -> {
+            mapController.setZoom(model.getZoomLevel());
+
+            GeoPoint location = model.getUserLocation();
+
+            if (!mapCentered && location != null) {
+                mapController.setCenter(location);
+                mapCentered = true;
             }
         };
     }

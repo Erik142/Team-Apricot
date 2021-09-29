@@ -12,7 +12,7 @@ import androidx.core.content.FileProvider;
 import com.teamapricot.projectwalking.BuildConfig;
 import com.teamapricot.projectwalking.PermissionHandler;
 import com.teamapricot.projectwalking.R;
-import com.teamapricot.projectwalking.model.CaptureImageModel;
+import com.teamapricot.projectwalking.model.CameraModel;
 import com.teamapricot.projectwalking.observe.Observer;
 import com.teamapricot.projectwalking.view.dialogs.PermissionRejectedDialog;
 import com.teamapricot.projectwalking.handlers.CameraHandler;
@@ -26,9 +26,9 @@ import java.util.concurrent.CompletableFuture;
  * @author Erik Wahlberger
  * @version 2021-09-27
  *
- * A controller class (In the MVC sense) for taking photos using the camera of the device
+ * A controller class (In the MVC sense) for using the camera of the device
  */
-public class PhotoController {
+public class CameraController {
     private final String TAG = "PhotoController";
     private final String FILE_PROVIDER_SUFFIX = ".fileprovider";
 
@@ -37,19 +37,19 @@ public class PhotoController {
     private ImageFileHandler imageFileHandler;
     private AppCompatActivity activity;
 
-    private CaptureImageModel captureImageModel;
+    private CameraModel cameraModel;
 
     /**
-     * Creates a new {@code PhotoController} instance using the specified {@code AppCompatActivity}, {@code PermissionHandler} and {@code CameraHandler}
+     * Creates a new {@code CameraController} instance using the specified {@code AppCompatActivity}, {@code PermissionHandler} and {@code CameraHandler}
      *
      * @param activity The {@code AppCompatActivity} used for creating dialogs, retrieving directory paths and creating {@code Toast}s
      */
-    public PhotoController(AppCompatActivity activity) {
+    public CameraController(AppCompatActivity activity) {
         this.activity = activity;
         this.permissionHandler = new PermissionHandler(this.activity);
         this.cameraHandler = new CameraHandler(this.activity);
         this.imageFileHandler = new ImageFileHandler(this.activity);
-        this.captureImageModel = new CaptureImageModel();
+        this.cameraModel = new CameraModel();
     }
 
     public void registerOnClickListener(View button) {
@@ -62,8 +62,8 @@ public class PhotoController {
         }
     }
 
-    public void registerObserver(Observer<CaptureImageModel> observer) {
-        captureImageModel.addObserver(observer);
+    public void registerObserver(Observer<CameraModel> observer) {
+        cameraModel.addObserver(observer);
     }
 
     /**
@@ -89,7 +89,7 @@ public class PhotoController {
      * Opens the camera application, captures an image and saves it to the device asynchronously
      */
     private void openCameraAndCaptureImageAsync() {
-        captureImageModel.reset();
+        cameraModel.reset();
 
         File tempFile;
         Uri uri;
@@ -114,32 +114,24 @@ public class PhotoController {
                 try {
                     File outputFile = imageFileHandler.moveImageToExternalStorage(tempFile);
 
-                    captureImageModel.setImageFile(outputFile);
-                    captureImageModel.setFinished(true);
+                    cameraModel.setImageFile(outputFile);
+                    cameraModel.setStatus(CameraModel.CameraStatus.Done);
 
                     Log.d(TAG, "Successfully saved image to external storage: " + outputFile.getAbsolutePath());
                 } catch (IOException e) {
                     Log.e(TAG, "An error occurred while copying image to external storage: " + e.getMessage());
+                    cameraModel.setStatus(CameraModel.CameraStatus.ErrorSavingFinalPhoto);
 
                     if (tempFile.exists()) {
                         tempFile.delete();
                     }
-
-                    this.activity.runOnUiThread(() -> {
-                        Toast toast = Toast.makeText(this.activity, "An error occurred while copying image to external storage", Toast.LENGTH_LONG);
-                        toast.show();
-                    });
                 }
                 catch (Exception e) {
                     Log.e(TAG, "An error occurred while showing Toast: " + e.getMessage());
                 }
             } else {
-                Log.e(TAG, "Something went wrong when capturing the image");
-
-                this.activity.runOnUiThread(() -> {
-                    Toast toast = Toast.makeText(this.activity, "Something went wrong when capturing the image", Toast.LENGTH_LONG);
-                    toast.show();
-                });
+                Log.d(TAG, "The camera was discarded.");
+                cameraModel.setStatus(CameraModel.CameraStatus.Discarded);
             }
         });
     }
