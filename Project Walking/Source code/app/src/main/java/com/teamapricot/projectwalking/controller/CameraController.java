@@ -12,7 +12,7 @@ import androidx.core.content.FileProvider;
 import com.teamapricot.projectwalking.BuildConfig;
 import com.teamapricot.projectwalking.PermissionHandler;
 import com.teamapricot.projectwalking.R;
-import com.teamapricot.projectwalking.model.CaptureImageModel;
+import com.teamapricot.projectwalking.model.CameraModel;
 import com.teamapricot.projectwalking.observe.Observer;
 import com.teamapricot.projectwalking.view.dialogs.PermissionRejectedDialog;
 import com.teamapricot.projectwalking.handlers.CameraHandler;
@@ -37,7 +37,7 @@ public class CameraController {
     private ImageFileHandler imageFileHandler;
     private AppCompatActivity activity;
 
-    private CaptureImageModel captureImageModel;
+    private CameraModel cameraModel;
 
     /**
      * Creates a new {@code PhotoController} instance using the specified {@code AppCompatActivity}, {@code PermissionHandler} and {@code CameraHandler}
@@ -49,7 +49,7 @@ public class CameraController {
         this.permissionHandler = new PermissionHandler(this.activity);
         this.cameraHandler = new CameraHandler(this.activity);
         this.imageFileHandler = new ImageFileHandler(this.activity);
-        this.captureImageModel = new CaptureImageModel();
+        this.cameraModel = new CameraModel();
     }
 
     public void registerOnClickListener(View button) {
@@ -62,8 +62,8 @@ public class CameraController {
         }
     }
 
-    public void registerObserver(Observer<CaptureImageModel> observer) {
-        captureImageModel.addObserver(observer);
+    public void registerObserver(Observer<CameraModel> observer) {
+        cameraModel.addObserver(observer);
     }
 
     /**
@@ -89,7 +89,7 @@ public class CameraController {
      * Opens the camera application, captures an image and saves it to the device asynchronously
      */
     private void openCameraAndCaptureImageAsync() {
-        captureImageModel.reset();
+        cameraModel.reset();
 
         File tempFile;
         Uri uri;
@@ -114,8 +114,8 @@ public class CameraController {
                 try {
                     File outputFile = imageFileHandler.moveImageToExternalStorage(tempFile);
 
-                    captureImageModel.setImageFile(outputFile);
-                    captureImageModel.setFinished(true);
+                    cameraModel.setImageFile(outputFile);
+                    cameraModel.setFinished(true);
 
                     Log.d(TAG, "Successfully saved image to external storage: " + outputFile.getAbsolutePath());
                 } catch (IOException e) {

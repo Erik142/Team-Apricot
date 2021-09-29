@@ -24,7 +24,7 @@ import com.teamapricot.projectwalking.R;
 import com.teamapricot.projectwalking.Reminder;
 import com.teamapricot.projectwalking.controller.NavigationController;
 import com.teamapricot.projectwalking.controller.CameraController;
-import com.teamapricot.projectwalking.model.CaptureImageModel;
+import com.teamapricot.projectwalking.model.CameraModel;
 import com.teamapricot.projectwalking.model.NavigationModel;
 import com.teamapricot.projectwalking.observe.Observer;
 
@@ -117,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
      * Creates a new {@code Observer} object for the Camera functionality
      * @return
      */
-    private Observer<CaptureImageModel> createCameraObserver() {
+    private Observer<CameraModel> createCameraObserver() {
         return model -> {
             if (model.isFinished()) {
                 if (model.isSuccessful()) {

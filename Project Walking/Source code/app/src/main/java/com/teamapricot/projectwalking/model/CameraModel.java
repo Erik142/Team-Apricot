@@ -4,7 +4,7 @@ import com.teamapricot.projectwalking.observe.ObservableBase;
 
 import java.io.File;
 
-public class CaptureImageModel extends ObservableBase<CaptureImageModel> {
+public class CameraModel extends ObservableBase<CameraModel> {
     private File imageFile;
     private boolean success;
     private boolean finished;
