@@ -14,12 +14,11 @@ import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 import android.view.View;
-
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.teamapricot.projectwalking.handlers.CameraHandler;
 import com.teamapricot.projectwalking.photos.PhotoController;
@@ -65,11 +64,37 @@ public class MainActivity extends AppCompatActivity {
 
         locationHandler.registerUpdateListener(position -> {
             GeoPoint point = new GeoPoint(position.getLatitude(), position.getLongitude());
+
             if(!mapInitialized) {
                 mapController.setCenter(point);
+
+                // Radius in meters
+                final double radius = 50;
+
+                //deg is angle and len is distance
+                double len = Math.sqrt(Math.random()) * radius;
+                double deg = Math.random() * 360;
+
+                GeoPoint nextPoint = point.destinationPoint(len, deg);
+
+                addMarker(ctx, map, nextPoint);
+
                 mapInitialized = true;
             }
         });
+
+    }
+
+    /**
+     * description: sets marker at given location on map
+     */
+    public static Marker addMarker(Context context, MapView map, GeoPoint position) {
+        Marker marker = new Marker(map);
+        marker.setPosition(position);
+        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+        map.getOverlays().add(marker);
+        map.invalidate();
+        return marker;
     }
 
     /**
