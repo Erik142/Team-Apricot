@@ -1,4 +1,4 @@
-import { Channel, Client, Collection, Intents, Interaction, Message, MessageEmbed, TextChannel } from "discord.js";
+import { Channel, Client, Collection, Intents, Message, MessageEmbed, TextChannel } from "discord.js";
 import { promisify } from "util";
 import { Command } from "../interfaces/Command";
 import { Config } from "../interfaces/Config";
@@ -6,7 +6,6 @@ import glob from 'glob'
 import { Event } from "../interfaces/Event";
 import { REST } from "@discordjs/rest";
 import { Routes } from "discord-api-types/rest/v9";
-import { json } from "stream/consumers";
 
 const globPromise = promisify(glob)
 /**
@@ -16,7 +15,6 @@ const globPromise = promisify(glob)
  */
 export class DiscordBot extends Client {
     private config: Config;
-    private commands: Collection<String, Command> = new Collection()
     private events: Collection<String, Event> = new Collection()
 
     /**

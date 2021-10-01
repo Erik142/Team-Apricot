@@ -1,5 +1,5 @@
 import { DiscordBot } from '../core/DiscordBot'
-import { CommandInteraction, Interaction, Message } from 'discord.js'
+import { CommandInteraction } from 'discord.js'
 import { SlashCommandBuilder, } from '@discordjs/builders'
 
 /**

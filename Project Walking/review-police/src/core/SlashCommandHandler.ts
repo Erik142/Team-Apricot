@@ -1,4 +1,4 @@
-import { Collection, CommandInteraction, Interaction, Message } from "discord.js";
+import { Collection, CommandInteraction } from "discord.js";
 import { Command } from "../interfaces/Command";
 import { DiscordBot } from "./DiscordBot";
 

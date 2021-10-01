@@ -1,6 +1,5 @@
 import fs from 'fs'
 import path from 'path'
-import { GitHubApi } from '../core/GitHubApi';
 
 /**
  * @author Erik Wahlberger
