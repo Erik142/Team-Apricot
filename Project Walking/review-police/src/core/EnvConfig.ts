@@ -2,6 +2,11 @@ require('dotenv').config()
 import { Config } from "../interfaces/Config";
 import { GitHubWebHookMode } from "./GitHubWebHooks";
 
+/**
+ * @author Erik Wahlberger
+ * @version 2021-10-01
+ * A class used to load the app configuration from environment variables, or a .env file
+ */
 export abstract class EnvConfig {
     static getConfig(): Config {
         const appmode = process.env.APP_MODE as string

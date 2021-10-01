@@ -5,6 +5,10 @@ import { GitHubApi, ReviewRequest } from "../core/GitHubApi";
 import { CommandExecutor } from "../interfaces/Command";
 import { UserMapper } from "../util/UserMapper";
 
+/**
+ * Retrieves the SlashCommandBuilder for this command
+ * @returns The SlashCommandBuilder object
+ */
 function getBuilder(): SlashCommandBuilder {
     const builder: SlashCommandBuilder = new SlashCommandBuilder()
     builder.setName('show')
@@ -16,6 +20,12 @@ function getBuilder(): SlashCommandBuilder {
     return builder;
 }
 
+/**
+ * Builds a Discord reply from the array of ReviewRequest options as well as the command (format) type
+ * @param reviewRequests The array of ReviewRequest objects to construct the reply from
+ * @param formatType The command variant, e.g. "all", "unaccepted" or "accepted"
+ * @returns An InteractionReplyOptions object containing the reply
+ */
 function getReply(reviewRequests: Array<ReviewRequest>, formatType: string): InteractionReplyOptions {
     let embeds: Array<MessageEmbed> = [];
 
@@ -44,6 +54,11 @@ function getReply(reviewRequests: Array<ReviewRequest>, formatType: string): Int
     return replyOptions;
 }
 
+/**
+ * The CommandExecutor for this command. Retrieves the review requests for the user that sent the command, and shows it as a reply in Discord
+ * @param client The Discord bot
+ * @param interaction The corresponding interaction that triggered this command
+ */
 export const executor: CommandExecutor = async (client, interaction: CommandInteraction) => {
     let isEphemeral: boolean = true
     let type = interaction.options.getString('type')
@@ -79,6 +94,12 @@ export const executor: CommandExecutor = async (client, interaction: CommandInte
     interaction.reply(reply)
 }
 
+/**
+ * The SlashCommandBuilder
+ */
 export const builder: SlashCommandBuilder = getBuilder()
 
+/**
+ * The command name
+ */
 export const name: string = 'show'

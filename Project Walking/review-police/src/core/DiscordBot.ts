@@ -9,18 +9,29 @@ import { Routes } from "discord-api-types/rest/v9";
 import { json } from "stream/consumers";
 
 const globPromise = promisify(glob)
-
+/**
+ * @author Erik Wahlberger
+ * @version 2021-10-01
+ * A class representing the Discord bot. Extends the discord.js Client class
+ */
 export class DiscordBot extends Client {
     private config: Config;
     private commands: Collection<String, Command> = new Collection()
     private events: Collection<String, Event> = new Collection()
 
+    /**
+     * Creates a new instance of the DiscordBot class with the specified configuration
+     * @param config The configuration for the bot
+     */
     public constructor(config: Config) {
         super({ intents: [Intents.FLAGS.GUILDS] });
 
         this.config = config;
     }
 
+    /**
+     * Sets up commands, event handlers and lets the bot login to Discord
+     */
     public async start(): Promise<void> {
         await this.setupCommands();
         await this.initEventHandlers();
@@ -56,21 +67,25 @@ export class DiscordBot extends Client {
         }))
     }
 
+    /**
+     * Loads all the slash commands and registers them in Discord
+     */
     private async setupCommands(): Promise<void> {
         const commandFiles: string[] = await globPromise(`${__dirname}/../commands/**/*{.ts,.js}`)
         const jsonCommands: Array<any> = new Array()
 
         await Promise.all(commandFiles.map(async (value: string) => {
             const file: Command = await import(value)
-            this.commands.set(file.name, file)
             jsonCommands.push(file.builder.toJSON())
         }))
-
-        console.log(jsonCommands)
 
         await this.registerSlashCommands(jsonCommands)
     }
 
+    /**
+     * Registers the specified slash commands in Discord
+     * @param commands The commands to register, specified as JSON objects
+     */
     private async registerSlashCommands(commands: Array<string>): Promise<void> {
         const rest = new REST({ version: '9' }).setToken(this.config.discordToken);
         try {

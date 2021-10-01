@@ -11,6 +11,19 @@ let commands: Collection<String, Command>
 let selectMenuResponders: Collection<String, SelectMenuResponse>
 let slashCommandHandler: SlashCommandHandler
 
+/**
+ * @author Erik Wahlberger
+ * @version 2021-10-01
+ * Event handler for the 'interactionCreate' event
+ */
+
+/**
+ * EventExecutor for the event. If the interaction was an command, the corresponding command is handled in the SlashCommandHandler. If the interaction instead was a SelectMenu, the interaction is handled in the corresponding SelectMenuResponse.
+ * @param client The Discord bot to be used for sending replies
+ * @param interaction The interaction to be handled
+ * @returns void
+ */
+
 export const executor: EventExecutor = async (client: DiscordBot, interaction: Interaction) => {
     if (!interaction.isCommand() && !interaction.isSelectMenu()) {
         return;
@@ -40,4 +53,7 @@ export const executor: EventExecutor = async (client: DiscordBot, interaction: I
     }
 }
 
+/**
+ * The event name: 'interactionCreate'
+ */
 export const name: string = 'interactionCreate'
