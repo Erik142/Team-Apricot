@@ -1,9 +1,31 @@
 import { createAppAuth } from "@octokit/auth-app";
 import { Octokit } from "@octokit/core";
 import { Config } from "../interfaces/Config";
-import { PullRequest } from "../model/PullRequest";
-import { ReviewRequest } from "../model/ReviewRequest";
 
+/**
+ * @author Erik Wahlberger
+ * @version 2021-10-01
+ * An interface representing the key elements in a GitHub pull request
+ */
+export interface PullRequest {
+    title: string,
+    url: string
+    number: number,
+    status: string,
+    reviewRequests: Array<ReviewRequest>
+}
+
+/**
+ * @author Erik Wahlberger
+ * @version 2021-10-01
+ * An interface representing the key elements in a GitHub review request
+ */
+export interface ReviewRequest {
+    url: string,
+    reviewer: string
+    pullNumber: number,
+    title: string
+}
 export abstract class GitHubApi {
     private static repoOwner = 'Erik142'
     private static repoName = 'Team-Apricot'

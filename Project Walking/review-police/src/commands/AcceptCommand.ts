@@ -2,9 +2,8 @@ import { CommandInteraction, Interaction, InteractionReplyOptions, MessageEmbed 
 import { userMention } from '@discordjs/builders'
 import { SlashCommandBuilder } from '@discordjs/builders'
 import { CommandExecutor } from "../interfaces/Command";
-import { ReviewRequest } from "../model/ReviewRequest";
 import { PullRequest } from "../model/PullRequest";
-import { GitHubApi } from "../core/GitHubApi";
+import { GitHubApi, ReviewRequest } from "../core/GitHubApi";
 import { UserMapper } from "../util/UserMapper";
 
 function getBuilder(): SlashCommandBuilder {

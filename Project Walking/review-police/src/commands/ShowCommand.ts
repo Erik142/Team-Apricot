@@ -1,9 +1,8 @@
 import { CommandInteraction, EmbedField, EmbedFieldData, Interaction, InteractionReplyOptions, MessageEmbed, User } from "discord.js";
 import { SlashCommandBuilder } from '@discordjs/builders'
 import { hyperlink } from '@discordjs/builders'
-import { GitHubApi } from "../core/GitHubApi";
+import { GitHubApi, ReviewRequest } from "../core/GitHubApi";
 import { CommandExecutor } from "../interfaces/Command";
-import { ReviewRequest } from "../model/ReviewRequest";
 import { UserMapper } from "../util/UserMapper";
 
 function getBuilder(): SlashCommandBuilder {
