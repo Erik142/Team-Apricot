@@ -1,4 +1,4 @@
-import { Client, Collection, Intents, Interaction } from "discord.js";
+import { Channel, Client, Collection, Intents, Interaction, Message, MessageEmbed, TextChannel } from "discord.js";
 import { promisify } from "util";
 import { Command } from "../interfaces/Command";
 import { Config } from "../interfaces/Config";
@@ -27,6 +27,26 @@ export class DiscordBot extends Client {
         await this.login(this.config.discordToken);
     }
 
+    /**
+     * Sends a message to the specified channel in the configuration as MessageEmbeds
+     * @param embeds The MessageEmbeds to send
+     * @returns The message that was sent, as a Message object
+     */
+    public async sendMessage(embeds: Array<MessageEmbed>): Promise<Message> {
+        const channel: Channel = await this.channels.fetch(this.config.discordChannelId)
+
+        if (channel.isText()) {
+            const textChannel = channel as TextChannel
+            const message: Message = await textChannel.send({ embeds: embeds })
+            return message;
+        }
+
+        return null;
+    }
+
+    /**
+     * Loads all the event handlers and sets up the event hooks for each event handler
+     */
     private async initEventHandlers(): Promise<void> {
         const eventFiles: string[] = await globPromise(`${__dirname}/../events/**/*{.ts,.js}`)
         await Promise.all(eventFiles.map(async (value: string) => {
