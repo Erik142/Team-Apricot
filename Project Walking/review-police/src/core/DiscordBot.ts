@@ -1,4 +1,4 @@
-import { Channel, Client, Collection, Intents, Message, MessageEmbed, TextChannel } from "discord.js";
+import { Channel, Client, Collection, Guild, GuildMember, Intents, Message, MessageEmbed, TextChannel } from "discord.js";
 import { promisify } from "util";
 import { Command } from "../interfaces/Command";
 import { Config } from "../interfaces/Config";
@@ -51,6 +51,11 @@ export class DiscordBot extends Client {
         }
 
         return null;
+    }
+
+    public async getUser(userId: string): Promise<GuildMember> {
+        const guild: Guild = await this.guilds.fetch(this.config.discordGuildId)
+        return await guild.members.fetch(userId)
     }
 
     /**

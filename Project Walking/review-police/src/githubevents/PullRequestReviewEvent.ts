@@ -5,7 +5,7 @@ import { EnvConfig } from "../core/EnvConfig";
 import { Config } from "../interfaces/Config";
 import { GitHubEventExecutor } from "../interfaces/GitHubEvent";
 import { UserMapper } from "../util/UserMapper";
-import { userMention, hyperlink } from '@discordjs/builders'
+import { hyperlink } from '@discordjs/builders'
 
 const config: Config = EnvConfig.getConfig()
 
@@ -24,7 +24,7 @@ async function pullRequestReviewApproved(client: DiscordBot, payload: PullReques
     const poDiscordId = UserMapper.getDiscordId(config.gitHubProductOwner)
     const reviewerDiscordId = UserMapper.getDiscordId(payload.review.user.login)
 
-    const description: string = `${userMention(poDiscordId)}: Pull request ${hyperlink(`#${payload.pull_request.number}: ${payload.pull_request.title}`, payload.pull_request.html_url)} has been approved by ${userMention(reviewerDiscordId)}, it is now up to you to decide it's destiny.`;
+    const description: string = `${await client.getUser(poDiscordId)}: Pull request ${hyperlink(`#${payload.pull_request.number}: ${payload.pull_request.title}`, payload.pull_request.html_url)} has been approved by ${await client.getUser(reviewerDiscordId)}, it is now up to you to decide it's destiny.`;
 
     const messagePayload: MessageEmbed = new MessageEmbed().setTitle("How does the judge respond?").setDescription(description);
     await client.sendMessage([messagePayload]);
@@ -38,7 +38,7 @@ async function pullRequestReviewApproved(client: DiscordBot, payload: PullReques
 async function pullRequestReviewChangesRequested(client: DiscordBot, payload: PullRequestReviewSubmittedEvent) {
     const ownerDiscordId = UserMapper.getDiscordId(payload.pull_request.user.login)
 
-    const description: string = `${userMention(ownerDiscordId)}: The judge has ruled to take this to a higher instance. Changes have been requested for the pull request ${hyperlink(`#${payload.pull_request.number}: ${payload.pull_request.title}`, payload.pull_request.html_url)}. Address the comments, then re-request the review in GitHub.`;
+    const description: string = `${await client.getUser(ownerDiscordId)}: The judge has ruled to take this to a higher instance. Changes have been requested for the pull request ${hyperlink(`#${payload.pull_request.number}: ${payload.pull_request.title}`, payload.pull_request.html_url)}. Address the comments, then re-request the review in GitHub.`;
 
     const messagePayload: MessageEmbed = new MessageEmbed().setTitle("A verdict has been made").setDescription(description);
     await client.sendMessage([messagePayload]);

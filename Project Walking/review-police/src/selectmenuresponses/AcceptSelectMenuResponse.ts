@@ -3,7 +3,6 @@ import { DiscordBot } from "../core/DiscordBot";
 import { GitHubApi, PullRequest, ReviewRequest } from "../core/GitHubApi";
 import { SelectMenuResponseExecutor } from "../interfaces/SelectMenuResponse";
 import { UserMapper } from "../util/UserMapper";
-import { userMention } from '@discordjs/builders'
 
 /**
  * @author Erik Wahlberger
@@ -101,16 +100,17 @@ export const executor: SelectMenuResponseExecutor = async (client: DiscordBot, i
         } else if (success) {
             description = ""
 
-            remainingReviewers.forEach(reviewRequest => {
+            for (let i = 0; i < remainingReviewers.length; i++) {
+                const reviewRequest = remainingReviewers[i]
                 let discordId = UserMapper.getDiscordId(reviewRequest.reviewer)
-                description += `${userMention(discordId)} `
-            })
+                description += `${await client.getUser(discordId)} `
+            }
 
             description = description.trim()
 
             let userDiscordId = UserMapper.getDiscordId(username)
 
-            description += `: ${userMention(userDiscordId)} has bailed you out of review duty. I'll catch you next time 🚓`
+            description += `: ${await client.getUser(userDiscordId)} has bailed you out of review duty. I'll catch you next time 🚓`
         } else if (!reviewRequested) {
             description = "Trying to bail your friends out of review duty, huh? Not gonna happen this time. Your review has not been requested for this pull request, try another one."
         } else if (!deleteSuccessfull && reviewRequested) {

@@ -3,7 +3,7 @@ import { MessageEmbed } from "discord.js";
 import { DiscordBot } from "../core/DiscordBot";
 import { GitHubEventExecutor } from "../interfaces/GitHubEvent";
 import { UserMapper } from "../util/UserMapper";
-import { userMention, hyperlink } from '@discordjs/builders'
+import { hyperlink } from '@discordjs/builders'
 import { GitHubApi, PullRequest } from "../core/GitHubApi";
 
 /**
@@ -50,10 +50,11 @@ async function pullRequestReopened(client: DiscordBot, payload: PullRequestReope
     const pullRequest: PullRequest = await GitHubApi.getPullRequest(payload.number);
     let description: string = "";
 
-    pullRequest.reviewRequests.forEach(reviewRequest => {
+    for (let i = 0; i < pullRequest.reviewRequests.length; i++) {
+        const reviewRequest = pullRequest.reviewRequests[i]
         const discordId = UserMapper.getDiscordId(reviewRequest.reviewer)
-        description += `${userMention(discordId)} `
-    })
+        description += `${await client.getUser(discordId)} `
+    }
 
     description = description.trim()
     description += `The pull request ${hyperlink(`#${pullRequest.number}: ${pullRequest.title}`, pullRequest.url)} has been re-opened. You are back on for review-duty, get a move on! 👮🏻‍♂️`
@@ -111,9 +112,10 @@ async function pullRequestReviewRequested(client: DiscordBot, payload: PullReque
 
         let description: string = ""
 
-        discordUsers.forEach(discordUser => {
-            description += `${userMention(discordUser)} `
-        })
+        for (let i = 0; i < discordUsers.length; i++) {
+            const discordUser = discordUsers[i]
+            description += `${await client.getUser(discordUser)} `
+        }
 
         description = description.trim()
         description += ": You have been summoned for review duty on pull request " + hyperlink(`#${payload.pull_request.number}: ${payload.pull_request.title}`, payload.pull_request.html_url) + ". Please either accept the review request by using the /accept command, or ignore this message."
@@ -145,11 +147,12 @@ function pullRequestMerged(client: DiscordBot, payload: PullRequestClosedEvent) 
 async function pullRequestClosed(client: DiscordBot, payload: PullRequestClosedEvent) {
     let description: string = "";
 
-    payload.pull_request.requested_reviewers.forEach(reviewer => {
+    for (let i = 0; i < payload.pull_request.requested_reviewers.length; i++) {
+        const reviewer = payload.pull_request.requested_reviewers[i]
         const user: User = reviewer as User;
         const discordId = UserMapper.getDiscordId(user.login)
-        description += `${userMention(discordId)} `
-    })
+        description += `${await client.getUser(discordId)} `
+    }
 
     description = description.trim()
     description += `The pull request ${hyperlink(`#${payload.pull_request.number}: ${payload.pull_request.title}`, payload.pull_request.html_url)} has been closed. You have been set free from review duty this time, I'll catch you next time 🚓`
