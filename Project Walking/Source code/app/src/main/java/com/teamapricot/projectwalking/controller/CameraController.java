@@ -52,6 +52,10 @@ public class CameraController {
         this.cameraModel = new CameraModel();
     }
 
+    /**
+     * Registers an OnClickListener to open the external camera application
+     * @param button The button that should be used to open the camera application
+     */
     public void registerOnClickListener(View button) {
         if (!button.hasOnClickListeners()) {
             button.setOnClickListener(view -> {
@@ -62,6 +66,10 @@ public class CameraController {
         }
     }
 
+    /**
+     * Registers the specified observer in the corresponding {@code CameraModel}
+     * @param observer The observer that should be registered
+     */
     public void registerObserver(Observer<CameraModel> observer) {
         cameraModel.addObserver(observer);
     }
