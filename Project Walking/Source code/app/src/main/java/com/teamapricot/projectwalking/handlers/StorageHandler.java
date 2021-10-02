@@ -1,4 +1,4 @@
-package com.teamapricot.projectwalking.photos;
+package com.teamapricot.projectwalking.handlers;
 
 import android.os.Environment;
 import android.util.Log;

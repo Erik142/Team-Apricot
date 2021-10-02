@@ -1,17 +1,22 @@
-package com.teamapricot.projectwalking.photos;
+package com.teamapricot.projectwalking.controller;
 
 import android.Manifest;
 import android.net.Uri;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
 import com.teamapricot.projectwalking.BuildConfig;
-import com.teamapricot.projectwalking.PermissionHandler;
-import com.teamapricot.projectwalking.dialogs.PermissionRejectedDialog;
+import com.teamapricot.projectwalking.handlers.PermissionHandler;
+import com.teamapricot.projectwalking.R;
+import com.teamapricot.projectwalking.model.CameraModel;
+import com.teamapricot.projectwalking.observe.Observer;
+import com.teamapricot.projectwalking.view.dialogs.PermissionRejectedDialog;
 import com.teamapricot.projectwalking.handlers.CameraHandler;
+import com.teamapricot.projectwalking.handlers.ImageFileHandler;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,11 +24,11 @@ import java.util.concurrent.CompletableFuture;
 
 /**
  * @author Erik Wahlberger
- * @version 2021-09-18
+ * @version 2021-09-27
  *
- * A controller class (In the MVC sense) for taking photos using the camera of the device
+ * A controller class (In the MVC sense) for using the camera of the device
  */
-public class PhotoController {
+public class CameraController {
     private final String TAG = "PhotoController";
     private final String FILE_PROVIDER_SUFFIX = ".fileprovider";
 
@@ -32,24 +37,53 @@ public class PhotoController {
     private StorageHandler storageHandler;
     private AppCompatActivity activity;
 
+    private CameraModel cameraModel;
+
     /**
-     * Creates a new {@code PhotoController} instance using the specified {@code AppCompatActivity}, {@code PermissionHandler} and {@code CameraHandler}
+     * Creates a new {@code CameraController} instance using the specified {@code AppCompatActivity}, {@code PermissionHandler} and {@code CameraHandler}
      *
      * @param activity The {@code AppCompatActivity} used for creating dialogs, retrieving directory paths and creating {@code Toast}s
-     * @param permissionHandler The {@code PermissionHandler} used to check for, and request app permissions
-     * @param cameraHandler The {@code CameraHandler} used to open the camera app, as well as to capture and save images
      */
-    public PhotoController(AppCompatActivity activity, PermissionHandler permissionHandler, CameraHandler cameraHandler) {
+    public CameraController(AppCompatActivity activity) {
         this.activity = activity;
+<<<<<<< HEAD:Project Walking/Source code/app/src/main/java/com/teamapricot/projectwalking/photos/PhotoController.java
         this.permissionHandler = permissionHandler;
         this.cameraHandler = cameraHandler;
         this.storageHandler = new StorageHandler(this.activity);
+=======
+        this.permissionHandler = new PermissionHandler(this.activity);
+        this.cameraHandler = new CameraHandler(this.activity);
+        this.imageFileHandler = new ImageFileHandler(this.activity);
+        this.cameraModel = new CameraModel();
+    }
+
+    /**
+     * Registers an OnClickListener to open the external camera application
+     * @param button The button that should be used to open the camera application
+     */
+    public void registerOnClickListener(View button) {
+        if (!button.hasOnClickListeners()) {
+            button.setOnClickListener(view -> {
+                if (view.getId() == R.id.open_camera_fab) {
+                    captureImageAsync();
+                }
+            });
+        }
+    }
+
+    /**
+     * Registers the specified observer in the corresponding {@code CameraModel}
+     * @param observer The observer that should be registered
+     */
+    public void registerObserver(Observer<CameraModel> observer) {
+        cameraModel.addObserver(observer);
+>>>>>>> origin/master:Project Walking/Source code/app/src/main/java/com/teamapricot/projectwalking/controller/CameraController.java
     }
 
     /**
      * Requests the necessary permissions, opens the camera applications, captures and saves an image to the device asynchronously
      */
-    public void captureImageAsync() {
+    private void captureImageAsync() {
         requestPermissions().thenAccept(isGranted -> {
             if (isGranted) {
                 Log.d(TAG, "All required permissions have been accepted.");
@@ -69,6 +103,8 @@ public class PhotoController {
      * Opens the camera application, captures an image and saves it to the device asynchronously
      */
     private void openCameraAndCaptureImageAsync() {
+        cameraModel.reset();
+
         File tempFile;
         Uri uri;
 
@@ -92,34 +128,24 @@ public class PhotoController {
                 try {
                     File outputFile = storageHandler.moveImageToExternalStorage(tempFile);
 
-                    this.activity.runOnUiThread(() -> {
-                        Toast toast = Toast.makeText(this.activity, "Nice photo!", Toast.LENGTH_LONG);
-                        toast.show();
-                    });
+                    cameraModel.setImageFile(outputFile);
+                    cameraModel.setStatus(CameraModel.CameraStatus.Done);
 
                     Log.d(TAG, "Successfully saved image to external storage: " + outputFile.getAbsolutePath());
                 } catch (IOException e) {
                     Log.e(TAG, "An error occurred while copying image to external storage: " + e.getMessage());
+                    cameraModel.setStatus(CameraModel.CameraStatus.ErrorSavingFinalPhoto);
 
                     if (tempFile.exists()) {
                         tempFile.delete();
                     }
-
-                    this.activity.runOnUiThread(() -> {
-                        Toast toast = Toast.makeText(this.activity, "An error occurred while copying image to external storage", Toast.LENGTH_LONG);
-                        toast.show();
-                    });
                 }
                 catch (Exception e) {
                     Log.e(TAG, "An error occurred while showing Toast: " + e.getMessage());
                 }
             } else {
-                Log.e(TAG, "Something went wrong when capturing the image");
-
-                this.activity.runOnUiThread(() -> {
-                    Toast toast = Toast.makeText(this.activity, "Something went wrong when capturing the image", Toast.LENGTH_LONG);
-                    toast.show();
-                });
+                Log.d(TAG, "The camera was discarded.");
+                cameraModel.setStatus(CameraModel.CameraStatus.Discarded);
             }
         });
     }

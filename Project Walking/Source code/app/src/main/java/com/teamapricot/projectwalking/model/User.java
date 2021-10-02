@@ -1,3 +1,5 @@
+package com.teamapricot.projectwalking.model;
+
 import java.util.ArrayList;
 
 /**

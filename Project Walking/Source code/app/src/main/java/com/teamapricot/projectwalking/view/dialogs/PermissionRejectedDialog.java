@@ -1,4 +1,4 @@
-package com.teamapricot.projectwalking.dialogs;
+package com.teamapricot.projectwalking.view.dialogs;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
