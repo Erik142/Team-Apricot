@@ -73,7 +73,7 @@ async function pullRequestReviewRequested(client: DiscordBot, payload: PullReque
      * This event is triggered one time for each reviewer when a new PR is opened and reviewerers are auto-assigned.
      * This is a workaround to only trigger the discord ping once for all of the assigned reviewers
      */
-    const index = newPullRequests.findIndex(x => x.number == payload.number)
+    const index = newPullRequests.length == 0 ? -1 : newPullRequests.findIndex(x => x.number == payload.pull_request.number)
     let pullRequest: PullRequestOpened
 
     if (index >= 0) {
