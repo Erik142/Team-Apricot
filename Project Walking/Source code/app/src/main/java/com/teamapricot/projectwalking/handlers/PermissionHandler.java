@@ -1,4 +1,4 @@
-package com.teamapricot.projectwalking;
+package com.teamapricot.projectwalking.handlers;
 
 import android.content.pm.PackageManager;
 

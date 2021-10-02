@@ -10,7 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
 import com.teamapricot.projectwalking.BuildConfig;
-import com.teamapricot.projectwalking.PermissionHandler;
+import com.teamapricot.projectwalking.handlers.PermissionHandler;
 import com.teamapricot.projectwalking.R;
 import com.teamapricot.projectwalking.model.CameraModel;
 import com.teamapricot.projectwalking.observe.Observer;
