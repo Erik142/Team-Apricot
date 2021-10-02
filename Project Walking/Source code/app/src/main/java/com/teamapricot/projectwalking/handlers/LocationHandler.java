@@ -1,4 +1,4 @@
-package com.teamapricot.projectwalking;
+package com.teamapricot.projectwalking.handlers;
 
 import android.Manifest;
 import android.location.LocationListener;
@@ -6,7 +6,6 @@ import android.location.LocationManager;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.teamapricot.projectwalking.handlers.PermissionHandler;
 import com.teamapricot.projectwalking.view.dialogs.PermissionRejectedDialog;
 
 import java.util.ArrayList;

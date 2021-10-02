@@ -2,7 +2,7 @@ package com.teamapricot.projectwalking.controller;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.teamapricot.projectwalking.LocationHandler;
+import com.teamapricot.projectwalking.handlers.LocationHandler;
 import com.teamapricot.projectwalking.model.NavigationModel;
 import com.teamapricot.projectwalking.observe.Observer;
 
