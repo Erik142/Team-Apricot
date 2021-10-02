@@ -16,7 +16,7 @@ import com.teamapricot.projectwalking.model.CameraModel;
 import com.teamapricot.projectwalking.observe.Observer;
 import com.teamapricot.projectwalking.view.dialogs.PermissionRejectedDialog;
 import com.teamapricot.projectwalking.handlers.CameraHandler;
-import com.teamapricot.projectwalking.photos.ImageFileHandler;
+import com.teamapricot.projectwalking.handlers.ImageFileHandler;
 
 import java.io.File;
 import java.io.IOException;
