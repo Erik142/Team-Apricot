@@ -14,10 +14,7 @@ import java.lang.*;
  * @version 2021-09-29
  * NotificationController controller class for sending notifications.
  */
-
-
 public class NotificationController {
-
     private final String NotificationTitle="new_spot";
     private final String NotificationMessage="new_challenge";
     private final String channel_id="notify_message";
@@ -33,7 +30,6 @@ public class NotificationController {
      * creates a new NotificationController
      * @param context used to access android system application
      */
-
     public NotificationController(Context context){
         this.Reminder=new Reminder(context);
         Reminder.createChannel();
@@ -46,20 +42,18 @@ public class NotificationController {
      *sends a notification to the user
      * @param check_time used to check the users activity.
      */
-
     public void SendNotification(boolean check_time ) {
         if ((NewUser.getRoutes().size() > 0 && Model.checkRouteTime(NewUser)) || !check_time) {
             Reminder.addNotification(NotificationTitle, NotificationMessage, channel_id, notificationRequestCode);
-            }
         }
-
-
-        /**
-         * test notifications function .since we don't have any routes yet
-         */
-        public void SendNotification() {
-        SendNotification(true);
     }
 
+    /**
+     * test notifications function .since we don't have any routes yet
+     */
+    public void SendNotification() {
+
+        SendNotification(true);
+    }
 }
 

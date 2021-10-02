@@ -1,6 +1,5 @@
 package com.teamapricot.projectwalking.view;
 
-import android.os.Build;
 import android.content.Context;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
