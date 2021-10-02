@@ -16,7 +16,7 @@ import com.teamapricot.projectwalking.model.CameraModel;
 import com.teamapricot.projectwalking.observe.Observer;
 import com.teamapricot.projectwalking.view.dialogs.PermissionRejectedDialog;
 import com.teamapricot.projectwalking.handlers.CameraHandler;
-import com.teamapricot.projectwalking.handlers.ImageFileHandler;
+import com.teamapricot.projectwalking.handlers.StorageHandler;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,14 +46,9 @@ public class CameraController {
      */
     public CameraController(AppCompatActivity activity) {
         this.activity = activity;
-<<<<<<< HEAD:Project Walking/Source code/app/src/main/java/com/teamapricot/projectwalking/photos/PhotoController.java
-        this.permissionHandler = permissionHandler;
-        this.cameraHandler = cameraHandler;
-        this.storageHandler = new StorageHandler(this.activity);
-=======
         this.permissionHandler = new PermissionHandler(this.activity);
         this.cameraHandler = new CameraHandler(this.activity);
-        this.imageFileHandler = new ImageFileHandler(this.activity);
+        this.storageHandler = new StorageHandler(this.activity);
         this.cameraModel = new CameraModel();
     }
 
@@ -77,7 +72,6 @@ public class CameraController {
      */
     public void registerObserver(Observer<CameraModel> observer) {
         cameraModel.addObserver(observer);
->>>>>>> origin/master:Project Walking/Source code/app/src/main/java/com/teamapricot/projectwalking/controller/CameraController.java
     }
 
     /**
