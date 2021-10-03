@@ -131,9 +131,11 @@ public class StorageHandler {
      * @return The image file data
      */
     private ImageFileData getImageFileData(File file) {
+        FileInputStream input = null;
         try {
-            FileInputStream input = new FileInputStream(file);
+            input = new FileInputStream(file);
             ExifInterface exif = new ExifInterface(input);
+            input.close();
             double[] latLong = exif.getLatLong();
             if (latLong != null) {
                 Log.d(TAG, "Created file data object for " + file.getName());
@@ -141,6 +143,10 @@ public class StorageHandler {
             }
         } catch (IOException e) {
             Log.d(TAG, e.getLocalizedMessage());
+        } finally {
+            if(input != null) {
+                input.close();
+            }
         }
         return null;
     }
