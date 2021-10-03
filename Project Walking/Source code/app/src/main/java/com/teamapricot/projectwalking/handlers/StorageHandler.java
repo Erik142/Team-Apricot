@@ -135,7 +135,6 @@ public class StorageHandler {
         try {
             input = new FileInputStream(file);
             ExifInterface exif = new ExifInterface(input);
-            input.close();
             double[] latLong = exif.getLatLong();
             if (latLong != null) {
                 Log.d(TAG, "Created file data object for " + file.getName());
@@ -144,8 +143,12 @@ public class StorageHandler {
         } catch (IOException e) {
             Log.d(TAG, e.getLocalizedMessage());
         } finally {
-            if(input != null) {
-                input.close();
+            try {
+                if (input != null) {
+                    input.close();
+                }
+            } catch (IOException e) {
+                Log.w(TAG, e.getLocalizedMessage());
             }
         }
         return null;
