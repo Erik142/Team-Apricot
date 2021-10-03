@@ -57,7 +57,7 @@ async function pullRequestReopened(client: DiscordBot, payload: PullRequestReope
     }
 
     description = description.trim()
-    description += `The pull request ${hyperlink(`#${pullRequest.number}: ${pullRequest.title}`, pullRequest.url)} has been re-opened. You are back on for review-duty, get a move on! 👮🏻‍♂️`
+    description += `: The pull request ${hyperlink(`#${pullRequest.number}: ${pullRequest.title}`, pullRequest.url)} has been re-opened. You are back on for review-duty, get a move on! 👮🏻‍♂️`
 
     const embed = new MessageEmbed().setTitle("Review Police court duty").setDescription(description).setFooter(client.user.username)
 
