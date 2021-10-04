@@ -50,7 +50,7 @@ async function deleteRemainingReviewers(username: string, pullRequestNumber: num
 export const executor: SelectMenuResponseExecutor = async (client: DiscordBot, interaction: SelectMenuInteraction) => {
     const embeds: Array<MessageEmbed> = new Array();
 
-    for (let i = 0; i <= interaction.values.length; i++) {
+    for (let i = 0; i < interaction.values.length; i++) {
         const value: string = interaction.values[i]
         const pullRequestNumber = Number(value)
         const user = interaction.user
