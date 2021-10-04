@@ -85,6 +85,7 @@ public class ImageOverlayController {
             Log.d(TAG, "No overlay to remove for " + file.toString());
             return;
         }
+        iconOverlays.remove(file);
         imageOverlayView.removeIconOverlay(iconOverlay);
     }
 
