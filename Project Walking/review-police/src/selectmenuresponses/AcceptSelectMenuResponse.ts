@@ -49,6 +49,7 @@ async function deleteRemainingReviewers(username: string, pullRequestNumber: num
  */
 export const executor: SelectMenuResponseExecutor = async (client: DiscordBot, interaction: SelectMenuInteraction) => {
     const embeds: Array<MessageEmbed> = new Array();
+    await interaction.deferUpdate();
 
     for (let i = 0; i < interaction.values.length; i++) {
         const value: string = interaction.values[i]
@@ -120,7 +121,8 @@ export const executor: SelectMenuResponseExecutor = async (client: DiscordBot, i
     }
 
     const reply: InteractionReplyOptions = { embeds: embeds }
-    interaction.reply(reply)
+    await interaction.update({ content: `PR${interaction.values.length > 1 ? 's have' : ' has'} been selected. Use /accept again to select more PRs.`, components: [] })
+    await interaction.reply(reply)
 }
 
 export const name: string = "accept-pr-response"
