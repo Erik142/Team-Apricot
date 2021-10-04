@@ -1,12 +1,10 @@
-package com.teamapricot.projectwalking;
+package com.teamapricot.projectwalking.handlers;
 
 import android.content.pm.PackageManager;
 
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
-
-import com.teamapricot.projectwalking.handlers.ActivityResultHandler;
 
 import java.util.HashMap;
 import java.util.Map;
