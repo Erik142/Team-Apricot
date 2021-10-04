@@ -1,4 +1,4 @@
-package com.teamapricot.projectwalking;
+package com.teamapricot.projectwalking.handlers;
 
 import android.Manifest;
 import android.location.LocationListener;
@@ -6,7 +6,7 @@ import android.location.LocationManager;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.teamapricot.projectwalking.dialogs.PermissionRejectedDialog;
+import com.teamapricot.projectwalking.view.dialogs.PermissionRejectedDialog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +38,7 @@ public class LocationHandler {
      * @param activity The associated Activity
      * @param interval Interval (in ms) between location updates
      */
-    LocationHandler(AppCompatActivity activity, int interval) {
+    public LocationHandler(AppCompatActivity activity, int interval) {
         permissionHandler = new PermissionHandler(activity);
         locationManager = (LocationManager) activity.getApplicationContext()
                 .getSystemService(AppCompatActivity.LOCATION_SERVICE);
