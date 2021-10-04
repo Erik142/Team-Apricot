@@ -21,10 +21,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Controller for overlaying images on the map.
- *
  * @author Daniel Brännvall
  * @version 2021-10-04
+ *
+ * Controller for overlaying images on the map.
  */
 public class ImageOverlayController {
     private static final String TAG = "ImageOverlayView";

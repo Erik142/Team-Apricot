@@ -4,10 +4,10 @@ import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.IconOverlay;
 
 /**
- * View for images overlaid on the map.
- *
  * @author Daniel Brännvall
  * @version 2021-10-04
+ *
+ * View for images overlaid on the map.
  */
 public class ImageOverlayView {
     private static final String TAG = "ImageOverlayView";
