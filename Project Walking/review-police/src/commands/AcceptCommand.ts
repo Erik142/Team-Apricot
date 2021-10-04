@@ -34,8 +34,8 @@ export const executor: CommandExecutor = async (client, interaction: CommandInte
 
         reviewRequests.forEach(reviewRequest => {
             const selectOptionData: MessageSelectOptionData = {
-                label: `PR #${reviewRequest.pullNumber}`,
-                description: reviewRequest.title,
+                label: reviewRequest.title,
+                description: `PR #${reviewRequest.pullNumber}`,
                 value: reviewRequest.pullNumber.toString()
             }
 
