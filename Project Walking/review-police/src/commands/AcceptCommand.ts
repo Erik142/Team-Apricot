@@ -43,7 +43,7 @@ export const executor: CommandExecutor = async (client, interaction: CommandInte
         })
 
         messageActionRow.addComponents(new MessageSelectMenu().setCustomId('accept-pr-response').setPlaceholder('Select a PR').addOptions(selectOptions))
-        await interaction.reply({ content: "Choose from the PRs below:", components: [messageActionRow] })
+        await interaction.reply({ content: "Choose from the PRs below:", components: [messageActionRow], ephemeral: true })
     }
 }
 
