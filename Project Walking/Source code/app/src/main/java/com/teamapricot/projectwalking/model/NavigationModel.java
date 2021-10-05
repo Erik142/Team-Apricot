@@ -58,7 +58,7 @@ public class NavigationModel extends ObservableBase<NavigationModel> {
 
             this.destination = location;
 
-            CompletableFuture.supplyAsync(() -> {
+            CompletableFuture.runAsync(() -> {
                 ArrayList<GeoPoint> points = new ArrayList<>();
                 points.add(this.getUserLocation());
                 points.add(this.getDestination());
@@ -66,7 +66,7 @@ public class NavigationModel extends ObservableBase<NavigationModel> {
                 Road road = roadManager.getRoad(points);
 
                 this.routeOverlay = RoadManager.buildRoadOverlay(road);
-                return this.routeOverlay;
+
             }).thenRun(() -> {
                 updateObservers(this);
             });
