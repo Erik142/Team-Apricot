@@ -1,7 +1,10 @@
 package com.teamapricot.projectwalking.controller;
 
+import android.view.View;
+
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.teamapricot.projectwalking.R;
 import com.teamapricot.projectwalking.handlers.LocationHandler;
 import com.teamapricot.projectwalking.model.NavigationModel;
 import com.teamapricot.projectwalking.observe.Observer;
@@ -12,7 +15,7 @@ import org.osmdroid.util.GeoPoint;
 
 /**
  * @author Erik Wahlberger
- * @version 2021-09-28
+ * @version 2021-09-28ä
  *
  * Controller class for navigation functionality
  */
@@ -64,5 +67,14 @@ public class NavigationController {
      */
     public void registerObserver(Observer<NavigationModel> observer) {
         this.navigationModel.addObserver(observer);
+    }
+
+    public void registerOnClickListener(View button) {
+        if (!button.hasOnClickListeners()) {
+            button.setOnClickListener(view -> {
+                if (view.getId() == R.id.view_dest) {
+                }
+            });
+        }
     }
 }
