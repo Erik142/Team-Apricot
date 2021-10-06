@@ -1,18 +1,30 @@
 package com.teamapricot.projectwalking.model;
 
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.Relation;
+
+import org.osmdroid.util.GeoPoint;
+
 import java.util.ArrayList;
 
 /**
- * @author Joakim Tubring
- * @version 2021-09-21
+ * @author Joakim Tubring, Erik Wahlberger
+ * @version 2021-10-06
  *
  * A class for representing a user.
  */
 
+@Entity
 public class User {
-
-    private String userId;
+    @ColumnInfo(name = "userId")
+    private final int userId;
     private ArrayList<Route> routes;
+    @Relation(
+            parentColumn = "userId",
+            entityColumn = "userId"
+    )
+    private ArrayList<Achievement> achievements;
 
 /**
 * Constructor.
@@ -21,12 +33,12 @@ public class User {
 * @param routes The users routes.
 */
 
-    public User(String userId, ArrayList<Route> routes){
+    public User(int userId, ArrayList<Route> routes){
         this.userId = userId;
         this.routes = routes;
     }
 
-    public String getUserId(){
+    public int getUserId(){
         return this.userId;
     }
 
@@ -47,15 +59,15 @@ public class User {
 * Will be adding to this later.
 */
 
-    public void addRoute(){
-        routes.add(new Route(generateRouteId()));
+    public void addRoute(GeoPoint start, GeoPoint end){
+        routes.add(new Route("" + generateRouteId(), start.getLongitude(), start.getLatitude(), end.getLongitude(), end.getLatitude()));
     }
 
 /**
 * Generates a route-id based on the user-id.
 */
 
-    private String generateRouteId(){
+    private int generateRouteId(){
         return this.userId + (routes.size() + 1);
     }
 

@@ -1,17 +1,39 @@
-public class Achievement {
+package com.teamapricot.projectwalking.model;
 
-    private String achivementId;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+import androidx.room.Relation;
+
+@Entity
+public class Achievement {
+    @PrimaryKey
+    private final int achievementId;
+    @ColumnInfo(name = "title")
+    private String title;
+    @ColumnInfo(name = "description")
+    private String description;
+    @ColumnInfo(name = "status")
     private boolean status;
+    @Relation(
+            parentColumn = "userId",
+            entityColumn = "userId"
+    )
+    private User user;
+    @Relation(
+            parentColumn = "id",
+            entityColumn = "achivementTypeId"
+    )
     private AchievementType type;
 
-    public Achievement(String achivementId, boolean status, AchievementType type){
-        this.achivementId = achivementId;
+    public Achievement(int achievementId, boolean status, AchievementType type){
+        this.achievementId = achievementId;
         this.status = status;
         this.type = type;
     }
 
-    public String getAchivementId(){
-        return this.achivementId;
+    public int getAchievementId(){
+        return this.achievementId;
     }
 
     public boolean getstatus(){
