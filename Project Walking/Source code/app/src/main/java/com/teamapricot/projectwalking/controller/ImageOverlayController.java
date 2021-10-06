@@ -13,7 +13,10 @@ import com.teamapricot.projectwalking.handlers.StorageHandler;
 import com.teamapricot.projectwalking.handlers.StorageHandler.ImageFileData;
 import com.teamapricot.projectwalking.view.ImageOverlayView;
 
+import org.osmdroid.api.IGeoPoint;
 import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.ClickableIconOverlay;
 import org.osmdroid.views.overlay.IconOverlay;
 
 import java.io.File;
@@ -32,8 +35,25 @@ public class ImageOverlayController {
     private final ImageOverlayView imageOverlayView;
     private final AppCompatActivity activity;
     private final StorageHandler storageHandler;
+    private final ImageController imageController;
 
-    private final Map<File, IconOverlay> iconOverlays = new HashMap<>();
+    private final Map<File, ImageMarker> iconOverlays = new HashMap<>();
+
+    /**
+     * @author Daniel Brännvall
+     * @version 2021-10-06
+     */
+    private class ImageMarker extends ClickableIconOverlay<File> {
+        protected ImageMarker(File file) {
+            super(file);
+        }
+
+        @Override
+        protected boolean onMarkerClicked(MapView mapView, int markerId, IGeoPoint position, File file) {
+            imageController.viewImageFile(file);
+            return true;
+        }
+    }
 
     /**
      * Constructor.
@@ -45,6 +65,7 @@ public class ImageOverlayController {
         this.activity = activity;
         this.imageOverlayView = view;
         this.storageHandler = new StorageHandler(activity);
+        this.imageController = new ImageController(activity);
     }
 
     /**
@@ -69,7 +90,8 @@ public class ImageOverlayController {
         int[] tnSize = imageOverlayView.thumbnailSize(image.getWidth(), image.getHeight());
         Bitmap thumbnail = ThumbnailUtils.extractThumbnail(image, tnSize[0], tnSize[1]);
         Drawable icon = new BitmapDrawable(activity.getResources(), thumbnail);
-        IconOverlay iconOverlay = new IconOverlay(location, icon);
+        ImageMarker iconOverlay = new ImageMarker(file);
+        iconOverlay.set(location, icon);
         iconOverlays.put(file, iconOverlay);
         imageOverlayView.addIconOverlay(iconOverlay);
     }
