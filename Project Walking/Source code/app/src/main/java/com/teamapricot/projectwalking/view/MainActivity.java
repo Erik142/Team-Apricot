@@ -12,6 +12,7 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
+import org.osmdroid.views.overlay.Polyline;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
@@ -133,20 +134,27 @@ public class MainActivity extends AppCompatActivity {
      */
     private Observer<NavigationModel> createNavigationObserver() {
         return model -> {
-            mapController.setZoom(model.getZoomLevel());
+            runOnUiThread(() -> {
+                mapController.setZoom(model.getZoomLevel());
 
-            GeoPoint location = model.getUserLocation();
+                GeoPoint location = model.getUserLocation();
 
-            if (!mapCentered && location != null) {
-                mapController.setCenter(location);
+                if (!mapCentered && location != null) {
+                    mapController.setCenter(location);
 
-                GeoPoint destination = model.getDestination();
+                    GeoPoint destination = model.getDestination();
 
-                if (destination != null) {
-                    addMarker(getApplicationContext(), map, destination);
-                    mapCentered = true;
+                    if (destination != null) {
+                        addMarker(getApplicationContext(), map, destination);
+
+                        Polyline routeOverlay = model.getRouteOverlay();
+                        map.getOverlays().add(routeOverlay);
+                        map.invalidate();
+
+                        mapCentered = true;
+                    }
                 }
-            }
+            });
         };
     }
 

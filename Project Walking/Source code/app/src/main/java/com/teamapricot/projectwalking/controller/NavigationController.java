@@ -6,6 +6,8 @@ import com.teamapricot.projectwalking.handlers.LocationHandler;
 import com.teamapricot.projectwalking.model.NavigationModel;
 import com.teamapricot.projectwalking.observe.Observer;
 
+import org.osmdroid.bonuspack.routing.OSRMRoadManager;
+import org.osmdroid.bonuspack.routing.RoadManager;
 import org.osmdroid.util.GeoPoint;
 
 /**
@@ -44,7 +46,9 @@ public class NavigationController {
 
             if(!isOnetimeExecutionDone) {
                 navigationModel.setUserLocation(point);
-                navigationModel.createDestination();
+
+                RoadManager roadManager = new OSRMRoadManager(activity, "Fun Walking");
+                navigationModel.createDestination(roadManager);
 
                 isOnetimeExecutionDone = true;
             }

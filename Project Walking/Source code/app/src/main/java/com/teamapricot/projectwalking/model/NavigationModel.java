@@ -1,8 +1,16 @@
 package com.teamapricot.projectwalking.model;
 
+import android.content.Context;
+
 import com.teamapricot.projectwalking.observe.ObservableBase;
 
+import org.osmdroid.bonuspack.routing.Road;
+import org.osmdroid.bonuspack.routing.RoadManager;
 import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.overlay.Polyline;
+
+import java.util.ArrayList;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * @author Erik Wahlberger
@@ -15,6 +23,7 @@ public class NavigationModel extends ObservableBase<NavigationModel> {
 
     private GeoPoint userLocation;
     private GeoPoint destination;
+    private Polyline routeOverlay;
     private double zoomLevel;
 
     /**
@@ -27,6 +36,8 @@ public class NavigationModel extends ObservableBase<NavigationModel> {
 
     public GeoPoint getDestination() { return this.destination; }
 
+    public Polyline getRouteOverlay() { return this.routeOverlay; }
+
     /**
      * Get the zoom level for the map
      * @return The zoom level as a {@code double} value
@@ -35,7 +46,7 @@ public class NavigationModel extends ObservableBase<NavigationModel> {
         return zoomLevel;
     }
 
-    public void createDestination() {
+    public void createDestination(RoadManager roadManager) {
         //deg is angle and len is distance
         double len = Math.sqrt(Math.random()) * DESTINATION_RADIUS;
         double deg = Math.random() * 360;
@@ -46,7 +57,19 @@ public class NavigationModel extends ObservableBase<NavigationModel> {
             GeoPoint location = userLocation.destinationPoint(len, deg);
 
             this.destination = location;
-            updateObservers(this);
+
+            CompletableFuture.runAsync(() -> {
+                ArrayList<GeoPoint> points = new ArrayList<>();
+                points.add(this.getUserLocation());
+                points.add(this.getDestination());
+
+                Road road = roadManager.getRoad(points);
+
+                this.routeOverlay = RoadManager.buildRoadOverlay(road);
+
+            }).thenRun(() -> {
+                updateObservers(this);
+            });
         }
     }
 
