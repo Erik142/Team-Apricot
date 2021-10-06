@@ -1,0 +1,13 @@
+  • Individual reflection
+      
+What do I want to learn or understand better?
+I Wan`t to learn how sql works in android i have difficulties with why it should be neccesary to launch the entire application to run one class i seems bad paratice.
+
+How can I help someone else, or the entire team, to learn something new?
+Not this week.
+
+What is my contribution towards the team’s use of Scrum?
+Participated in the sprint planning and end meeting not so much further this week.
+
+What is my contribution towards the team’s deliveries?
+Did not finish any tasks this week had trouble getting the database to work.
