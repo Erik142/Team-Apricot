@@ -184,9 +184,7 @@ public class StorageHandler {
      * @return The distance squared
      */
     private double distanceSq(ImageFileData img, double lat, double lon) {
-        double lat2 = img.getLatitude();
-        double lon2 = img.getLongitude();
-        return Math.abs(lat * lat + lon * lon - lat2 * lat2 - lon2 * lon2);
+        return Math.pow(img.getLatitude() - lat, 2) + Math.pow(img.getLongitude() - lon, 2);
     }
 
     /**
