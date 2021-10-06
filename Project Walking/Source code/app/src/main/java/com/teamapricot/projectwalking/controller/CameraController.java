@@ -16,7 +16,7 @@ import com.teamapricot.projectwalking.model.CameraModel;
 import com.teamapricot.projectwalking.observe.Observer;
 import com.teamapricot.projectwalking.view.dialogs.PermissionRejectedDialog;
 import com.teamapricot.projectwalking.handlers.CameraHandler;
-import com.teamapricot.projectwalking.handlers.ImageFileHandler;
+import com.teamapricot.projectwalking.handlers.StorageHandler;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,7 +34,7 @@ public class CameraController {
 
     private PermissionHandler permissionHandler;
     private CameraHandler cameraHandler;
-    private ImageFileHandler imageFileHandler;
+    private StorageHandler storageHandler;
     private AppCompatActivity activity;
 
     private CameraModel cameraModel;
@@ -48,7 +48,7 @@ public class CameraController {
         this.activity = activity;
         this.permissionHandler = new PermissionHandler(this.activity);
         this.cameraHandler = new CameraHandler(this.activity);
-        this.imageFileHandler = new ImageFileHandler(this.activity);
+        this.storageHandler = new StorageHandler(this.activity);
         this.cameraModel = new CameraModel();
     }
 
@@ -103,7 +103,7 @@ public class CameraController {
         Uri uri;
 
         try {
-            tempFile = imageFileHandler.createSharableImageFile();
+            tempFile = storageHandler.createSharableImageFile();
             uri = FileProvider.getUriForFile(this.activity, BuildConfig.APPLICATION_ID + FILE_PROVIDER_SUFFIX, tempFile);
         } catch (IOException | IllegalArgumentException e) {
             Log.e(TAG, "An error occurred while creating temporary image file: " + e.getMessage());
@@ -120,7 +120,7 @@ public class CameraController {
             if (success) {
                 Log.d(TAG, "Successfully captured image!");
                 try {
-                    File outputFile = imageFileHandler.moveImageToExternalStorage(tempFile);
+                    File outputFile = storageHandler.moveImageToExternalStorage(tempFile);
 
                     cameraModel.setImageFile(outputFile);
                     cameraModel.setStatus(CameraModel.CameraStatus.Done);
