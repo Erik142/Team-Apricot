@@ -1,9 +1,37 @@
 import { createAppAuth } from "@octokit/auth-app";
 import { Octokit } from "@octokit/core";
 import { Config } from "../interfaces/Config";
-import { PullRequest } from "../model/PullRequest";
-import { ReviewRequest } from "../model/ReviewRequest";
 
+/**
+ * @author Erik Wahlberger
+ * @version 2021-10-01
+ * An interface representing the key elements in a GitHub pull request
+ */
+export interface PullRequest {
+    title: string,
+    url: string
+    number: number,
+    status: string,
+    reviewRequests: Array<ReviewRequest>
+}
+
+/**
+ * @author Erik Wahlberger
+ * @version 2021-10-01
+ * An interface representing the key elements in a GitHub review request
+ */
+export interface ReviewRequest {
+    url: string,
+    reviewer: string
+    pullNumber: number,
+    title: string
+}
+
+/**
+ * @author Erik Wahlberger
+ * @version 2021-10-01
+ * A class used to communicate with the GitHub pull request API
+ */
 export abstract class GitHubApi {
     private static repoOwner = 'Erik142'
     private static repoName = 'Team-Apricot'
@@ -11,11 +39,19 @@ export abstract class GitHubApi {
     private static octokit: Octokit
     private static config: Config
 
+    /**
+     * Set the configuration for the API to use
+     * @param config The configuration
+     */
     static setConfig(config: Config) {
         GitHubApi.config = config;
     }
 
-    private static async setup(): Promise<void> {
+    /**
+     * Setup the initial connection to the GitHub API. This only needs to be done once
+     * @returns void
+     */
+    private static setup(): void {
         if (GitHubApi.octokit) {
             return;
         }
@@ -30,6 +66,10 @@ export abstract class GitHubApi {
         });
     }
 
+    /**
+     * Retrieves all the open pull requests for the repo in the configuration
+     * @returns An array of PullRequest objects
+     */
     static async getPullRequests(): Promise<Array<PullRequest>> {
         await GitHubApi.setup()
 
@@ -48,6 +88,11 @@ export abstract class GitHubApi {
         return pullRequests;
     }
 
+    /**
+     * Retrieves a single open pull request for the repo in the configuration
+     * @param pullNumber The pull request number
+     * @returns The pull request as a PullRequest object
+     */
     static async getPullRequest(pullNumber: number): Promise<PullRequest> {
         await GitHubApi.setup()
 
@@ -70,6 +115,11 @@ export abstract class GitHubApi {
         return pullRequest;
     }
 
+    /**
+     * Retrieves all the review requests from the open pull requests in the repo in the configuration, for the specified user
+     * @param username The username for the GitHub user
+     * @returns An array of ReviewRequest objects
+     */
     static async getAllReviewRequests(username: string): Promise<Array<ReviewRequest>> {
         await GitHubApi.setup()
 
@@ -89,6 +139,11 @@ export abstract class GitHubApi {
         return reviewRequests
     }
 
+    /**
+     * Retrieves all the accepted review requests from the open pull requests in the repo in the configuration for the specified user, meaning all the review requests where the specified user is the only reviewer
+     * @param username The username for the GitHub user
+     * @returns An array of ReviewRequest objects
+     */
     static async getAcceptedReviewRequests(username: string): Promise<Array<ReviewRequest>> {
         await GitHubApi.setup()
 
@@ -108,6 +163,11 @@ export abstract class GitHubApi {
         return reviewRequests
     }
 
+    /**
+     * Retrieves all the unaccepted review requests from the open pull requests in the repo in the configuration for the specified user, meaning all the review requests where the specified user is not the only reviewer
+     * @param username The username for the GitHub user
+     * @returns An array of ReviewRequest objects
+     */
     static async getUnacceptedReviewRequests(username: string): Promise<Array<ReviewRequest>> {
         await GitHubApi.setup()
 
@@ -129,6 +189,12 @@ export abstract class GitHubApi {
         return reviewRequests
     }
 
+    /**
+     * Deletes the specified reviewers from the specified pull request in the repo in the configuration
+     * @param pullRequestNumber The pull request number
+     * @param reviewers The reviewers to be deleted
+     * @returns true if successful, false otherwise
+     */
     static async deleteReviewers(pullRequestNumber: number, reviewers: string[]): Promise<boolean> {
         await GitHubApi.setup()
 
@@ -142,6 +208,11 @@ export abstract class GitHubApi {
         return response['status'] == 200
     }
 
+    /**
+     * Convert the GitHub pull request API response into a PullRequest object
+     * @param response The API response
+     * @returns A PullRequest object
+     */
     private static getPullRequestFromResponse(response: any): PullRequest {
         let pullRequest: PullRequest = {
             title: response['title'] as string,
@@ -154,6 +225,11 @@ export abstract class GitHubApi {
         return pullRequest;
     }
 
+    /**
+     * Convert the GitHub pull request API response into an array of ReviewRequest objects
+     * @param response The API response
+     * @returns An array of ReviewRequest objects
+     */
     private static getReviewRequestsFromResponse(response: any): Array<ReviewRequest> {
         const reviewRequests: Array<ReviewRequest> = new Array()
 
