@@ -20,7 +20,7 @@ public class NotificationController {
     private final String channel_id="notify_message";
     private final int notificationRequestCode = 1;
 
-    private final String userId ="1";
+    private final int userId = 1;
     private final ArrayList<Route> routes = new ArrayList<Route>();
     private Reminder Reminder;
     private Model Model;
