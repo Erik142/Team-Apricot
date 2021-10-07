@@ -32,9 +32,14 @@ import com.teamapricot.projectwalking.model.Database;
 import com.teamapricot.projectwalking.model.NavigationModel;
 import com.teamapricot.projectwalking.controller.NotificationController;
 import com.teamapricot.projectwalking.model.Photo;
+import com.teamapricot.projectwalking.model.Route;
+import com.teamapricot.projectwalking.model.User;
 import com.teamapricot.projectwalking.model.dao.PhotoDao;
+import com.teamapricot.projectwalking.model.dao.RouteDao;
+import com.teamapricot.projectwalking.model.dao.UserDao;
 import com.teamapricot.projectwalking.observe.Observer;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -72,13 +77,25 @@ public class MainActivity extends AppCompatActivity {
             runOnUiThread(() -> Log.d("MainActivity", "Is database open? " + database.isOpen()));
             runOnUiThread(() -> Log.d("MainActivity", "Successfully created database"));
 
+
+            User user = new User("2", new ArrayList<>());
+
+            UserDao userDao = database.userDao();
+            userDao.insertAll(user);
+
+            Route route = new Route("1", 0, 0, 0, 0);
+            route.setUserId(user.getUserId());
+
+            RouteDao routeDao = database.routeDao();
+            routeDao.insertAll(route);
+
             Photo photo = new Photo();
-            photo.setPhotoId("1");
-            photo.setUserId("1");
+            photo.setPhotoId(route.getId());
+            photo.setUserId(user.getUserId());
             photo.setFilename("Test.png");
 
             PhotoDao photoDao = database.photoDao();
-            photoDao.insertAll(photo);
+            photoDao.insertPhotos(photo);
 
             List<Photo> allPhotos = photoDao.getAllPhotos();
 

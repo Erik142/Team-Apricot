@@ -13,5 +13,5 @@ public interface PhotoDao {
     @Query("SELECT * FROM Photos")
     List<Photo> getAllPhotos();
     @Insert
-    void insertAll(Photo... photos);
+    void insertPhotos(Photo... photos);
 }
