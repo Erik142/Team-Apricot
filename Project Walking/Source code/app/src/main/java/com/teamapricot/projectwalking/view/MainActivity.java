@@ -142,6 +142,11 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Updates the camera visibility if it would change.
+     *
+     * @param visibility - The wanted visibility (e.g. {@code View.VISIBLE})
+     */
     public void setCameraButtonVisibility(int visibility) {
         View cameraButton = this.findViewById(R.id.open_camera_fab);
         if (cameraButton.getVisibility() != visibility) {
