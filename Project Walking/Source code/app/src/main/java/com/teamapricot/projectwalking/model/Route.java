@@ -23,7 +23,7 @@ public class Route {
     @ColumnInfo(name = "routeId")
     private String id;
     @NonNull
-    private int userId;
+    private String userId;
     //@ColumnInfo(name = "time")
     @Ignore
     private Calendar time;
@@ -70,11 +70,11 @@ public class Route {
         return this.startY;
     }
 
-    public int getUserId() {
+    public String getUserId() {
         return this.userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 }
