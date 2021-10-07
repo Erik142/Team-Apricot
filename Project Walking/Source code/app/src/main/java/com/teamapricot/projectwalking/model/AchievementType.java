@@ -1,21 +1,21 @@
 package com.teamapricot.projectwalking.model;
 
+import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.PrimaryKey;
 
 @Entity
 public class AchievementType {
-    @ColumnInfo(name = "typeId")
-    private int typeId;
-    @ColumnInfo(name = "points")
+    @NonNull
+    @PrimaryKey
+    private String typeId;
     private int points;
-    @ColumnInfo(name = "headline")
     private String headline;
-    @ColumnInfo(name = "description")
     private String description;
 
-    public AchievementType(int typeNr, int points, String headline, String description){
-        this.typeId = typeNr;
+    public AchievementType(String typeId, int points, String headline, String description){
+        this.typeId = typeId;
         this.points = points;
         this.headline = headline;
         this.description = description;
@@ -25,7 +25,7 @@ public class AchievementType {
         return this.description;
     }
     public String getHeadline() { return this.headline; }
-    public int getId(){
+    public String getTypeId(){
         return this.typeId;
     }
     public int getPoints(){

@@ -1,23 +1,11 @@
 package com.teamapricot.projectwalking.model;
 
-import androidx.room.ColumnInfo;
-import androidx.room.Entity;
-import androidx.room.ForeignKey;
-
 import com.teamapricot.projectwalking.observe.ObservableBase;
 
 import java.io.File;
 
 
-@Entity(tableName = "Photos", primaryKeys = {"userId", "routeId"}, foreignKeys =
-        {@ForeignKey(entity = User.class,
-                parentColumns = "userId",
-                childColumns = "userId",
-                onDelete = ForeignKey.CASCADE),
-         @ForeignKey(entity = Route.class,
-                 parentColumns = "routeId",
-                 childColumns = "routeId",
-                 onDelete = ForeignKey.CASCADE)})
+
 /**
  * @author Erik Wahlberger
  * @version 2021-09-29
@@ -34,16 +22,8 @@ public class CameraModel extends ObservableBase<CameraModel> {
     }
 
     private File imageFile;
-    @ColumnInfo(name = "filename")
-    private String filename;
     private CameraStatus status = CameraStatus.Unknown;
 
-
-    public CameraModel(File imageFile, CameraStatus status){
-        this.imageFile = imageFile;
-        this.filename = imageFile.getName();
-        this.status = status;
-    }
     /**
      * Retrieves the taken image file in the camera application
      * @return The image file as a @{code File} object
@@ -67,6 +47,7 @@ public class CameraModel extends ObservableBase<CameraModel> {
     public void setImageFile(File file) {
         if (file != imageFile) {
             this.imageFile = file;
+            // TODO: Add file name to database
             updateObservers(this);
         }
     }

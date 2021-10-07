@@ -1,5 +1,6 @@
 package com.teamapricot.projectwalking.model;
 
+import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
@@ -7,44 +8,45 @@ import androidx.room.Relation;
 
 @Entity
 public class Achievement {
+    @NonNull
     @PrimaryKey
-    private final int achievementId;
-    @ColumnInfo(name = "title")
+    private final String achievementId;
     private String title;
-    @ColumnInfo(name = "description")
     private String description;
-    @ColumnInfo(name = "status")
     private boolean status;
-    @Relation(
-            parentColumn = "userId",
-            entityColumn = "userId"
-    )
-    private User user;
-    @Relation(
-            parentColumn = "id",
-            entityColumn = "achivementTypeId"
-    )
-    private AchievementType type;
+    private String achievementTypeId;
 
-    public Achievement(int achievementId, boolean status, AchievementType type){
+    public Achievement(String achievementId, boolean status, String achievementTypeId){
         this.achievementId = achievementId;
         this.status = status;
-        this.type = type;
+        this.achievementTypeId = achievementTypeId;
     }
 
-    public int getAchievementId(){
+    public String getAchievementId(){
         return this.achievementId;
     }
 
-    public boolean getstatus(){
+    public String getDescription() { return this.description; }
+
+    public boolean getStatus(){
         return this.status;
     }
 
-    public AchievementType getType(){
-        return this.type;
+    public String getTitle() { return this.title; }
+
+    public String getAchievementTypeId(){
+        return this.achievementTypeId;
     }
 
     public void changeStatus(String achivementId){
         this.status = true;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 }

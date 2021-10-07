@@ -1,21 +1,31 @@
 package com.teamapricot.projectwalking.model;
 
+import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
+import androidx.room.Ignore;
+import androidx.room.Index;
 
+import java.time.LocalDateTime;
 import java.util.Calendar;
+import java.util.Date;
 
-@Entity(tableName = "Routes", primaryKeys = {"userId", "id"}, foreignKeys =
+@Entity(tableName = "Routes", primaryKeys = {"userId", "routeId"}, foreignKeys =
         {@ForeignKey(entity = User.class,
                 parentColumns = "userId",
                 childColumns = "userId",
-                onDelete = ForeignKey.CASCADE)})
+                onDelete = ForeignKey.CASCADE)},
+        indices = {@Index(value = { "routeId" }, unique = true)})
 
 public class Route {
+    @NonNull
     @ColumnInfo(name = "routeId")
     private String id;
-    @ColumnInfo(name = "time")
+    @NonNull
+    private int userId;
+    //@ColumnInfo(name = "time")
+    @Ignore
     private Calendar time;
     @ColumnInfo(name = "startX")
     private double startX;
@@ -44,4 +54,27 @@ public class Route {
         return this.time;
     }
 
+    public double getEndX() {
+        return this.endX;
+    }
+
+    public double getEndY() {
+        return this.endY;
+    }
+
+    public double getStartX() {
+        return this.startX;
+    }
+
+    public double getStartY() {
+        return this.startY;
+    }
+
+    public int getUserId() {
+        return this.userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
 }
