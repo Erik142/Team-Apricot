@@ -1,10 +1,12 @@
 package com.teamapricot.projectwalking.view;
 
+import android.Manifest;
 import android.content.Context;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.room.Room;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
@@ -24,12 +26,21 @@ import com.teamapricot.projectwalking.R;
 import com.teamapricot.projectwalking.controller.ImageOverlayController;
 import com.teamapricot.projectwalking.controller.NavigationController;
 import com.teamapricot.projectwalking.controller.CameraController;
+import com.teamapricot.projectwalking.handlers.PermissionHandler;
 import com.teamapricot.projectwalking.model.CameraModel;
+import com.teamapricot.projectwalking.model.Database;
 import com.teamapricot.projectwalking.model.NavigationModel;
 import com.teamapricot.projectwalking.controller.NotificationController;
+import com.teamapricot.projectwalking.model.Photo;
+import com.teamapricot.projectwalking.model.dao.PhotoDao;
 import com.teamapricot.projectwalking.observe.Observer;
 
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
 public class MainActivity extends AppCompatActivity {
+    private final String DATABASE_STRING = "fun-walking-database";
+
     private NavigationController navigationController;
     private CameraController cameraController;
     private ImageOverlayController imageOverlayController;
@@ -49,6 +60,36 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         init();
+
+        PermissionHandler permissionHandler = new PermissionHandler(this);
+
+        permissionHandler.requestPermissionAsync(Manifest.permission.WRITE_EXTERNAL_STORAGE).thenAccept(isAccepted -> {
+            if (!isAccepted) {
+                runOnUiThread(() -> Log.d("MainActivity", "Read permission has not been granted"));
+            }
+
+            Database database = Room.databaseBuilder(getApplicationContext(), Database.class, DATABASE_STRING).build();
+            runOnUiThread(() -> Log.d("MainActivity", "Is database open? " + database.isOpen()));
+            runOnUiThread(() -> Log.d("MainActivity", "Successfully created database"));
+
+            Photo photo = new Photo();
+            photo.setPhotoId("1");
+            photo.setUserId("1");
+            photo.setFilename("Test.png");
+
+            PhotoDao photoDao = database.photoDao();
+            photoDao.insertAll(photo);
+
+            List<Photo> allPhotos = photoDao.getAllPhotos();
+
+            runOnUiThread(() -> Log.d("MainActivity", allPhotos != null && allPhotos.toArray().length > 0 ? "Photo(s) exist in database" : "No photos are in the database"));
+
+            if (allPhotos != null) {
+                for (Photo dbPhoto : allPhotos) {
+                    runOnUiThread(() -> Log.d("MainActivity", "Photo path: " + dbPhoto.getFilename()));
+                }
+            }
+        });
     }
 
     @Override
