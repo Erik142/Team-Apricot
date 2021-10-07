@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
                 runOnUiThread(() -> Log.d("MainActivity", "Read permission has not been granted"));
             }
 
-            Database database = Room.databaseBuilder(getApplicationContext(), Database.class, DATABASE_STRING).build();
+            Database database = Room.databaseBuilder(getApplicationContext(), Database.class, DATABASE_STRING).enableMultiInstanceInvalidation().build();
             runOnUiThread(() -> Log.d("MainActivity", "Is database open? " + database.isOpen()));
             runOnUiThread(() -> Log.d("MainActivity", "Successfully created database"));
 
