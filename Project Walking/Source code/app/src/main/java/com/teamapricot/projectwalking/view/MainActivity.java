@@ -3,8 +3,20 @@ package com.teamapricot.projectwalking.view;
 import android.content.Context;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
+import android.view.View;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.teamapricot.projectwalking.R;
+import com.teamapricot.projectwalking.controller.CameraController;
+import com.teamapricot.projectwalking.controller.ImageOverlayController;
+import com.teamapricot.projectwalking.controller.NavigationController;
+import com.teamapricot.projectwalking.controller.NotificationController;
+import com.teamapricot.projectwalking.model.CameraModel;
+import com.teamapricot.projectwalking.model.NavigationModel;
+import com.teamapricot.projectwalking.observe.Observer;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
@@ -16,20 +28,9 @@ import org.osmdroid.views.overlay.Polyline;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
-import android.util.Log;
-import android.view.View;
-import android.widget.Toast;
-
-import com.teamapricot.projectwalking.R;
-import com.teamapricot.projectwalking.controller.ImageOverlayController;
-import com.teamapricot.projectwalking.controller.NavigationController;
-import com.teamapricot.projectwalking.controller.CameraController;
-import com.teamapricot.projectwalking.model.CameraModel;
-import com.teamapricot.projectwalking.model.NavigationModel;
-import com.teamapricot.projectwalking.controller.NotificationController;
-import com.teamapricot.projectwalking.observe.Observer;
-
 public class MainActivity extends AppCompatActivity {
+    private static final double ALLOWED_DISTANCE = 20;
+
     private NavigationController navigationController;
     private CameraController cameraController;
     private ImageOverlayController imageOverlayController;
@@ -71,12 +72,14 @@ public class MainActivity extends AppCompatActivity {
         notificationController = new NotificationController(getApplicationContext());
         notificationController.SendNotification(false);
         initImageOverlay();
+        initCameraButtonVisibility();
     }
 
     private void initCamera() {
         cameraController = new CameraController(this);
 
         View openCameraButton = findViewById(R.id.open_camera_fab);
+        setCameraButtonVisibility(View.INVISIBLE);
 
         cameraController.registerOnClickListener(openCameraButton);
         cameraController.registerObserver(createCameraObserver());
@@ -105,13 +108,46 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initImageOverlay() {
-        if(map == null) {
+        if (map == null) {
             Log.e("initImageOverlay", "MapView not initialized");
             return;
         }
 
         imageOverlayController = new ImageOverlayController(this, new ImageOverlayView(map));
         imageOverlayController.initImageOverlays();
+    }
+
+    private void initCameraButtonVisibility() {
+        if (map == null || navigationController == null) {
+            Log.e("initCameraButtonVisibility", "Initialization failed earlier");
+            return;
+        }
+
+        navigationController.registerObserver(model -> {
+            runOnUiThread(() -> {
+                GeoPoint location = model.getUserLocation();
+                GeoPoint destination = model.getDestination();
+                if (destination == null) {
+                    setCameraButtonVisibility(View.INVISIBLE);
+                    return;
+                }
+                double distance = location.distanceToAsDouble(destination);
+                Log.d("observer", "distance = " + distance);
+                if (distance > ALLOWED_DISTANCE) {
+                    setCameraButtonVisibility(View.INVISIBLE);
+                    return;
+                }
+                setCameraButtonVisibility(View.VISIBLE);
+            });
+        });
+    }
+
+    public void setCameraButtonVisibility(int visibility) {
+        View cameraButton = this.findViewById(R.id.open_camera_fab);
+        if (cameraButton.getVisibility() != visibility) {
+            cameraButton.setVisibility(visibility);
+            cameraButton.invalidate();
+        }
     }
 
     /**
