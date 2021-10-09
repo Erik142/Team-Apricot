@@ -26,9 +26,23 @@ import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
+import android.util.Log;
+import android.view.View;
+import android.widget.Toast;
+
+import com.teamapricot.projectwalking.R;
+import com.teamapricot.projectwalking.controller.ImageOverlayController;
+import com.teamapricot.projectwalking.controller.NavigationController;
+import com.teamapricot.projectwalking.controller.CameraController;
+import com.teamapricot.projectwalking.model.CameraModel;
+import com.teamapricot.projectwalking.model.NavigationModel;
+import com.teamapricot.projectwalking.controller.NotificationController;
+import com.teamapricot.projectwalking.observe.Observer;
+
 public class MainActivity extends AppCompatActivity {
     private NavigationController navigationController;
     private CameraController cameraController;
+    private ImageOverlayController imageOverlayController;
 
     private IMapController mapController;
     private MyLocationNewOverlay locationOverlay;
@@ -68,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
         initCamera();
         notificationController = new NotificationController(getApplicationContext());
         notificationController.SendNotification(false);
+        initImageOverlay();
     }
 
     private void initCamera() {
@@ -97,12 +112,21 @@ public class MainActivity extends AppCompatActivity {
 
         map.getOverlays().add(locationOverlay);
 
-
         button = findViewById(R.id.view_dest);
         navigationController.registerObserver(createNavigationObserver());
         navigationController.start();
         navigationController.registerOnClickListener(button);
 
+    }
+
+    private void initImageOverlay() {
+        if(map == null) {
+            Log.e("initImageOverlay", "MapView not initialized");
+            return;
+        }
+
+        imageOverlayController = new ImageOverlayController(this, new ImageOverlayView(map));
+        imageOverlayController.initImageOverlays();
     }
 
     /**

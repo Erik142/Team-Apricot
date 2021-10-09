@@ -21,7 +21,7 @@ import org.osmdroid.util.GeoPoint;
  */
 public class NavigationController {
     private final int LOCATION_UPDATE_INTERVAL_MS = 2000;
-    private final double INITIAL_ZOOM_LEVEL = 19.5;
+    private final double INITIAL_ZOOM_LEVEL = 17.5;
 
     private AppCompatActivity activity;
     private LocationHandler locationHandler;
