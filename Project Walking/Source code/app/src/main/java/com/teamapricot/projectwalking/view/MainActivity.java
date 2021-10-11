@@ -167,20 +167,21 @@ public class MainActivity extends AppCompatActivity {
                 mapController.setZoom(model.getZoomLevel());
 
                 GeoPoint location = model.getUserLocation();
-                GeoPoint destination = model.getDestination();
-
-                if (destination != null) {
-                    addMarker(getApplicationContext(), map, destination);
-                    button.setVisibility(View.INVISIBLE);
-;               }
-
-                else{
-                    button.setVisibility(View.VISIBLE);
-                }
 
                 if (!mapCentered && location != null) {
                     mapController.setCenter(location);
-                    mapCentered = true;
+
+                    GeoPoint destination = model.getDestination();
+
+                    if (destination != null) {
+                        addMarker(getApplicationContext(), map, destination);
+                        Polyline routeOverlay = model.getRouteOverlay();
+                        map.getOverlays().add(routeOverlay);
+                        map.invalidate();
+                        mapCentered = true;
+                        button.setVisibility(View.INVISIBLE);
+                    }
+
                 }
             });
         };
