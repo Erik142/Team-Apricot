@@ -166,6 +166,11 @@ public class MainActivity extends AppCompatActivity {
                         map.invalidate();
 
                         mapCentered = true;
+
+                        //center on user movement
+                        locationOverlay.setEnableAutoStop(false);
+                        locationOverlay.enableFollowLocation();
+                        map.invalidate();
                     }
                 }
             });
