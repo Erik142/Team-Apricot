@@ -3,6 +3,7 @@ package com.teamapricot.projectwalking.view;
 import android.content.Context;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -11,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.teamapricot.projectwalking.R;
 import com.teamapricot.projectwalking.controller.CameraController;
+import com.teamapricot.projectwalking.controller.ImageOverlayController;
 import com.teamapricot.projectwalking.controller.NavigationController;
 import com.teamapricot.projectwalking.controller.NotificationController;
 import com.teamapricot.projectwalking.model.CameraModel;
@@ -23,21 +25,9 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
+import org.osmdroid.views.overlay.Polyline;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
-
-import android.util.Log;
-import android.view.View;
-import android.widget.Toast;
-
-import com.teamapricot.projectwalking.R;
-import com.teamapricot.projectwalking.controller.ImageOverlayController;
-import com.teamapricot.projectwalking.controller.NavigationController;
-import com.teamapricot.projectwalking.controller.CameraController;
-import com.teamapricot.projectwalking.model.CameraModel;
-import com.teamapricot.projectwalking.model.NavigationModel;
-import com.teamapricot.projectwalking.controller.NotificationController;
-import com.teamapricot.projectwalking.observe.Observer;
 
 public class MainActivity extends AppCompatActivity {
     private NavigationController navigationController;
