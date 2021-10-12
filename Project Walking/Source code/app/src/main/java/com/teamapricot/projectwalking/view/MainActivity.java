@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
 
-            Database database = Room.databaseBuilder(getApplicationContext(), Database.class, DATABASE_NAME).enableMultiInstanceInvalidation().build();
+            Database database = Room.databaseBuilder(getApplicationContext(), Database.class, DATABASE_NAME).fallbackToDestructiveMigration().enableMultiInstanceInvalidation().build();
         });
     }
 
