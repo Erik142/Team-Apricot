@@ -14,7 +14,13 @@ import android.view.ViewGroup;
 
 import com.teamapricot.projectwalking.R;
 import com.teamapricot.projectwalking.controller.AchievementRecyclerViewAdapter;
+import com.teamapricot.projectwalking.model.Board;
 import com.teamapricot.projectwalking.model.database.Achievement;
+import com.teamapricot.projectwalking.model.database.Database;
+import com.teamapricot.projectwalking.model.database.dao.AchievementDao;
+import com.teamapricot.projectwalking.model.database.dao.PhotoDao;
+import com.teamapricot.projectwalking.model.database.dao.RouteDao;
+import com.teamapricot.projectwalking.observe.Observer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +36,7 @@ public class AchievementFragment extends Fragment {
     private int mColumnCount = 1;
     private List<Achievement> achievements;
     private RecyclerView.Adapter recyclerViewAdapter;
+    private Board board;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -37,11 +44,6 @@ public class AchievementFragment extends Fragment {
      */
     public AchievementFragment() {
         achievements = new ArrayList<>();
-        achievements.add(new Achievement("1", "Achievement 1", "Description for achievement 1",false, 1, 1, 100, 1));
-        achievements.add(new Achievement("2", "Achievement 2", "Description for achievement 2",false, 1, 1, 100, 2));
-        achievements.add(new Achievement("3", "Achievement 3", "Description for achievement 3",false, 1, 1, 100, 3));
-        achievements.add(new Achievement("4", "Achievement 4", "Description for achievement 4",false, 1, 1, 100, 4));
-        achievements.add(new Achievement("5", "Achievement 5", "Description for achievement 5",false, 1, 1, 100, 5));
     }
 
     // TODO: Customize parameter initialization
@@ -80,8 +82,32 @@ public class AchievementFragment extends Fragment {
             recyclerView.setAdapter(new AchievementRecyclerViewAdapter(achievements));
             this.recyclerViewAdapter = recyclerView.getAdapter();
 
-            // TODO: Register observer
+            Database.getDatabase(getActivity().getApplicationContext()).thenAccept(database -> {
+                PhotoDao photoDao = database.photoDao();
+                RouteDao routeDao = database.routeDao();
+                AchievementDao achievementDao = database.achievementDao();
+                achievementDao.insertAchievements(
+                        new Achievement("1", "Achievement 1", "Description for achievement 1",false, 1, 1, 100, 1),
+                        new Achievement("2", "Achievement 2", "Description for achievement 2",true, 1, 1, 100, 1),
+                        new Achievement("3", "Achievement 3", "Description for achievement 3",true, 1, 1, 100, 1),
+                        new Achievement("4", "Achievement 4", "Description for achievement 4",true, 1, 1, 100, 1),
+                        new Achievement("5", "Achievement 5", "Description for achievement 5",false, 1, 1, 100, 1)
+                );
+                board = new Board(photoDao, routeDao, achievementDao);
+                board.addObserver(createBoardObserver());
+                board.init();
+            });
         }
         return view;
+    }
+
+    private Observer<Board> createBoardObserver() {
+        return model -> {
+            getActivity().runOnUiThread(() -> {
+                achievements.clear();
+                achievements.addAll(model.getAchievements());
+                this.recyclerViewAdapter.notifyDataSetChanged();
+            });
+        };
     }
 }
