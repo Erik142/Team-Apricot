@@ -16,10 +16,14 @@ public interface AchievementDao {
     void insertAchievements(Achievement... Achievements);
 
     @Query("UPDATE Achievement SET status = 'true' WHERE ((value >= :input) AND" +
-            "(type = :inputType))")
-    void updateAchievements(int input, int inputType);
+            "(type = '1'))")
+    void updateAchievementsDistance(double input);
 
-    @Query("SELECT * FROM Achievement ORDER BY nr DESC LIMIT 10")
+    @Query("UPDATE Achievement SET status = 'true' WHERE ((value >= :input) AND" +
+            "(type = '2'))")
+    void updateAchievementsPhotos(int input);
+
+    @Query("SELECT * FROM Achievement WHERE status = 'true' ORDER BY nr DESC LIMIT 10")
     List<Achievement> getLatestAchievements();
 
 }

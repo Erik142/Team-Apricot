@@ -43,6 +43,7 @@ public class Board extends ObservableBase<Board> {
         this.nrPhotos = ph.getNrPhotos();
         this.routes = rd.getLatestRoutes();
         this.photos = ph.getAllPhotos();
+        updateAchievements(rDist,nrPhotos);
         this.achievements = ad.getLatestAchievements();
         updateObservers(this);
     }
@@ -50,8 +51,14 @@ public class Board extends ObservableBase<Board> {
 /**
 * Method for checking for and updating achievements.
 */
-private void updateAchievements(){
-//INSERT
+private void updateAchievements(double distance, int nrPhotos){
+
+    ad.updateAchievementsDistance(distance);
+    ad.updateAchievementsPhotos(nrPhotos);
+
+}
+
+private void insertAchievementData(){
 
 }
 }
