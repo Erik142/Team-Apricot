@@ -51,13 +51,13 @@ public class NavigationModel extends ObservableBase<NavigationModel> {
     }
 
     public void createDestination(RoadManager roadManager, double radius ) {
-        //deg is angle and len is distance
-        double len = radius + (0.1 * radius * (Math.random() - 0.5));
-        double deg = Math.random() * 360;
-
         if (userLocation == null) {
             return;
         }
+
+        //deg is angle and len is distance
+        double len = 0.8 * radius + 0.2 * radius * Math.random();
+        double deg = Math.random() * 360;
 
         GeoPoint newDestination = userLocation.destinationPoint(len, deg);
 
