@@ -38,6 +38,7 @@ public class NavigationController {
         this.navigationModel = new NavigationModel();
         this.activity = activity;
         roadManager = new OSRMRoadManager(activity, "Fun Walking");
+        ((OSRMRoadManager)roadManager).setMean(OSRMRoadManager.MEAN_BY_FOOT);
     }
 
     /**
