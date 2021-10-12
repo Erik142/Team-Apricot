@@ -20,14 +20,10 @@ import java.util.List;
  * A class for representing a user.
  */
 
-@Entity(tableName = "User")
 public class User {
-    @NonNull
-    @PrimaryKey
-    private final String userId;
-    @Ignore
-    private List<Route> routes;
 
+    private final String userId;
+    private List<Route> routes;
     public User(String userId) {
         this.userId = userId;
     }

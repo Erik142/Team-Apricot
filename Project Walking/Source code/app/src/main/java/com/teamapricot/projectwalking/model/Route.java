@@ -11,19 +11,13 @@ import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
 
-@Entity(tableName = "Routes", primaryKeys = {"userId", "routeId"}, foreignKeys =
-        {@ForeignKey(entity = User.class,
-                parentColumns = "userId",
-                childColumns = "userId",
-                onDelete = ForeignKey.CASCADE)},
+@Entity(tableName = "Routes", primaryKeys = {"routeId"},
         indices = {@Index(value = { "routeId" }, unique = true)})
 
 public class Route {
     @NonNull
     @ColumnInfo(name = "routeId")
     private String id;
-    @NonNull
-    private String userId;
     //@ColumnInfo(name = "time")
     @Ignore
     private Calendar time;
@@ -68,13 +62,5 @@ public class Route {
 
     public double getStartY() {
         return this.startY;
-    }
-
-    public String getUserId() {
-        return this.userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
     }
 }
