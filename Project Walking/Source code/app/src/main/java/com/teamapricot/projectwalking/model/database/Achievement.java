@@ -23,6 +23,7 @@ public class Achievement {
     private String title;
     private String description;
     private boolean status;
+    private int type;
     private int value;
     private int points;
     private int nr;
@@ -34,11 +35,12 @@ public class Achievement {
  * @param status status true false to set if achievement have been achieved.
 */
     public Achievement(String achievementId, String title, String description,
-                       boolean status, int value, int points, int nr){
+                       boolean status, int type, int value, int points, int nr){
         this.achievementId = achievementId;
         this.title = title;
         this.description = description;
         this.status = status;
+        this.type = type;
         this.value = value;
         this.points = points;
         this.nr = nr;
@@ -64,6 +66,8 @@ public class Achievement {
     public int getPoints() { return this.points; }
 
     public int getNr() { return this.nr; }
+
+    public int getType() { return this.type; }
 
     public void changeStatus(String achivementId){
         this.status = true;
