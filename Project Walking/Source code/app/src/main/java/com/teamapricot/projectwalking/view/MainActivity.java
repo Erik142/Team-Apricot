@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
             runOnUiThread(() -> Log.d("MainActivity", "Successfully created database"));
 
 
-            Route route = new Route("1", 0, 0, 0, 0);
+            Route route = new Route("1", 0, 0, 0, 0,0);
 
             RouteDao routeDao = database.routeDao();
             routeDao.insertAll(route);

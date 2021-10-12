@@ -21,22 +21,24 @@ public class Route {
     //@ColumnInfo(name = "time")
     @Ignore
     private Calendar time;
-    @ColumnInfo(name = "startX")
+    @ColumnInfo(name = "startLatitude")
     private double startX;
-    @ColumnInfo(name = "startY")
+    @ColumnInfo(name = "startLongitude")
     private double startY;
-    @ColumnInfo(name = "endX")
+    @ColumnInfo(name = "endLatitude")
     private double endX;
-    @ColumnInfo(name = "endY")
+    @ColumnInfo(name = "endLongitude")
     private double endY;
+    private double distance;
 
-    public Route(String id, double startX, double startY, double endX, double endY){
+    public Route(String id, double startX, double startY, double endX, double endY, double distance){
         this.id = id;
         this.time = Calendar.getInstance();
         this.startX = startX;
         this.startY = startY;
         this.endX = endX;
         this.endY = endY;
+        this.distance = distance;
 
     }
 
