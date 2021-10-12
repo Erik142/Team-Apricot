@@ -29,7 +29,7 @@ public interface RouteDao {
      * Get the total distance from routes table.
      */
     @Query("SELECT SUM(distance) FROM Routes")
-    Double getTotalDist();
+    double getTotalDist();
 
     /**
      * Get the 10 last routes from route table.
