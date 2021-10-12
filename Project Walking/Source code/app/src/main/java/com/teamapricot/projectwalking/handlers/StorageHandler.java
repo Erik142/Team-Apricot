@@ -6,6 +6,8 @@ import android.util.Log;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.exifinterface.media.ExifInterface;
 
+import org.osmdroid.util.GeoPoint;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
