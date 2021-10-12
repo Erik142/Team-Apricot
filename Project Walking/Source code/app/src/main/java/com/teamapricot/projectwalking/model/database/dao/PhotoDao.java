@@ -36,4 +36,5 @@ public interface PhotoDao {
      */
     @Insert
     void insertPhotos(Photo... photos);
+
 }

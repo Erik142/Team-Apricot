@@ -23,19 +23,26 @@ public class Achievement {
     private String title;
     private String description;
     private boolean status;
-    private String achievementTypeId;
+    private int value;
+    private int points;
+    private int nr;
 
 
 /**
 * @Constructor
  * @param achievementId Unique identifier for achievements.
- * @param achievementTypeId type of achievement.
  * @param status status true false to set if achievement have been achieved.
 */
-    public Achievement(String achievementId, boolean status, String achievementTypeId){
+    public Achievement(String achievementId, String title, String description,
+                       boolean status, int value, int points, int nr){
         this.achievementId = achievementId;
+        this.title = title;
+        this.description = description;
         this.status = status;
-        this.achievementTypeId = achievementTypeId;
+        this.value = value;
+        this.points = points;
+        this.nr = nr;
+
     }
 
     public String getAchievementId(){
@@ -50,9 +57,13 @@ public class Achievement {
 
     public String getTitle() { return this.title; }
 
-    public String getAchievementTypeId(){
-        return this.achievementTypeId;
+    public int getValue(){
+        return this.value;
     }
+
+    public int getPoints() { return this.points; }
+
+    public int getNr() { return this.nr; }
 
     public void changeStatus(String achivementId){
         this.status = true;
