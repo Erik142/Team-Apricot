@@ -47,6 +47,7 @@ public class User {
         return routes.get(routes.size() - 1);
     }
 
+    // TODO: Move this method to separate class, will be done in task 9.2
    // public void addRoute(GeoPoint start, GeoPoint end){
     //    routes.add(new Route("" + generateRouteId(), start.getLongitude(), start.getLatitude(), end.getLongitude(), end.getLatitude()));
     //}
