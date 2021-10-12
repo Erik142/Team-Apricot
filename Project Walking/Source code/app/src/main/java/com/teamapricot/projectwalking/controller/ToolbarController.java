@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.view.MenuItem;
 
 import com.teamapricot.projectwalking.R;
-import com.teamapricot.projectwalking.model.database.Database;
 import com.teamapricot.projectwalking.view.achievement.AchievementsActivity;
 
 public class ToolbarController {
