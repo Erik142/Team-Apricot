@@ -19,12 +19,13 @@ import java.util.concurrent.CompletableFuture;
  * Model class for the navigation functionality
  */
 public class NavigationModel extends ObservableBase<NavigationModel> {
-    private final int DESTINATION_RADIUS = 500;
+    private final int[] DISTANCES = new int[] {300, 750, 1500};
 
     private GeoPoint userLocation;
     private GeoPoint destination;
     private Polyline routeOverlay;
     private double zoomLevel;
+    private int distanceChoice = 0;
 
     /**
      * Get the user location
@@ -39,6 +40,14 @@ public class NavigationModel extends ObservableBase<NavigationModel> {
     public Polyline getRouteOverlay() { return this.routeOverlay; }
 
     /**
+     * Get the distance choice
+     * @return The distance choice (0 to 2 where 0 means short and 2 means long)
+     */
+    public int getDistanceChoice() {
+        return distanceChoice;
+    }
+
+    /**
      * Get the zoom level for the map
      * @return The zoom level as a {@code double} value
      */
@@ -47,7 +56,7 @@ public class NavigationModel extends ObservableBase<NavigationModel> {
     }
 
     public void createDestination(RoadManager roadManager) {
-        createDestination(roadManager, DESTINATION_RADIUS);
+        createDestination(roadManager, DISTANCES[distanceChoice]);
     }
 
     public void createDestination(RoadManager roadManager, double radius ) {
@@ -92,5 +101,9 @@ public class NavigationModel extends ObservableBase<NavigationModel> {
     public void setZoomLevel(double zoomLevel) {
         this.zoomLevel = zoomLevel;
         updateObservers(this);
+    }
+
+    public void setDistanceChoice(int distanceChoice) {
+        this.distanceChoice = distanceChoice;
     }
 }

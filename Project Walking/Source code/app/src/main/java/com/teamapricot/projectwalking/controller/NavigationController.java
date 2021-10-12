@@ -8,6 +8,7 @@ import com.teamapricot.projectwalking.R;
 import com.teamapricot.projectwalking.handlers.LocationHandler;
 import com.teamapricot.projectwalking.model.NavigationModel;
 import com.teamapricot.projectwalking.observe.Observer;
+import com.teamapricot.projectwalking.view.dialogs.ChooseDistanceDialog;
 import com.teamapricot.projectwalking.view.dialogs.ReplaceDestinationDialog;
 
 import org.osmdroid.bonuspack.routing.OSRMRoadManager;
@@ -83,8 +84,13 @@ public class NavigationController {
             }
         });
 
-        // button.setOnLongClickListener(view -> {
-        //     TODO: choose distance dialog
-        // });
+        button.setOnLongClickListener(view -> {
+            ChooseDistanceDialog dialog =
+                    new ChooseDistanceDialog(
+                            this.activity, navigationModel.getDistanceChoice(),
+                            (choice) -> navigationModel.setDistanceChoice(choice));
+            dialog.show(activity.getSupportFragmentManager(), "NavigationController");
+            return true;
+        });
     }
 }

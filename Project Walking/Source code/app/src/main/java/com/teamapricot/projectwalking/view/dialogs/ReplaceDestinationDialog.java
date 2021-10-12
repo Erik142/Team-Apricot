@@ -38,17 +38,9 @@ public class ReplaceDestinationDialog extends DialogFragment {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
         dialogBuilder.setTitle(TITLE)
                 .setMessage(MESSAGE)
-                .setPositiveButton(POSITIVE_BUTTON_TEXT, getOnClickListener(() -> effect.run()))
+                .setPositiveButton(POSITIVE_BUTTON_TEXT, (DialogInterface.OnClickListener) (dialog, i) -> effect.run())
                 .setNegativeButton(NEGATIVE_BUTTON_TEXT, null);
 
         return dialogBuilder.create();
-    }
-
-    private DialogInterface.OnClickListener getOnClickListener(Runnable runnable) {
-        return (dialogInterface, i) -> {
-            if (runnable != null) {
-                runnable.run();
-            }
-        };
     }
 }
