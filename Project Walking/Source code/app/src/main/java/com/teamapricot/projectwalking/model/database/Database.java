@@ -2,8 +2,8 @@ package com.teamapricot.projectwalking.model.database;
 
 import androidx.room.RoomDatabase;
 
-import com.teamapricot.projectwalking.model.dao.PhotoDao;
-import com.teamapricot.projectwalking.model.dao.RouteDao;
+import com.teamapricot.projectwalking.model.database.dao.PhotoDao;
+import com.teamapricot.projectwalking.model.database.dao.RouteDao;
 
 /**
  * @author Erik Wahlberger, Joakim Tubring

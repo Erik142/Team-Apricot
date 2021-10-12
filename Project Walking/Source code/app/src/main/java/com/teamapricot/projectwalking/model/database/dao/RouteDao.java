@@ -1,4 +1,4 @@
-package com.teamapricot.projectwalking.model.dao;
+package com.teamapricot.projectwalking.model.database.dao;
 
 import androidx.room.Dao;
 import androidx.room.Insert;

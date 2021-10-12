@@ -1,7 +1,7 @@
 package com.teamapricot.projectwalking.model.database;
 
-import com.teamapricot.projectwalking.model.dao.PhotoDao;
-import com.teamapricot.projectwalking.model.dao.RouteDao;
+import com.teamapricot.projectwalking.model.database.dao.PhotoDao;
+import com.teamapricot.projectwalking.model.database.dao.RouteDao;
 import com.teamapricot.projectwalking.observe.ObservableBase;
 
 import java.util.List;
