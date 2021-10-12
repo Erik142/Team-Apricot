@@ -15,15 +15,17 @@ public interface AchievementDao {
     @Insert
     void insertAchievements(Achievement... Achievements);
 
-    @Query("UPDATE Achievement SET status = 'true' WHERE ((value >= :input) AND" +
+    @Query("UPDATE Achievement SET status = 1 WHERE ((value >= :input) AND" +
             "(type = '1'))")
     void updateAchievementsDistance(double input);
 
-    @Query("UPDATE Achievement SET status = 'true' WHERE ((value >= :input) AND" +
+    @Query("UPDATE Achievement SET status = 1 WHERE ((value >= :input) AND" +
             "(type = '2'))")
     void updateAchievementsPhotos(int input);
 
-    @Query("SELECT * FROM Achievement WHERE status = 'true' ORDER BY nr DESC LIMIT 10")
+    @Query("SELECT * FROM Achievement WHERE status = 1 ORDER BY nr DESC LIMIT 10")
     List<Achievement> getLatestAchievements();
 
+    @Query("SELECT * FROM Achievement WHERE status = 1")
+    List<Achievement> getAllAchievements();
 }
