@@ -1,5 +1,6 @@
 package com.teamapricot.projectwalking.model;
 
+import java.sql.Date;
 import java.time.Duration;
 import java.util.Calendar;
 
