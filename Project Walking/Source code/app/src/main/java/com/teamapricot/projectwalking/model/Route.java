@@ -3,13 +3,11 @@ package com.teamapricot.projectwalking.model;
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
-import androidx.room.ForeignKey;
 import androidx.room.Ignore;
 import androidx.room.Index;
 
-import java.time.LocalDateTime;
 import java.util.Calendar;
-import java.util.Date;
+
 
 @Entity(tableName = "Routes", primaryKeys = {"routeId"},
         indices = {@Index(value = { "routeId" }, unique = true)})
@@ -29,7 +27,7 @@ public class Route {
     private double endX;
     @ColumnInfo(name = "endLongitude")
     private double endY;
-    private double distance;
+    private double  distance;
 
     public Route(String id, double startX, double startY, double endX, double endY, double distance){
         this.id = id;
@@ -64,5 +62,8 @@ public class Route {
 
     public double getStartY() {
         return this.startY;
+    }
+    public double getDistance(){
+        return this.distance;
     }
 }

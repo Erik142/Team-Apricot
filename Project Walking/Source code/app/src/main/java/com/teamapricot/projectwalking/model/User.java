@@ -56,14 +56,9 @@ public class User {
         return routes.get(routes.size() - 1);
     }
 
-/**
-* Adds a route (placeholder).
-* Will be adding to this later.
-*/
-
-    public void addRoute(GeoPoint start, GeoPoint end){
-        routes.add(new Route("" + generateRouteId(), start.getLongitude(), start.getLatitude(), end.getLongitude(), end.getLatitude()));
-    }
+   // public void addRoute(GeoPoint start, GeoPoint end){
+    //    routes.add(new Route("" + generateRouteId(), start.getLongitude(), start.getLatitude(), end.getLongitude(), end.getLatitude()));
+    //}
 
 /**
 * Generates a route-id based on the user-id.
