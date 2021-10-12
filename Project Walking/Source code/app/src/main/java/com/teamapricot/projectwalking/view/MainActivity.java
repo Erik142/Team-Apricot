@@ -7,7 +7,6 @@ import android.preference.PreferenceManager;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.room.Room;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
@@ -37,9 +36,9 @@ import com.teamapricot.projectwalking.model.NavigationModel;
 import com.teamapricot.projectwalking.controller.NotificationController;
 import com.teamapricot.projectwalking.observe.Observer;
 
-public class MainActivity extends AppCompatActivity {
-    private final String DATABASE_NAME = "fun-walking-database";
+import java.util.concurrent.ExecutionException;
 
+public class MainActivity extends AppCompatActivity {
     private NavigationController navigationController;
     private CameraController cameraController;
     private ImageOverlayController imageOverlayController;
@@ -74,7 +73,12 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
 
-            Database database = Room.databaseBuilder(getApplicationContext(), Database.class, DATABASE_NAME).fallbackToDestructiveMigration().enableMultiInstanceInvalidation().build();
+            try {
+                Database database = Database.getDatabase(this).get();
+            } catch (ExecutionException | InterruptedException e) {
+                e.printStackTrace();
+                return;
+            }
         });
     }
 
