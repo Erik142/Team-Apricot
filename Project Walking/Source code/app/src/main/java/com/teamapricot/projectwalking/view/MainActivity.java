@@ -34,7 +34,7 @@ import com.teamapricot.projectwalking.controller.NotificationController;
 import com.teamapricot.projectwalking.observe.Observer;
 
 public class MainActivity extends AppCompatActivity {
-    private final String DATABASE_STRING = "fun-walking-database";
+    private final String DATABASE_NAME = "fun-walking-database";
 
     private NavigationController navigationController;
     private CameraController cameraController;
@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
 
-            Database database = Room.databaseBuilder(getApplicationContext(), Database.class, DATABASE_STRING).enableMultiInstanceInvalidation().build();
+            Database database = Room.databaseBuilder(getApplicationContext(), Database.class, DATABASE_NAME).enableMultiInstanceInvalidation().build();
         });
     }
 
