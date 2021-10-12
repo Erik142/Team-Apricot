@@ -19,7 +19,7 @@ import java.util.concurrent.CompletableFuture;
  * Model class for the navigation functionality
  */
 public class NavigationModel extends ObservableBase<NavigationModel> {
-    private final int DESTINATION_RADIUS = 50;
+    private final int DESTINATION_RADIUS = 200;
 
     private GeoPoint userLocation;
     private GeoPoint destination;
@@ -48,7 +48,7 @@ public class NavigationModel extends ObservableBase<NavigationModel> {
 
     public void createDestination(RoadManager roadManager) {
         //deg is angle and len is distance
-        double len = Math.sqrt(Math.random()) * DESTINATION_RADIUS;
+        double len = radius + (0.1 * radius * (Math.random() - 0.5));
         double deg = Math.random() * 360;
 
         GeoPoint userLocation = getUserLocation();
