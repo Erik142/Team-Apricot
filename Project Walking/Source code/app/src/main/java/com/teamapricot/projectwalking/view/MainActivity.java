@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.room.Room;
 
 import org.osmdroid.api.IMapController;
@@ -19,6 +20,8 @@ import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -26,6 +29,7 @@ import com.teamapricot.projectwalking.R;
 import com.teamapricot.projectwalking.controller.ImageOverlayController;
 import com.teamapricot.projectwalking.controller.NavigationController;
 import com.teamapricot.projectwalking.controller.CameraController;
+import com.teamapricot.projectwalking.controller.ToolbarController;
 import com.teamapricot.projectwalking.handlers.PermissionHandler;
 import com.teamapricot.projectwalking.model.CameraModel;
 import com.teamapricot.projectwalking.model.database.Database;
@@ -44,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
     private MyLocationNewOverlay locationOverlay;
     private NotificationController notificationController;
 
+    private ToolbarController toolbarController;
+
     boolean mapCentered;
 
     private MapView map = null;
@@ -53,6 +59,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
+
+        Toolbar myToolbar = findViewById(R.id.my_toolbar);
+        setSupportActionBar(myToolbar);
 
         init();
 
@@ -83,7 +92,20 @@ public class MainActivity extends AppCompatActivity {
         map.onPause();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.toolbar_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return toolbarController.onToolbarMenuItemClick(item, this);
+    }
+
     private void init() {
+        toolbarController = new ToolbarController();
         initNavigation();
         initCamera();
         notificationController = new NotificationController(getApplicationContext());
