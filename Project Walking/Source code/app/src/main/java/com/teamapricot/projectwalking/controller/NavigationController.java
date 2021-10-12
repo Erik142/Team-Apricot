@@ -8,6 +8,7 @@ import com.teamapricot.projectwalking.R;
 import com.teamapricot.projectwalking.handlers.LocationHandler;
 import com.teamapricot.projectwalking.model.NavigationModel;
 import com.teamapricot.projectwalking.observe.Observer;
+import com.teamapricot.projectwalking.view.dialogs.ReplaceDestinationDialog;
 
 import org.osmdroid.bonuspack.routing.OSRMRoadManager;
 import org.osmdroid.bonuspack.routing.RoadManager;
@@ -73,11 +74,13 @@ public class NavigationController {
      */
     public void registerNewDestinationButtonListeners(View button) {
         button.setOnClickListener(view -> {
-            // if(navigationModel.getDestination() == null) {
+            if(navigationModel.getDestination() == null) {
                 navigationModel.createDestination(roadManager);
-            // } else {
-            //     TODO: are you sure?
-            // }
+            } else {
+                ReplaceDestinationDialog dialog =
+                        new ReplaceDestinationDialog(this.activity, () -> { navigationModel.createDestination(roadManager); });
+                dialog.show(activity.getSupportFragmentManager(), "NavigationController");
+            }
         });
 
         // button.setOnLongClickListener(view -> {
