@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
 
         map.getOverlays().add(locationOverlay);
 
-        button = findViewById(R.id.view_dest);
+        button = findViewById(R.id.new_destination_button);
         navigationController.registerObserver(createNavigationObserver());
         navigationController.start();
         navigationController.registerOnClickListener(button);
