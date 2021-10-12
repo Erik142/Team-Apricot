@@ -37,11 +37,11 @@ public class AchievementFragment extends Fragment {
      */
     public AchievementFragment() {
         achievements = new ArrayList<>();
-        achievements.add(new Achievement("1", false, "1"));
-        achievements.add(new Achievement("2", false, "1"));
-        achievements.add(new Achievement("3", false, "1"));
-        achievements.add(new Achievement("4", false, "1"));
-        achievements.add(new Achievement("5", false, "1"));
+        achievements.add(new Achievement("1", "Achievement 1", "Description for achievement 1",false, 1, 1, 100, 1));
+        achievements.add(new Achievement("2", "Achievement 2", "Description for achievement 2",false, 1, 1, 100, 2));
+        achievements.add(new Achievement("3", "Achievement 3", "Description for achievement 3",false, 1, 1, 100, 3));
+        achievements.add(new Achievement("4", "Achievement 4", "Description for achievement 4",false, 1, 1, 100, 4));
+        achievements.add(new Achievement("5", "Achievement 5", "Description for achievement 5",false, 1, 1, 100, 5));
     }
 
     // TODO: Customize parameter initialization
