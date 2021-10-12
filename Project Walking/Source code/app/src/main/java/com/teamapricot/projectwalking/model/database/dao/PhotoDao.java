@@ -1,10 +1,10 @@
-package com.teamapricot.projectwalking.model.dao;
+package com.teamapricot.projectwalking.model.database.dao;
 
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
 
-import com.teamapricot.projectwalking.model.Photo;
+import com.teamapricot.projectwalking.model.database.Photo;
 
 import java.util.List;
 

@@ -3,7 +3,7 @@ package com.teamapricot.projectwalking.controller;
 import android.content.Context;
 import com.teamapricot.projectwalking.model.Reminder;
 import com.teamapricot.projectwalking.model.Model;
-import com.teamapricot.projectwalking.model.Route;
+import com.teamapricot.projectwalking.model.database.Route;
 import com.teamapricot.projectwalking.model.User;
 import java.util.ArrayList;
 import java.lang.*;

@@ -1,16 +1,7 @@
 package com.teamapricot.projectwalking.model;
 
-import androidx.annotation.NonNull;
-import androidx.room.ColumnInfo;
-import androidx.room.Entity;
-import androidx.room.ForeignKey;
-import androidx.room.Ignore;
-import androidx.room.PrimaryKey;
-import androidx.room.Relation;
+import com.teamapricot.projectwalking.model.database.Route;
 
-import org.osmdroid.util.GeoPoint;
-
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -56,6 +47,7 @@ public class User {
         return routes.get(routes.size() - 1);
     }
 
+    // TODO: Move this method to separate class, will be done in task 9.2
    // public void addRoute(GeoPoint start, GeoPoint end){
     //    routes.add(new Route("" + generateRouteId(), start.getLongitude(), start.getLatitude(), end.getLongitude(), end.getLatitude()));
     //}
