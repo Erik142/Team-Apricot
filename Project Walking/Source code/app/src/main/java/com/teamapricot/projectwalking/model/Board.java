@@ -39,15 +39,21 @@ public class Board extends ObservableBase<Board> {
         this.ph = ph;
         this.rd = rd;
         this.ad = ad;
+    }
+
+    public void init() {
         this.rDist = rd.getTotalDist();
         this.nrPhotos = ph.getNrPhotos();
         this.routes = rd.getLatestRoutes();
         this.photos = ph.getAllPhotos();
         updateAchievements(rDist,nrPhotos);
-        this.achievements = ad.getLatestAchievements();
+        this.achievements = ad.getAllAchievements();
         updateObservers(this);
     }
 
+    public List<Achievement> getAchievements() {
+        return this.achievements;
+    }
 /**
 * Method for checking for and updating achievements.
 */
