@@ -6,6 +6,15 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.Relation;
 
+
+/**
+ * @author Erik Wahlberger, Joakim Tubring
+ * @version 2021-10-12
+ */
+
+/**
+ * Class for representing an achievement.
+ */
 @Entity
 public class Achievement {
     @NonNull
@@ -16,6 +25,13 @@ public class Achievement {
     private boolean status;
     private String achievementTypeId;
 
+
+/**
+* @Constructor
+ * @param achievementId Unique identifier for achievements.
+ * @param achievementTypeId type of achievement.
+ * @param status status true false to set if achievement have been achieved.
+*/
     public Achievement(String achievementId, boolean status, String achievementTypeId){
         this.achievementId = achievementId;
         this.status = status;

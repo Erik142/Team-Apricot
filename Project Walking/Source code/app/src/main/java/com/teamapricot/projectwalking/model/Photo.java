@@ -6,6 +6,15 @@ import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
 
+/**
+ * @author Erik Wahlberger, Joakim Tubring
+ * @version 2021-10-12
+ */
+
+/**
+ * Class for representing a photo.
+ */
+
 @Entity(tableName = "Photos", primaryKeys = {"photoId"}, foreignKeys =
         {@ForeignKey(entity = Route.class,
                         parentColumns = "routeId",

@@ -8,7 +8,14 @@ import androidx.room.Index;
 
 import java.util.Calendar;
 
+/**
+ * @author Erik Wahlberger, Joakim Tubring
+ * @version 2021-10-12
+ */
 
+/**
+ * class for representing a route.
+ */
 @Entity(tableName = "Routes", primaryKeys = {"routeId"},
         indices = {@Index(value = { "routeId" }, unique = true)})
 
@@ -29,6 +36,15 @@ public class Route {
     private double endY;
     private double  distance;
 
+/**
+* @Constructor
+ * @param id The id for current route.
+ * @param startX The startpoint X-value.
+ * @param startY The startpoint Y-value.
+ * @param endX The endpoint X-value.
+ * @param endY The endpoint Y-value
+ * @param distance The distance of the route.
+*/
     public Route(String id, double startX, double startY, double endX, double endY, double distance){
         this.id = id;
         this.time = Calendar.getInstance();

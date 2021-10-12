@@ -8,13 +8,32 @@ import com.teamapricot.projectwalking.model.Route;
 
 import java.util.List;
 
+/**
+ * @author Erik Wahlberger, Joakim Tubring
+ * @version 2021-10-12
+ */
+
+/**
+ * Database access-object for Routes-table.
+ */
 @Dao
 public interface RouteDao {
+
+    /**
+     * Insert new routes.
+     */
     @Insert
     void insertAll(Route... routes);
 
+    /**
+     * Get the total distance from routes table.
+     */
     @Query("SELECT SUM(distance) FROM Routes")
     Double getTotalDist();
+
+    /**
+     * Get the 10 last routes from route table.
+     */
     @Query("SELECT * FROM Routes LIMIT 10")
     List<Route> getLatestRoutes();
 }
