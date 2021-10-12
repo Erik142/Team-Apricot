@@ -9,7 +9,6 @@ import android.view.View;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.room.Room;
 
 import com.teamapricot.projectwalking.R;
 import com.teamapricot.projectwalking.controller.CameraController;
@@ -32,10 +31,10 @@ import org.osmdroid.views.overlay.Polyline;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
-public class MainActivity extends AppCompatActivity {
-    private final String DATABASE_NAME = "fun-walking-database";
-    private static final double ALLOWED_DISTANCE = 20;
+import java.util.concurrent.ExecutionException;
 
+public class MainActivity extends AppCompatActivity {
+    private static final double ALLOWED_DISTANCE = 20;
     private NavigationController navigationController;
     private CameraController cameraController;
     private ImageOverlayController imageOverlayController;
@@ -65,7 +64,12 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
 
-            Database database = Room.databaseBuilder(getApplicationContext(), Database.class, DATABASE_NAME).fallbackToDestructiveMigration().build();
+            try {
+                Database database = Database.getDatabase(this).get();
+            } catch (ExecutionException | InterruptedException e) {
+                e.printStackTrace();
+                return;
+            }
         });
     }
 
