@@ -31,13 +31,7 @@ import com.teamapricot.projectwalking.model.CameraModel;
 import com.teamapricot.projectwalking.model.Database;
 import com.teamapricot.projectwalking.model.NavigationModel;
 import com.teamapricot.projectwalking.controller.NotificationController;
-import com.teamapricot.projectwalking.model.Photo;
-import com.teamapricot.projectwalking.model.Route;
-import com.teamapricot.projectwalking.model.dao.PhotoDao;
-import com.teamapricot.projectwalking.model.dao.RouteDao;
 import com.teamapricot.projectwalking.observe.Observer;
-
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private final String DATABASE_STRING = "fun-walking-database";
@@ -62,39 +56,16 @@ public class MainActivity extends AppCompatActivity {
 
         init();
 
+        // TODO: Create controller and model classes that will use the database after the database has been successfully instantiated
         PermissionHandler permissionHandler = new PermissionHandler(this);
 
         permissionHandler.requestPermissionAsync(Manifest.permission.WRITE_EXTERNAL_STORAGE).thenAccept(isAccepted -> {
             if (!isAccepted) {
                 runOnUiThread(() -> Log.d("MainActivity", "Read permission has not been granted"));
+                return;
             }
 
             Database database = Room.databaseBuilder(getApplicationContext(), Database.class, DATABASE_STRING).enableMultiInstanceInvalidation().build();
-            runOnUiThread(() -> Log.d("MainActivity", "Is database open? " + database.isOpen()));
-            runOnUiThread(() -> Log.d("MainActivity", "Successfully created database"));
-
-
-            Route route = new Route("1", 0, 0, 0, 0,0);
-
-            RouteDao routeDao = database.routeDao();
-            routeDao.insertAll(route);
-
-            Photo photo = new Photo();
-            photo.setPhotoId(route.getId());
-            photo.setFilename("Test.png");
-
-            PhotoDao photoDao = database.photoDao();
-            photoDao.insertPhotos(photo);
-
-            List<Photo> allPhotos = photoDao.getAllPhotos();
-
-            runOnUiThread(() -> Log.d("MainActivity", allPhotos != null && allPhotos.toArray().length > 0 ? "Photo(s) exist in database" : "No photos are in the database"));
-
-            if (allPhotos != null) {
-                for (Photo dbPhoto : allPhotos) {
-                    runOnUiThread(() -> Log.d("MainActivity", "Photo path: " + dbPhoto.getFilename()));
-                }
-            }
         });
     }
 
