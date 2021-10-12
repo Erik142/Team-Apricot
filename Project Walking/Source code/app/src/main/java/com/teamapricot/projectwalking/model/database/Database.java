@@ -10,6 +10,7 @@ import com.teamapricot.projectwalking.model.database.dao.PhotoDao;
 import com.teamapricot.projectwalking.model.database.dao.RouteDao;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
 
 /**
  * @author Erik Wahlberger, Joakim Tubring
@@ -34,12 +35,12 @@ public abstract class Database extends RoomDatabase {
     public static CompletableFuture<Database> getDatabase(Context context) {
         return CompletableFuture.supplyAsync(() -> {
             if (database == null) {
-                database = Room.databaseBuilder(context, Database.class, DATABASE_NAME).fallbackToDestructiveMigration().enableMultiInstanceInvalidation().build();
+                database = Room.databaseBuilder(context, Database.class, DATABASE_NAME).fallbackToDestructiveMigration().build();
                 database.clearAllTables();
             }
 
             return database;
-        });
+        }, Executors.newSingleThreadExecutor());
     }
 }
 
