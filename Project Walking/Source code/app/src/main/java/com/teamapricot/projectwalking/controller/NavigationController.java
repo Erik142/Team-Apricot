@@ -53,7 +53,6 @@ public class NavigationController {
                 navigationModel.setUserLocation(point);
                 isOnetimeExecutionDone = true;
             }
-
         });
 
         this.navigationModel.setZoomLevel(INITIAL_ZOOM_LEVEL);
@@ -71,13 +70,17 @@ public class NavigationController {
      * registers a button for triggering new destination
      * @param button triggers new destination
      */
-    public void registerOnClickListener(View button) {
-        if (!button.hasOnClickListeners()) {
-            button.setOnClickListener(view -> {
-                if (view.getId() == R.id.view_dest) {
-                    this.navigationModel.createDestination(roadManager);
-                }
-            });
-        }
+    public void registerNewDestinationButtonListeners(View button) {
+        button.setOnClickListener(view -> {
+            // if(navigationModel.getDestination() == null) {
+                navigationModel.createDestination(roadManager);
+            // } else {
+            //     TODO: are you sure?
+            // }
+        });
+
+        // button.setOnLongClickListener(view -> {
+        //     TODO: choose distance dialog
+        // });
     }
 }

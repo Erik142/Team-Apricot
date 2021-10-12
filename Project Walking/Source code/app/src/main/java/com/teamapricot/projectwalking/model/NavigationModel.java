@@ -19,7 +19,7 @@ import java.util.concurrent.CompletableFuture;
  * Model class for the navigation functionality
  */
 public class NavigationModel extends ObservableBase<NavigationModel> {
-    private final int DESTINATION_RADIUS = 200;
+    private final int DESTINATION_RADIUS = 500;
 
     private GeoPoint userLocation;
     private GeoPoint destination;
@@ -47,30 +47,33 @@ public class NavigationModel extends ObservableBase<NavigationModel> {
     }
 
     public void createDestination(RoadManager roadManager) {
+        createDestination(roadManager, DESTINATION_RADIUS);
+    }
+
+    public void createDestination(RoadManager roadManager, double radius ) {
         //deg is angle and len is distance
         double len = radius + (0.1 * radius * (Math.random() - 0.5));
         double deg = Math.random() * 360;
 
-        GeoPoint userLocation = getUserLocation();
-
-        if (userLocation != null) {
-            GeoPoint location = userLocation.destinationPoint(len, deg);
-
-            this.destination = location;
-
-            CompletableFuture.runAsync(() -> {
-                ArrayList<GeoPoint> points = new ArrayList<>();
-                points.add(this.getUserLocation());
-                points.add(this.getDestination());
-
-                Road road = roadManager.getRoad(points);
-
-                this.routeOverlay = RoadManager.buildRoadOverlay(road);
-
-            }).thenRun(() -> {
-                updateObservers(this);
-            });
+        if (userLocation == null) {
+            return;
         }
+
+        GeoPoint newDestination = userLocation.destinationPoint(len, deg);
+
+        this.destination = newDestination;
+
+        CompletableFuture.runAsync(() -> {
+            ArrayList<GeoPoint> points = new ArrayList<>();
+            points.add(this.getUserLocation());
+            points.add(this.getDestination());
+
+            Road road = roadManager.getRoad(points);
+
+            this.routeOverlay = RoadManager.buildRoadOverlay(road);
+        }).thenRun(() -> {
+            updateObservers(this);
+        });
     }
 
     /**
