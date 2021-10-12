@@ -28,7 +28,7 @@ import com.teamapricot.projectwalking.controller.NavigationController;
 import com.teamapricot.projectwalking.controller.CameraController;
 import com.teamapricot.projectwalking.handlers.PermissionHandler;
 import com.teamapricot.projectwalking.model.CameraModel;
-import com.teamapricot.projectwalking.model.Database;
+import com.teamapricot.projectwalking.model.database.Database;
 import com.teamapricot.projectwalking.model.NavigationModel;
 import com.teamapricot.projectwalking.controller.NotificationController;
 import com.teamapricot.projectwalking.observe.Observer;

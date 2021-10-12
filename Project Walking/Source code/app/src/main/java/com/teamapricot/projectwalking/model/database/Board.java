@@ -1,4 +1,4 @@
-package com.teamapricot.projectwalking.model;
+package com.teamapricot.projectwalking.model.database;
 
 import com.teamapricot.projectwalking.model.dao.PhotoDao;
 import com.teamapricot.projectwalking.model.dao.RouteDao;

@@ -4,7 +4,7 @@ import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
 
-import com.teamapricot.projectwalking.model.Route;
+import com.teamapricot.projectwalking.model.database.Route;
 
 import java.util.List;
 

@@ -1,5 +1,6 @@
 package com.teamapricot.projectwalking.model;
 
+import com.teamapricot.projectwalking.model.database.Route;
 
 import java.util.List;
 

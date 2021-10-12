@@ -1,4 +1,4 @@
-package com.teamapricot.projectwalking.model;
+package com.teamapricot.projectwalking.model.database;
 
 import androidx.room.RoomDatabase;
 
