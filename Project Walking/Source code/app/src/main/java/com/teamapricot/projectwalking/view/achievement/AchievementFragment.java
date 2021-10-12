@@ -17,6 +17,7 @@ import com.teamapricot.projectwalking.controller.AchievementRecyclerViewAdapter;
 import com.teamapricot.projectwalking.model.Board;
 import com.teamapricot.projectwalking.model.database.Achievement;
 import com.teamapricot.projectwalking.model.database.Database;
+import com.teamapricot.projectwalking.model.database.Route;
 import com.teamapricot.projectwalking.model.database.dao.AchievementDao;
 import com.teamapricot.projectwalking.model.database.dao.PhotoDao;
 import com.teamapricot.projectwalking.model.database.dao.RouteDao;
@@ -86,12 +87,13 @@ public class AchievementFragment extends Fragment {
                 PhotoDao photoDao = database.photoDao();
                 RouteDao routeDao = database.routeDao();
                 AchievementDao achievementDao = database.achievementDao();
+                routeDao.insertAll(new Route("1", 1, 1, 2, 2, 2));
                 achievementDao.insertAchievements(
-                        new Achievement("1", "Achievement 1", "Description for achievement 1",false, 1, 1, 100, 1),
-                        new Achievement("2", "Achievement 2", "Description for achievement 2",true, 1, 1, 100, 1),
-                        new Achievement("3", "Achievement 3", "Description for achievement 3",true, 1, 1, 100, 1),
-                        new Achievement("4", "Achievement 4", "Description for achievement 4",true, 1, 1, 100, 1),
-                        new Achievement("5", "Achievement 5", "Description for achievement 5",false, 1, 1, 100, 1)
+                        new Achievement("1", "Achievement 1", "Description for achievement 1", false, 1, 1, 100, 1),
+                        new Achievement("2", "Achievement 2", "Description for achievement 2", false, 1, 1, 100, 1),
+                        new Achievement("3", "Achievement 3", "Description for achievement 3", false, 1, 1, 100, 1),
+                        new Achievement("4", "Achievement 4", "Description for achievement 4", false, 1, 1, 100, 1),
+                        new Achievement("5", "Achievement 5", "Description for achievement 5", false, 1, 1, 100, 1)
                 );
                 board = new Board(photoDao, routeDao, achievementDao);
                 board.addObserver(createBoardObserver());
