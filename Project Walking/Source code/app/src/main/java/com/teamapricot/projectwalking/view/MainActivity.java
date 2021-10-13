@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -42,6 +43,8 @@ public class MainActivity extends AppCompatActivity {
     private IMapController mapController;
     private MyLocationNewOverlay locationOverlay;
     private NotificationController notificationController;
+
+    Button button;
 
     boolean mapCentered;
 
@@ -115,8 +118,11 @@ public class MainActivity extends AppCompatActivity {
 
         map.getOverlays().add(locationOverlay);
 
+        button = findViewById(R.id.view_dest);
         navigationController.registerObserver(createNavigationObserver());
         navigationController.start();
+        navigationController.registerOnClickListener(button);
+
     }
 
     private void initImageOverlay() {
@@ -213,13 +219,13 @@ public class MainActivity extends AppCompatActivity {
 
                     if (destination != null) {
                         addMarker(getApplicationContext(), map, destination);
-
                         Polyline routeOverlay = model.getRouteOverlay();
                         map.getOverlays().add(routeOverlay);
                         map.invalidate();
-
                         mapCentered = true;
+                        button.setVisibility(View.INVISIBLE);
                     }
+
                 }
             });
         };
