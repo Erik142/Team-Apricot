@@ -225,7 +225,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 routeOverlay = model.getRouteOverlay();
-                map.getOverlays().add(routeOverlay);
+                map.getOverlays().add(0, routeOverlay);
                 map.invalidate();
                 mapCentered = true;
             });
