@@ -59,9 +59,6 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
-        Toolbar myToolbar = findViewById(R.id.my_toolbar);
-        setSupportActionBar(myToolbar);
-
         init();
 
         // TODO: Create controller and model classes that will use the database after the database has been successfully instantiated
@@ -109,12 +106,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void init() {
-        toolbarController = new ToolbarController();
+        initToolbar();
         initNavigation();
         initCamera();
         notificationController = new NotificationController(getApplicationContext());
         notificationController.SendNotification(false);
         initImageOverlay();
+    }
+
+    private void initToolbar() {
+        Toolbar myToolbar = findViewById(R.id.main_toolbar);
+        setSupportActionBar(myToolbar);
+        toolbarController = new ToolbarController();
     }
 
     private void initCamera() {
