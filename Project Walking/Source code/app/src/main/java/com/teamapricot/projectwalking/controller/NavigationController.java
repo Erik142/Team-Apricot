@@ -8,6 +8,8 @@ import com.teamapricot.projectwalking.R;
 import com.teamapricot.projectwalking.handlers.LocationHandler;
 import com.teamapricot.projectwalking.model.NavigationModel;
 import com.teamapricot.projectwalking.observe.Observer;
+import com.teamapricot.projectwalking.view.dialogs.ChooseDistanceDialog;
+import com.teamapricot.projectwalking.view.dialogs.ReplaceDestinationDialog;
 
 import org.osmdroid.bonuspack.routing.OSRMRoadManager;
 import org.osmdroid.bonuspack.routing.RoadManager;
@@ -21,7 +23,7 @@ import org.osmdroid.util.GeoPoint;
  */
 public class NavigationController {
     private final int LOCATION_UPDATE_INTERVAL_MS = 2000;
-    private final double INITIAL_ZOOM_LEVEL = 17.5;
+    private final double INITIAL_ZOOM_LEVEL = 16;
 
     private AppCompatActivity activity;
     private LocationHandler locationHandler;
@@ -38,6 +40,7 @@ public class NavigationController {
         this.navigationModel = new NavigationModel();
         this.activity = activity;
         roadManager = new OSRMRoadManager(activity, "Fun Walking");
+        ((OSRMRoadManager)roadManager).setMean(OSRMRoadManager.MEAN_BY_FOOT);
     }
 
     /**
@@ -53,7 +56,6 @@ public class NavigationController {
                 navigationModel.setUserLocation(point);
                 isOnetimeExecutionDone = true;
             }
-
         });
 
         this.navigationModel.setZoomLevel(INITIAL_ZOOM_LEVEL);
@@ -71,13 +73,24 @@ public class NavigationController {
      * registers a button for triggering new destination
      * @param button triggers new destination
      */
-    public void registerOnClickListener(View button) {
-        if (!button.hasOnClickListeners()) {
-            button.setOnClickListener(view -> {
-                if (view.getId() == R.id.view_dest) {
-                    this.navigationModel.createDestination(roadManager);
-                }
-            });
-        }
+    public void registerNewDestinationButtonListeners(View button) {
+        button.setOnClickListener(view -> {
+            if(navigationModel.getDestination() == null) {
+                navigationModel.createDestination(roadManager);
+            } else {
+                ReplaceDestinationDialog dialog =
+                        new ReplaceDestinationDialog(this.activity, () -> { navigationModel.createDestination(roadManager); });
+                dialog.show(activity.getSupportFragmentManager(), "NavigationController");
+            }
+        });
+
+        button.setOnLongClickListener(view -> {
+            ChooseDistanceDialog dialog =
+                    new ChooseDistanceDialog(
+                            this.activity, navigationModel.getDistanceChoice(),
+                            (choice) -> navigationModel.setDistanceChoice(choice));
+            dialog.show(activity.getSupportFragmentManager(), "NavigationController");
+            return true;
+        });
     }
 }

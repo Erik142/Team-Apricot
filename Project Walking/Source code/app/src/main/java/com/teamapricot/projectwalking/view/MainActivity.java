@@ -44,9 +44,13 @@ public class MainActivity extends AppCompatActivity {
     private MyLocationNewOverlay locationOverlay;
     private NotificationController notificationController;
 
-    Button button;
+    private Marker destinationMarker = null;
+    private GeoPoint oldDestination = null;
+    private Polyline routeOverlay = null;
 
-    boolean mapCentered;
+    private Button button;
+
+    private boolean mapCentered;
 
     private MapView map = null;
 
@@ -118,11 +122,10 @@ public class MainActivity extends AppCompatActivity {
 
         map.getOverlays().add(locationOverlay);
 
-        button = findViewById(R.id.view_dest);
+        button = findViewById(R.id.new_destination_button);
         navigationController.registerObserver(createNavigationObserver());
         navigationController.start();
-        navigationController.registerOnClickListener(button);
-
+        navigationController.registerNewDestinationButtonListeners(button);
     }
 
     private void initImageOverlay() {
@@ -214,19 +217,28 @@ public class MainActivity extends AppCompatActivity {
 
                 if (!mapCentered && location != null) {
                     mapController.setCenter(location);
-
-                    GeoPoint destination = model.getDestination();
-
-                    if (destination != null) {
-                        addMarker(getApplicationContext(), map, destination);
-                        Polyline routeOverlay = model.getRouteOverlay();
-                        map.getOverlays().add(routeOverlay);
-                        map.invalidate();
-                        mapCentered = true;
-                        button.setVisibility(View.INVISIBLE);
-                    }
-
                 }
+
+                GeoPoint destination = model.getDestination();
+
+                if (destination == null || destination == oldDestination) {
+                    return;
+                }
+
+                if(destinationMarker != null) {
+                    destinationMarker.setPosition(destination);
+                } else {
+                    destinationMarker = addMarker(map, destination);
+                }
+
+                if(routeOverlay != null) {
+                    map.getOverlays().remove(routeOverlay);
+                }
+
+                routeOverlay = model.getRouteOverlay();
+                map.getOverlays().add(0, routeOverlay);
+                map.invalidate();
+                mapCentered = true;
             });
         };
     }
@@ -234,7 +246,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * description: sets marker at given location on map
      */
-    public static Marker addMarker(Context context, MapView map, GeoPoint position) {
+    public static Marker addMarker(MapView map, GeoPoint position) {
         Marker marker = new Marker(map);
         marker.setPosition(position);
         marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
