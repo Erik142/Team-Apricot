@@ -1,0 +1,14 @@
+name: Auto Comment on PRs
+on: [issues, pull_request]
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: wow-actions/auto-comment@v1
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          pullRequestOpenedReactions: "hooray, +1, eyes"
+          pullRequestOpenedComment: |
+            👋 @{{ author }}
+            Thank you for opening your pull request.
+            Reviewers: You have been notified about a pending review in Discord. Either use the "/accept" command in Discord to remove the remaining reviewers from the PR, or comment on this PR stating that you will review it.
