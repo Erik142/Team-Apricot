@@ -19,7 +19,6 @@ import com.teamapricot.projectwalking.controller.ImageOverlayController;
 import com.teamapricot.projectwalking.controller.NavigationController;
 import com.teamapricot.projectwalking.controller.NotificationController;
 import com.teamapricot.projectwalking.controller.ToolbarController;
-import com.teamapricot.projectwalking.handlers.PermissionHandler;
 import com.teamapricot.projectwalking.model.CameraModel;
 import com.teamapricot.projectwalking.model.NavigationModel;
 import com.teamapricot.projectwalking.model.database.Database;
@@ -62,21 +61,12 @@ public class MainActivity extends AppCompatActivity {
 
         init();
 
-        PermissionHandler permissionHandler = new PermissionHandler(this);
-
-        permissionHandler.requestPermissionAsync(Manifest.permission.WRITE_EXTERNAL_STORAGE).thenAccept(isAccepted -> {
-            if (!isAccepted) {
-                runOnUiThread(() -> Log.d("MainActivity", "Read permission has not been granted"));
-                return;
-            }
-
-            try {
-                Database database = Database.getDatabase(this).get();
-            } catch (ExecutionException | InterruptedException e) {
-                e.printStackTrace();
-                return;
-            }
-        });
+        try {
+            Database database = Database.getDatabase(this).get();
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+            return;
+        }
     }
 
     @Override
