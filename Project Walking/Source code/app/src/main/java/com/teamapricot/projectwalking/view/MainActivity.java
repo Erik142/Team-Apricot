@@ -61,7 +61,6 @@ public class MainActivity extends AppCompatActivity {
 
         init();
 
-        // TODO: Create controller and model classes that will use the database after the database has been successfully instantiated
         PermissionHandler permissionHandler = new PermissionHandler(this);
 
         permissionHandler.requestPermissionAsync(Manifest.permission.WRITE_EXTERNAL_STORAGE).thenAccept(isAccepted -> {

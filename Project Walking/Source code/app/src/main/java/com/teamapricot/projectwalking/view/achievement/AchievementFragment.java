@@ -17,7 +17,6 @@ import com.teamapricot.projectwalking.controller.AchievementRecyclerViewAdapter;
 import com.teamapricot.projectwalking.model.Board;
 import com.teamapricot.projectwalking.model.database.Achievement;
 import com.teamapricot.projectwalking.model.database.Database;
-import com.teamapricot.projectwalking.model.database.Route;
 import com.teamapricot.projectwalking.model.database.dao.AchievementDao;
 import com.teamapricot.projectwalking.model.database.dao.PhotoDao;
 import com.teamapricot.projectwalking.model.database.dao.RouteDao;
