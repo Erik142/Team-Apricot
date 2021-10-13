@@ -3,6 +3,7 @@ package com.teamapricot.projectwalking.controller;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
@@ -12,13 +13,19 @@ import com.teamapricot.projectwalking.model.AchievementListItemBinding;
 import java.util.List;
 
 /**
+ * @author Erik Wahlberger
+ * @version 2021-10-12
+ *
  * {@link RecyclerView.Adapter} that can display an {@link Achievement}.
- * TODO: Replace the implementation with code for your data type.
  */
 public class AchievementRecyclerViewAdapter extends RecyclerView.Adapter<AchievementRecyclerViewAdapter.ViewHolder> {
 
     private final List<Achievement> mValues;
 
+    /**
+     * Creates a new AchievementRecyclerViewAdapter for the specified items
+     * @param items The items that will be shown in the {@link RecyclerView}
+     */
     public AchievementRecyclerViewAdapter(List<Achievement> items) {
         mValues = items;
     }
@@ -42,6 +49,9 @@ public class AchievementRecyclerViewAdapter extends RecyclerView.Adapter<Achieve
         return mValues.size();
     }
 
+    /**
+     * Helper class used to hold a reference to all {@link View}'s in the list item, as well as the data object that will be displayed in the corresponding {@link View}'s.
+     */
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final TextView mContentView;
         public final TextView mPointsView;

@@ -15,9 +15,7 @@ import java.util.concurrent.Executors;
 /**
  * @author Erik Wahlberger, Joakim Tubring
  * @version 2021-10-12
- */
-
-/**
+ *
  * Class for creating the database.
  * When adding new tables add dao's and class names here.
  */
@@ -32,6 +30,11 @@ public abstract class Database extends RoomDatabase {
     public abstract RouteDao routeDao();
     public abstract AchievementDao achievementDao();
 
+    /**
+     * Retrieves the current {@link Database} instance
+     * @param context The {@link Context} from which to create the {@link Database} instance if it does not exists
+     * @return A {@link CompletableFuture} object containing the {@link Database} instance.
+     */
     public static CompletableFuture<Database> getDatabase(Context context) {
         return CompletableFuture.supplyAsync(() -> {
             if (database == null) {

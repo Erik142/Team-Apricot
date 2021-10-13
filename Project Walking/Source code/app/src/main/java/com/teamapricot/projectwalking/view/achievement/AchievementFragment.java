@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * @author Erik Wahlberger
+ * @version 2021-10-13
  * A fragment representing a list of Items.
  */
 public class AchievementFragment extends Fragment {
