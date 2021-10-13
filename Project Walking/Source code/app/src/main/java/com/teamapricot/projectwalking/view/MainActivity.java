@@ -56,21 +56,12 @@ public class MainActivity extends AppCompatActivity {
         init();
 
         // TODO: Create controller and model classes that will use the database after the database has been successfully instantiated
-        PermissionHandler permissionHandler = new PermissionHandler(this);
-
-        permissionHandler.requestPermissionAsync(Manifest.permission.WRITE_EXTERNAL_STORAGE).thenAccept(isAccepted -> {
-            if (!isAccepted) {
-                runOnUiThread(() -> Log.d("MainActivity", "Read permission has not been granted"));
-                return;
-            }
-
-            try {
-                Database database = Database.getDatabase(this).get();
-            } catch (ExecutionException | InterruptedException e) {
-                e.printStackTrace();
-                return;
-            }
-        });
+        try {
+            Database database = Database.getDatabase(this).get();
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+            return;
+        }
     }
 
     @Override
