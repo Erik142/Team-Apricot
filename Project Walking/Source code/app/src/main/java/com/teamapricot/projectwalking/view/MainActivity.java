@@ -1,5 +1,6 @@
 package com.teamapricot.projectwalking.view;
 
+import android.Manifest;
 import android.content.Context;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -14,8 +15,10 @@ import com.teamapricot.projectwalking.controller.CameraController;
 import com.teamapricot.projectwalking.controller.ImageOverlayController;
 import com.teamapricot.projectwalking.controller.NavigationController;
 import com.teamapricot.projectwalking.controller.NotificationController;
+import com.teamapricot.projectwalking.handlers.PermissionHandler;
 import com.teamapricot.projectwalking.model.CameraModel;
 import com.teamapricot.projectwalking.model.NavigationModel;
+import com.teamapricot.projectwalking.model.database.Database;
 import com.teamapricot.projectwalking.observe.Observer;
 
 import org.osmdroid.api.IMapController;
@@ -28,9 +31,10 @@ import org.osmdroid.views.overlay.Polyline;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
+import java.util.concurrent.ExecutionException;
+
 public class MainActivity extends AppCompatActivity {
     private static final double ALLOWED_DISTANCE = 20;
-
     private NavigationController navigationController;
     private CameraController cameraController;
     private ImageOverlayController imageOverlayController;
@@ -50,6 +54,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         init();
+
+        // TODO: Create controller and model classes that will use the database after the database has been successfully instantiated
+        try {
+            Database database = Database.getDatabase(this).get();
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+            return;
+        }
     }
 
     @Override

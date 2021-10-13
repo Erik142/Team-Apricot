@@ -1,18 +1,23 @@
 package com.teamapricot.projectwalking.model;
 
-import java.util.ArrayList;
+import com.teamapricot.projectwalking.model.database.Route;
+
+import java.util.List;
 
 /**
- * @author Joakim Tubring
- * @version 2021-09-21
+ * @author Joakim Tubring, Erik Wahlberger
+ * @version 2021-10-06
  *
  * A class for representing a user.
  */
 
 public class User {
 
-    private String userId;
-    private ArrayList<Route> routes;
+    private final String userId;
+    private List<Route> routes;
+    public User(String userId) {
+        this.userId = userId;
+    }
 
 /**
 * Constructor.
@@ -21,7 +26,7 @@ public class User {
 * @param routes The users routes.
 */
 
-    public User(String userId, ArrayList<Route> routes){
+    public User(String userId, List<Route> routes){
         this.userId = userId;
         this.routes = routes;
     }
@@ -30,7 +35,7 @@ public class User {
         return this.userId;
     }
 
-    public ArrayList getRoutes(){
+    public List getRoutes(){
         return this.routes;
     }
 
@@ -42,14 +47,10 @@ public class User {
         return routes.get(routes.size() - 1);
     }
 
-/**
-* Adds a route (placeholder).
-* Will be adding to this later.
-*/
-
-    public void addRoute(){
-        routes.add(new Route(generateRouteId()));
-    }
+    // TODO: Move this method to separate class, will be done in task 9.2
+   // public void addRoute(GeoPoint start, GeoPoint end){
+    //    routes.add(new Route("" + generateRouteId(), start.getLongitude(), start.getLatitude(), end.getLongitude(), end.getLatitude()));
+    //}
 
 /**
 * Generates a route-id based on the user-id.
@@ -58,5 +59,4 @@ public class User {
     private String generateRouteId(){
         return this.userId + (routes.size() + 1);
     }
-
 }
