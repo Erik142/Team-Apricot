@@ -13,7 +13,7 @@ import java.util.List;
 @Dao
 public interface AchievementDao {
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAchievements(Achievement... Achievements);
 
     @Query("UPDATE Achievement SET status = 1 WHERE ((value <= :input) AND" +

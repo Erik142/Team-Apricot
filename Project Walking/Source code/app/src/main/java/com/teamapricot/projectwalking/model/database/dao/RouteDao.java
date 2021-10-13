@@ -23,7 +23,7 @@ public interface RouteDao {
     /**
      * Insert new routes.
      */
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAll(Route... routes);
 
     /**
