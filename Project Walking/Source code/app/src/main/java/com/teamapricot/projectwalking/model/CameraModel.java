@@ -4,6 +4,8 @@ import com.teamapricot.projectwalking.observe.ObservableBase;
 
 import java.io.File;
 
+
+
 /**
  * @author Erik Wahlberger
  * @version 2021-09-29
@@ -45,6 +47,7 @@ public class CameraModel extends ObservableBase<CameraModel> {
     public void setImageFile(File file) {
         if (file != imageFile) {
             this.imageFile = file;
+            // TODO: Add file name to database
             updateObservers(this);
         }
     }
