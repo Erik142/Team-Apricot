@@ -20,7 +20,7 @@ import java.util.concurrent.Executors;
  * When adding new tables add dao's and class names here.
  */
 
-@androidx.room.Database(entities = { Achievement.class, Photo.class, Route.class}, version = 1)
+@androidx.room.Database(entities = { Achievement.class, Photo.class, Route.class}, version = 2)
 public abstract class Database extends RoomDatabase {
     private static final String DATABASE_NAME = "fun-walking-database";
 
