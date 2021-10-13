@@ -20,7 +20,13 @@
         tools:replace="android:allowBackup">
         <activity
             android:name=".view.achievement.AchievementsActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:parentActivityName="com.teamapricot.projectwalking.view.MainActivity" >
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.teamapricot.projectwalking.view.MainActivity" />
+        </activity>
 
         <provider
             android:name="androidx.core.content.FileProvider"
