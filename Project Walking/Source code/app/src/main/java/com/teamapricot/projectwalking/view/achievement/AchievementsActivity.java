@@ -28,7 +28,7 @@ public class AchievementsActivity extends AppCompatActivity {
     private void initToolbar() {
         Toolbar myToolbar = findViewById(R.id.achievements_toolbar);
         setSupportActionBar(myToolbar);
-        getSupportActionBar().setTitle("");
+        getSupportActionBar().setTitle("Achievements");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
         toolbarController = new ToolbarController();
