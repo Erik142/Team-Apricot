@@ -32,9 +32,7 @@ import java.util.List;
  */
 public class AchievementFragment extends Fragment {
 
-    // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
-    // TODO: Customize parameters
     private int mColumnCount = 1;
     private List<Achievement> achievements;
     private RecyclerView.Adapter recyclerViewAdapter;
@@ -48,8 +46,6 @@ public class AchievementFragment extends Fragment {
         achievements = new ArrayList<>();
     }
 
-    // TODO: Customize parameter initialization
-    @SuppressWarnings("unused")
     public static AchievementFragment newInstance(int columnCount) {
         AchievementFragment fragment = new AchievementFragment();
         Bundle args = new Bundle();
