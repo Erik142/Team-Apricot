@@ -19,12 +19,13 @@ import java.util.concurrent.CompletableFuture;
  * Model class for the navigation functionality
  */
 public class NavigationModel extends ObservableBase<NavigationModel> {
-    private final int DESTINATION_RADIUS = 50;
+    private final int[] DISTANCES = new int[] {300, 750, 1500};
 
     private GeoPoint userLocation;
     private GeoPoint destination;
     private Polyline routeOverlay;
     private double zoomLevel;
+    private int distanceChoice = 0;
 
     /**
      * Get the user location
@@ -39,6 +40,14 @@ public class NavigationModel extends ObservableBase<NavigationModel> {
     public Polyline getRouteOverlay() { return this.routeOverlay; }
 
     /**
+     * Get the distance choice
+     * @return The distance choice (0 to 2 where 0 means short and 2 means long)
+     */
+    public int getDistanceChoice() {
+        return distanceChoice;
+    }
+
+    /**
      * Get the zoom level for the map
      * @return The zoom level as a {@code double} value
      */
@@ -47,30 +56,33 @@ public class NavigationModel extends ObservableBase<NavigationModel> {
     }
 
     public void createDestination(RoadManager roadManager) {
+        createDestination(roadManager, DISTANCES[distanceChoice]);
+    }
+
+    public void createDestination(RoadManager roadManager, double radius ) {
+        if (userLocation == null) {
+            return;
+        }
+
         //deg is angle and len is distance
-        double len = Math.sqrt(Math.random()) * DESTINATION_RADIUS;
+        double len = 0.8 * radius + 0.2 * radius * Math.random();
         double deg = Math.random() * 360;
 
-        GeoPoint userLocation = getUserLocation();
+        GeoPoint newDestination = userLocation.destinationPoint(len, deg);
 
-        if (userLocation != null) {
-            GeoPoint location = userLocation.destinationPoint(len, deg);
+        this.destination = newDestination;
 
-            this.destination = location;
+        CompletableFuture.runAsync(() -> {
+            ArrayList<GeoPoint> points = new ArrayList<>();
+            points.add(this.getUserLocation());
+            points.add(this.getDestination());
 
-            CompletableFuture.runAsync(() -> {
-                ArrayList<GeoPoint> points = new ArrayList<>();
-                points.add(this.getUserLocation());
-                points.add(this.getDestination());
+            Road road = roadManager.getRoad(points);
 
-                Road road = roadManager.getRoad(points);
-
-                this.routeOverlay = RoadManager.buildRoadOverlay(road);
-
-            }).thenRun(() -> {
-                updateObservers(this);
-            });
-        }
+            this.routeOverlay = RoadManager.buildRoadOverlay(road);
+        }).thenRun(() -> {
+            updateObservers(this);
+        });
     }
 
     /**
@@ -89,5 +101,9 @@ public class NavigationModel extends ObservableBase<NavigationModel> {
     public void setZoomLevel(double zoomLevel) {
         this.zoomLevel = zoomLevel;
         updateObservers(this);
+    }
+
+    public void setDistanceChoice(int distanceChoice) {
+        this.distanceChoice = distanceChoice;
     }
 }

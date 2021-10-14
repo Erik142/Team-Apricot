@@ -1,10 +1,15 @@
 package com.teamapricot.projectwalking.controller;
 
+import android.view.View;
+
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.teamapricot.projectwalking.R;
 import com.teamapricot.projectwalking.handlers.LocationHandler;
 import com.teamapricot.projectwalking.model.NavigationModel;
 import com.teamapricot.projectwalking.observe.Observer;
+import com.teamapricot.projectwalking.view.dialogs.ChooseDistanceDialog;
+import com.teamapricot.projectwalking.view.dialogs.ReplaceDestinationDialog;
 
 import org.osmdroid.bonuspack.routing.OSRMRoadManager;
 import org.osmdroid.bonuspack.routing.RoadManager;
@@ -12,17 +17,18 @@ import org.osmdroid.util.GeoPoint;
 
 /**
  * @author Erik Wahlberger
- * @version 2021-09-28
+ * @version 2021-09-28ä
  *
  * Controller class for navigation functionality
  */
 public class NavigationController {
     private final int LOCATION_UPDATE_INTERVAL_MS = 2000;
-    private final double INITIAL_ZOOM_LEVEL = 17.5;
+    private final double INITIAL_ZOOM_LEVEL = 16;
 
     private AppCompatActivity activity;
     private LocationHandler locationHandler;
     private NavigationModel navigationModel;
+    private RoadManager roadManager;
 
     private boolean isOnetimeExecutionDone = false;
 
@@ -33,6 +39,8 @@ public class NavigationController {
     public NavigationController(AppCompatActivity activity) {
         this.navigationModel = new NavigationModel();
         this.activity = activity;
+        roadManager = new OSRMRoadManager(activity, "Fun Walking");
+        ((OSRMRoadManager)roadManager).setMean(OSRMRoadManager.MEAN_BY_FOOT);
     }
 
     /**
@@ -46,13 +54,8 @@ public class NavigationController {
 
             if(!isOnetimeExecutionDone) {
                 navigationModel.setUserLocation(point);
-
-                RoadManager roadManager = new OSRMRoadManager(activity, "Fun Walking");
-                navigationModel.createDestination(roadManager);
-
                 isOnetimeExecutionDone = true;
             }
-
         });
 
         this.navigationModel.setZoomLevel(INITIAL_ZOOM_LEVEL);
@@ -64,5 +67,30 @@ public class NavigationController {
      */
     public void registerObserver(Observer<NavigationModel> observer) {
         this.navigationModel.addObserver(observer);
+    }
+
+    /**
+     * registers a button for triggering new destination
+     * @param button triggers new destination
+     */
+    public void registerNewDestinationButtonListeners(View button) {
+        button.setOnClickListener(view -> {
+            if(navigationModel.getDestination() == null) {
+                navigationModel.createDestination(roadManager);
+            } else {
+                ReplaceDestinationDialog dialog =
+                        new ReplaceDestinationDialog(this.activity, () -> { navigationModel.createDestination(roadManager); });
+                dialog.show(activity.getSupportFragmentManager(), "NavigationController");
+            }
+        });
+
+        button.setOnLongClickListener(view -> {
+            ChooseDistanceDialog dialog =
+                    new ChooseDistanceDialog(
+                            this.activity, navigationModel.getDistanceChoice(),
+                            (choice) -> navigationModel.setDistanceChoice(choice));
+            dialog.show(activity.getSupportFragmentManager(), "NavigationController");
+            return true;
+        });
     }
 }
