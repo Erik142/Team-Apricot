@@ -4,16 +4,20 @@ import android.content.Context;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.teamapricot.projectwalking.R;
 import com.teamapricot.projectwalking.controller.CameraController;
 import com.teamapricot.projectwalking.controller.ImageOverlayController;
 import com.teamapricot.projectwalking.controller.NavigationController;
 import com.teamapricot.projectwalking.controller.NotificationController;
+import com.teamapricot.projectwalking.controller.ToolbarController;
 import com.teamapricot.projectwalking.model.CameraModel;
 import com.teamapricot.projectwalking.model.NavigationModel;
 import com.teamapricot.projectwalking.model.database.Database;
@@ -33,6 +37,7 @@ import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity {
     private static final double ALLOWED_DISTANCE = 20;
+    
     private NavigationController navigationController;
     private CameraController cameraController;
     private ImageOverlayController imageOverlayController;
@@ -40,6 +45,8 @@ public class MainActivity extends AppCompatActivity {
     private IMapController mapController;
     private MyLocationNewOverlay locationOverlay;
     private NotificationController notificationController;
+
+    private ToolbarController toolbarController;
 
     private Marker destinationMarker = null;
     private GeoPoint oldDestination = null;
@@ -57,7 +64,6 @@ public class MainActivity extends AppCompatActivity {
 
         init();
 
-        // TODO: Create controller and model classes that will use the database after the database has been successfully instantiated
         try {
             Database database = Database.getDatabase(this).get();
         } catch (ExecutionException | InterruptedException e) {
@@ -80,13 +86,32 @@ public class MainActivity extends AppCompatActivity {
         map.onPause();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.toolbar_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return toolbarController.onToolbarMenuItemClick(item, this);
+    }
+
     private void init() {
+        initToolbar();
         initNavigation();
         initCamera();
         notificationController = new NotificationController(getApplicationContext());
         notificationController.SendNotification(false);
         initImageOverlay();
         initCameraButtonVisibility();
+    }
+
+    private void initToolbar() {
+        Toolbar myToolbar = findViewById(R.id.main_toolbar);
+        setSupportActionBar(myToolbar);
+        toolbarController = new ToolbarController();
     }
 
     private void initCamera() {
