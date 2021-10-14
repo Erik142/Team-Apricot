@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
     private IMapController mapController;
     private MyLocationNewOverlay locationOverlay;
     private NotificationController notificationController;
+    private NavigationModel navigationModel;
 
     private ToolbarController toolbarController;
 
@@ -55,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
     MenuItem checkboxItem;
 
     private boolean mapCentered;
+    private boolean previousFollowLocation;
 
     private MapView map = null;
 
@@ -102,6 +104,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void init() {
+        initModels();
         initToolbar();
         initNavigation();
         initCamera();
@@ -111,10 +114,14 @@ public class MainActivity extends AppCompatActivity {
         initCameraButtonVisibility();
     }
 
+    private void initModels() {
+        this.navigationModel = new NavigationModel();
+    }
+
     private void initToolbar() {
         Toolbar myToolbar = findViewById(R.id.main_toolbar);
         setSupportActionBar(myToolbar);
-        toolbarController = new ToolbarController();
+        toolbarController = new ToolbarController(this.navigationModel);
     }
 
     private void initCamera() {
@@ -132,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
         Context ctx = getApplicationContext();
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
 
-        navigationController = new NavigationController(this);
+        navigationController = new NavigationController(navigationModel, this);
 
         map = findViewById(R.id.map);
         map.setTileSource(TileSourceFactory.MAPNIK);
@@ -249,6 +256,7 @@ public class MainActivity extends AppCompatActivity {
                 GeoPoint destination = model.getDestination();
 
                 if (!mapCentered) {
+                    previousFollowLocation = model.getFollowLocation();
                     mapController.setZoom(model.getZoomLevel());
                     if (location != null) {
                         mapController.setCenter(location);
@@ -266,6 +274,19 @@ public class MainActivity extends AppCompatActivity {
                     }
                     map.invalidate();
                 }
+
+                if (model.getFollowLocation() != previousFollowLocation) {
+                    Log.d("MainActivity", "New follow location state: " + model.getFollowLocation());
+                    if (model.getFollowLocation()) {
+                        locationOverlay.enableFollowLocation();
+                    }
+                    else {
+                        locationOverlay.disableFollowLocation();
+                    }
+                    map.invalidate();
+                    previousFollowLocation = model.getFollowLocation();
+                }
+
                 if (destination == oldDestination) {
                     return;
                 }

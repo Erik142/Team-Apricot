@@ -17,7 +17,7 @@ import org.osmdroid.util.GeoPoint;
 
 /**
  * @author Erik Wahlberger
- * @version 2021-09-28ä
+ * @version 2021-10-14
  *
  * Controller class for navigation functionality
  */
@@ -34,8 +34,8 @@ public class NavigationController {
      * Creates a new instance of the {@code NavigationController class} for the specified {@code AppCompatActivity}.
      * @param activity The {@code AppCompatActivity} that will be used for activity results
      */
-    public NavigationController(AppCompatActivity activity) {
-        this.navigationModel = new NavigationModel();
+    public NavigationController(NavigationModel navigationModel, AppCompatActivity activity) {
+        this.navigationModel = navigationModel;
         this.activity = activity;
         roadManager = new OSRMRoadManager(activity, "Fun Walking");
         ((OSRMRoadManager)roadManager).setMean(OSRMRoadManager.MEAN_BY_FOOT);

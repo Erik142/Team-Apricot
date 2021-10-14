@@ -16,7 +16,7 @@ import java.util.concurrent.CompletableFuture;
 
 /**
  * @author Erik Wahlberger
- * @version 2021-09-28
+ * @version 2021-10-14
  *
  * Model class for the navigation functionality
  */
@@ -29,6 +29,7 @@ public class NavigationModel extends ObservableBase<NavigationModel> {
     private BoundingBox boundingBox;
     private double zoomLevel;
     private int distanceChoice = 0;
+    private boolean followLocation;
 
     /**
      * Get the user location
@@ -43,6 +44,8 @@ public class NavigationModel extends ObservableBase<NavigationModel> {
     public Polyline getRouteOverlay() { return this.routeOverlay; }
 
     public BoundingBox getBoundingBox() { return this.boundingBox; }
+
+    public boolean getFollowLocation() { return this.followLocation; }
 
     /**
      * Get the distance choice
@@ -117,6 +120,11 @@ public class NavigationModel extends ObservableBase<NavigationModel> {
      */
     public void setUserLocation(GeoPoint location) {
         this.userLocation = location;
+        updateObservers(this);
+    }
+
+    public void setFollowLocation(boolean followLocation) {
+        this.followLocation = followLocation;
         updateObservers(this);
     }
 
