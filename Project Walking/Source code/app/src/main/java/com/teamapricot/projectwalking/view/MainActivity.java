@@ -52,6 +52,8 @@ public class MainActivity extends AppCompatActivity {
     private GeoPoint oldDestination = null;
     private Polyline routeOverlay = null;
 
+    MenuItem checkboxItem;
+
     private boolean mapCentered;
 
     private MapView map = null;
@@ -90,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.toolbar_menu, menu);
+        checkboxItem = menu.findItem(R.id.action_follow_location);
         return true;
     }
 
@@ -139,6 +142,7 @@ public class MainActivity extends AppCompatActivity {
 
         locationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(ctx), map);
         locationOverlay.enableMyLocation();
+        locationOverlay.setEnableAutoStop(false);
 
         map.getOverlays().add(locationOverlay);
 
@@ -171,11 +175,13 @@ public class MainActivity extends AppCompatActivity {
                 GeoPoint location = model.getUserLocation();
                 GeoPoint destination = model.getDestination();
                 if (destination == null) {
+                    checkboxItem.setEnabled(false);
                     setButtonVisibility(R.id.open_camera_fab, View.GONE);
                     setButtonVisibility(R.id.add_destination_fab, View.VISIBLE);
                     setButtonVisibility(R.id.remove_destination_fab, View.GONE);
                     return;
                 }
+                checkboxItem.setEnabled(true);
                 double distance = location.distanceToAsDouble(destination);
                 Log.d("observer", "distance = " + distance);
                 if (distance > ALLOWED_DISTANCE) {
@@ -252,10 +258,12 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
 
-                if(destination !=null) {
+                if(destination != null && destination != oldDestination) {
                     //center on user movement
-                    locationOverlay.setEnableAutoStop(false);
-                    locationOverlay.enableFollowLocation();
+                    if (!model.getFollowLocation() && model.getBoundingBox() != null) {
+                        locationOverlay.disableFollowLocation();
+                        map.zoomToBoundingBox(model.getBoundingBox(), true, 150);
+                    }
                     map.invalidate();
                 }
                 if (destination == oldDestination) {
