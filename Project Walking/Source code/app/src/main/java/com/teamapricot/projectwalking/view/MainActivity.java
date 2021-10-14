@@ -121,9 +121,11 @@ public class MainActivity extends AppCompatActivity {
         map.getOverlays().add(locationOverlay);
 
         View addDestinationButton = findViewById(R.id.add_destination_fab);
+        View removeDestinationButton = findViewById(R.id.remove_destination_fab);
         navigationController.registerObserver(createNavigationObserver());
         navigationController.start();
-        navigationController.registerNewDestinationButtonListeners(addDestinationButton);
+        navigationController.registerOnClickListener(addDestinationButton);
+        navigationController.registerOnClickListener(removeDestinationButton);
     }
 
     private void initImageOverlay() {

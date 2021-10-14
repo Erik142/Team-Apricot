@@ -70,17 +70,28 @@ public class NavigationController {
     }
 
     /**
-     * registers a button for triggering new destination
-     * @param button triggers new destination
+     * registers a button for triggering new destination, and removing destination
+     * @param button triggers new destination, or remove destination based on the button id
      */
-    public void registerNewDestinationButtonListeners(View button) {
+    public void registerOnClickListener(View button) {
+        switch (button.getId()) {
+            case R.id.add_destination_fab:
+                addDestination(button);
+                break;
+            case R.id.remove_destination_fab:
+                removeDestination(button);
+                break;
+        }
+    }
+
+    /**
+     * Register onClickListener for adding a destination to the map
+     * @param button The button that will be used to add a destination to the map
+     */
+    private void addDestination(View button) {
         button.setOnClickListener(view -> {
             if(navigationModel.getDestination() == null) {
                 navigationModel.createDestination(roadManager);
-            } else {
-                ReplaceDestinationDialog dialog =
-                        new ReplaceDestinationDialog(this.activity, () -> { navigationModel.createDestination(roadManager); });
-                dialog.show(activity.getSupportFragmentManager(), "NavigationController");
             }
         });
 
@@ -91,6 +102,20 @@ public class NavigationController {
                             (choice) -> navigationModel.setDistanceChoice(choice));
             dialog.show(activity.getSupportFragmentManager(), "NavigationController");
             return true;
+        });
+    }
+
+    /**
+     * Register onClickListener for removing a destination from the map
+     * @param button The button that will be used to remove a destination from the map
+     */
+    private void removeDestination(View button) {
+        button.setOnClickListener(view -> {
+            if(navigationModel.getDestination() != null) {
+                ReplaceDestinationDialog dialog =
+                        new ReplaceDestinationDialog(this.activity, () -> { navigationModel.createDestination(roadManager); });
+                dialog.show(activity.getSupportFragmentManager(), "NavigationController");
+            }
         });
     }
 }
