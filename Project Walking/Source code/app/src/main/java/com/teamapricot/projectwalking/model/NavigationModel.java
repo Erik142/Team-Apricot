@@ -86,6 +86,15 @@ public class NavigationModel extends ObservableBase<NavigationModel> {
     }
 
     /**
+     * Sets the destination and routeOverlay to null, then updates all observers
+     */
+    public void removeDestination() {
+        this.destination = null;
+        this.routeOverlay = null;
+        updateObservers(this);
+    }
+
+    /**
      * Sets the user location and updates all observers
      * @param location the value for the user location
      */

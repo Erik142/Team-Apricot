@@ -1,6 +1,5 @@
 package com.teamapricot.projectwalking.view;
 
-import android.Manifest;
 import android.content.Context;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -8,7 +7,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -53,8 +51,6 @@ public class MainActivity extends AppCompatActivity {
     private Marker destinationMarker = null;
     private GeoPoint oldDestination = null;
     private Polyline routeOverlay = null;
-
-    private Button button;
 
     private boolean mapCentered;
 
@@ -122,7 +118,6 @@ public class MainActivity extends AppCompatActivity {
         cameraController = new CameraController(this);
 
         View openCameraButton = findViewById(R.id.open_camera_fab);
-        setCameraButtonVisibility(View.INVISIBLE);
 
         cameraController.registerOnClickListener(openCameraButton);
         cameraController.registerObserver(createCameraObserver());
@@ -146,10 +141,12 @@ public class MainActivity extends AppCompatActivity {
 
         map.getOverlays().add(locationOverlay);
 
-        button = findViewById(R.id.new_destination_button);
+        View addDestinationButton = findViewById(R.id.add_destination_fab);
+        View removeDestinationButton = findViewById(R.id.remove_destination_fab);
         navigationController.registerObserver(createNavigationObserver());
         navigationController.start();
-        navigationController.registerNewDestinationButtonListeners(button);
+        navigationController.registerOnClickListener(addDestinationButton);
+        navigationController.registerOnClickListener(removeDestinationButton);
     }
 
     private void initImageOverlay() {
@@ -173,30 +170,36 @@ public class MainActivity extends AppCompatActivity {
                 GeoPoint location = model.getUserLocation();
                 GeoPoint destination = model.getDestination();
                 if (destination == null) {
-                    setCameraButtonVisibility(View.INVISIBLE);
+                    setButtonVisibility(R.id.open_camera_fab, View.GONE);
+                    setButtonVisibility(R.id.add_destination_fab, View.VISIBLE);
+                    setButtonVisibility(R.id.remove_destination_fab, View.GONE);
                     return;
                 }
                 double distance = location.distanceToAsDouble(destination);
                 Log.d("observer", "distance = " + distance);
                 if (distance > ALLOWED_DISTANCE) {
-                    setCameraButtonVisibility(View.INVISIBLE);
+                    setButtonVisibility(R.id.open_camera_fab, View.GONE);
+                    setButtonVisibility(R.id.add_destination_fab, View.GONE);
+                    setButtonVisibility(R.id.remove_destination_fab, View.VISIBLE);
                     return;
                 }
-                setCameraButtonVisibility(View.VISIBLE);
+                setButtonVisibility(R.id.open_camera_fab, View.VISIBLE);
+                setButtonVisibility(R.id.add_destination_fab, View.GONE);
+                setButtonVisibility(R.id.remove_destination_fab, View.GONE);
             });
         });
     }
 
     /**
-     * Updates the camera visibility if it would change.
+     * Updates the visibility for the specified button if it would change.
      *
      * @param visibility - The wanted visibility (e.g. {@code View.VISIBLE})
      */
-    public void setCameraButtonVisibility(int visibility) {
-        View cameraButton = this.findViewById(R.id.open_camera_fab);
-        if (cameraButton.getVisibility() != visibility) {
-            cameraButton.setVisibility(visibility);
-            cameraButton.invalidate();
+    public void setButtonVisibility(int buttonId, int visibility) {
+        View button = this.findViewById(buttonId);
+        if (button.getVisibility() != visibility) {
+            button.setVisibility(visibility);
+            button.invalidate();
         }
     }
 
@@ -235,41 +238,50 @@ public class MainActivity extends AppCompatActivity {
     private Observer<NavigationModel> createNavigationObserver() {
         return model -> {
             runOnUiThread(() -> {
-                mapController.setZoom(model.getZoomLevel());
-
                 GeoPoint location = model.getUserLocation();
-
-                if (!mapCentered && location != null) {
-                    mapController.setCenter(location);
-                }
-
                 GeoPoint destination = model.getDestination();
+
+                if (!mapCentered) {
+                    mapController.setZoom(model.getZoomLevel());
+                    if (location != null) {
+                        mapController.setCenter(location);
+                        mapCentered = true;
+                        oldDestination = destination;
+                        return;
+                    }
+                }
 
                 if(destination !=null) {
                     //center on user movement
                     locationOverlay.setEnableAutoStop(false);
                     locationOverlay.enableFollowLocation();
                     map.invalidate();
-
                 }
-                if (destination == null || destination == oldDestination) {
+                if (destination == oldDestination) {
                     return;
                 }
 
-                if(destinationMarker != null) {
-                    destinationMarker.setPosition(destination);
-                } else {
+                if(destinationMarker != null && destination == null) {
+                    map.getOverlays().remove(destinationMarker);
+                    map.invalidate();
+                    destinationMarker = null;
+                } else if (destination != null) {
                     destinationMarker = addMarker(map, destination);
                 }
 
                 if(routeOverlay != null) {
                     map.getOverlays().remove(routeOverlay);
+                    map.invalidate();
                 }
 
                 routeOverlay = model.getRouteOverlay();
-                map.getOverlays().add(0, routeOverlay);
-                map.invalidate();
-                mapCentered = true;
+
+                if (routeOverlay != null) {
+                    map.getOverlays().add(0, routeOverlay);
+                    map.invalidate();
+                }
+
+                oldDestination = destination;
             });
         };
     }

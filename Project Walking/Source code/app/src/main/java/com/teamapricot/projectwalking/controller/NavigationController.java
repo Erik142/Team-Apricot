@@ -9,7 +9,7 @@ import com.teamapricot.projectwalking.handlers.LocationHandler;
 import com.teamapricot.projectwalking.model.NavigationModel;
 import com.teamapricot.projectwalking.observe.Observer;
 import com.teamapricot.projectwalking.view.dialogs.ChooseDistanceDialog;
-import com.teamapricot.projectwalking.view.dialogs.ReplaceDestinationDialog;
+import com.teamapricot.projectwalking.view.dialogs.RemoveDestinationDialog;
 
 import org.osmdroid.bonuspack.routing.OSRMRoadManager;
 import org.osmdroid.bonuspack.routing.RoadManager;
@@ -29,8 +29,6 @@ public class NavigationController {
     private LocationHandler locationHandler;
     private NavigationModel navigationModel;
     private RoadManager roadManager;
-
-    private boolean isOnetimeExecutionDone = false;
 
     /**
      * Creates a new instance of the {@code NavigationController class} for the specified {@code AppCompatActivity}.
@@ -52,10 +50,7 @@ public class NavigationController {
         locationHandler.registerUpdateListener(position -> {
             GeoPoint point = new GeoPoint(position.getLatitude(), position.getLongitude());
 
-            if(!isOnetimeExecutionDone) {
-                navigationModel.setUserLocation(point);
-                isOnetimeExecutionDone = true;
-            }
+            navigationModel.setUserLocation(point);
         });
 
         this.navigationModel.setZoomLevel(INITIAL_ZOOM_LEVEL);
@@ -70,17 +65,28 @@ public class NavigationController {
     }
 
     /**
-     * registers a button for triggering new destination
-     * @param button triggers new destination
+     * registers a button for triggering new destination, and removing destination
+     * @param button triggers new destination, or remove destination based on the button id
      */
-    public void registerNewDestinationButtonListeners(View button) {
+    public void registerOnClickListener(View button) {
+        switch (button.getId()) {
+            case R.id.add_destination_fab:
+                addDestination(button);
+                break;
+            case R.id.remove_destination_fab:
+                removeDestination(button);
+                break;
+        }
+    }
+
+    /**
+     * Register onClickListener for adding a destination to the map
+     * @param button The button that will be used to add a destination to the map
+     */
+    private void addDestination(View button) {
         button.setOnClickListener(view -> {
             if(navigationModel.getDestination() == null) {
                 navigationModel.createDestination(roadManager);
-            } else {
-                ReplaceDestinationDialog dialog =
-                        new ReplaceDestinationDialog(this.activity, () -> { navigationModel.createDestination(roadManager); });
-                dialog.show(activity.getSupportFragmentManager(), "NavigationController");
             }
         });
 
@@ -91,6 +97,20 @@ public class NavigationController {
                             (choice) -> navigationModel.setDistanceChoice(choice));
             dialog.show(activity.getSupportFragmentManager(), "NavigationController");
             return true;
+        });
+    }
+
+    /**
+     * Register onClickListener for removing a destination from the map
+     * @param button The button that will be used to remove a destination from the map
+     */
+    private void removeDestination(View button) {
+        button.setOnClickListener(view -> {
+            if(navigationModel.getDestination() != null) {
+                RemoveDestinationDialog dialog =
+                        new RemoveDestinationDialog(this.activity, () -> { navigationModel.removeDestination(); });
+                dialog.show(activity.getSupportFragmentManager(), "NavigationController");
+            }
         });
     }
 }

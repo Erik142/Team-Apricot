@@ -13,12 +13,12 @@ import com.teamapricot.projectwalking.model.NavigationModel;
 
 import org.osmdroid.bonuspack.routing.RoadManager;
 
-public class ReplaceDestinationDialog extends DialogFragment {
-    private final String TITLE = "Replace destination?";
+public class RemoveDestinationDialog extends DialogFragment {
+    private final String TITLE = "Remove destination?";
     private final String POSITIVE_BUTTON_TEXT = "OK";
     private final String NEGATIVE_BUTTON_TEXT = "Cancel";
 
-    private final String MESSAGE = "This will replace your current destination.";
+    private final String MESSAGE = "This will remove your current destination.";
 
     private AppCompatActivity activity;
     private Effect effect;
@@ -27,7 +27,7 @@ public class ReplaceDestinationDialog extends DialogFragment {
         void run();
     }
 
-    public ReplaceDestinationDialog(AppCompatActivity activity, Effect effect) {
+    public RemoveDestinationDialog(AppCompatActivity activity, Effect effect) {
         this.activity = activity;
         this.effect = effect;
     }
