@@ -276,7 +276,6 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 if (model.getFollowLocation() != previousFollowLocation) {
-                    Log.d("MainActivity", "New follow location state: " + model.getFollowLocation());
                     if (model.getFollowLocation()) {
                         locationOverlay.enableFollowLocation();
                     }
