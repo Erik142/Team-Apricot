@@ -48,8 +48,6 @@ public class MainActivity extends AppCompatActivity {
     private GeoPoint oldDestination = null;
     private Polyline routeOverlay = null;
 
-    private Button button;
-
     private boolean mapCentered;
 
     private MapView map = null;
@@ -122,10 +120,10 @@ public class MainActivity extends AppCompatActivity {
 
         map.getOverlays().add(locationOverlay);
 
-        button = findViewById(R.id.new_destination_button);
+        View addDestinationButton = findViewById(R.id.add_destination_fab);
         navigationController.registerObserver(createNavigationObserver());
         navigationController.start();
-        navigationController.registerNewDestinationButtonListeners(button);
+        navigationController.registerNewDestinationButtonListeners(addDestinationButton);
     }
 
     private void initImageOverlay() {
