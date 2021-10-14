@@ -30,8 +30,6 @@ public class NavigationController {
     private NavigationModel navigationModel;
     private RoadManager roadManager;
 
-    private boolean isOnetimeExecutionDone = false;
-
     /**
      * Creates a new instance of the {@code NavigationController class} for the specified {@code AppCompatActivity}.
      * @param activity The {@code AppCompatActivity} that will be used for activity results
@@ -52,10 +50,7 @@ public class NavigationController {
         locationHandler.registerUpdateListener(position -> {
             GeoPoint point = new GeoPoint(position.getLatitude(), position.getLongitude());
 
-            if(!isOnetimeExecutionDone) {
-                navigationModel.setUserLocation(point);
-                isOnetimeExecutionDone = true;
-            }
+            navigationModel.setUserLocation(point);
         });
 
         this.navigationModel.setZoomLevel(INITIAL_ZOOM_LEVEL);
