@@ -133,6 +133,7 @@ public class MainActivity extends AppCompatActivity {
 
         map = findViewById(R.id.map);
         map.setTileSource(TileSourceFactory.MAPNIK);
+        map.setMultiTouchControls(true);
 
         mapController = map.getController();
 
