@@ -285,6 +285,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     map.invalidate();
                     previousFollowLocation = model.getFollowLocation();
+                    checkboxItem.setChecked(model.getFollowLocation());
                 }
 
                 if (destination == oldDestination) {
