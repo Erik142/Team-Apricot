@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Fun Walking</string>
+    <string name="action_achievements">Achievements</string>
     <string name="new_destination_button_title">Dest</string>
+    <string name="achievements_title">Title</string>
+    <string name="achievements_points">Points</string>
 </resources>
