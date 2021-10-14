@@ -1,12 +1,10 @@
 package com.teamapricot.projectwalking.view;
 
-import android.Manifest;
 import android.content.Context;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,7 +14,6 @@ import com.teamapricot.projectwalking.controller.CameraController;
 import com.teamapricot.projectwalking.controller.ImageOverlayController;
 import com.teamapricot.projectwalking.controller.NavigationController;
 import com.teamapricot.projectwalking.controller.NotificationController;
-import com.teamapricot.projectwalking.handlers.PermissionHandler;
 import com.teamapricot.projectwalking.model.CameraModel;
 import com.teamapricot.projectwalking.model.NavigationModel;
 import com.teamapricot.projectwalking.model.database.Database;
@@ -229,24 +226,30 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
 
-
-                if (destination == null || destination == oldDestination) {
+                if (destination == oldDestination) {
                     return;
                 }
 
-                if(destinationMarker != null) {
-                    destinationMarker.setPosition(destination);
-                } else {
+                if(destinationMarker != null && destination == null) {
+                    map.getOverlays().remove(destinationMarker);
+                    map.invalidate();
+                    destinationMarker = null;
+                } else if (destination != null) {
                     destinationMarker = addMarker(map, destination);
                 }
 
                 if(routeOverlay != null) {
                     map.getOverlays().remove(routeOverlay);
+                    map.invalidate();
                 }
 
                 routeOverlay = model.getRouteOverlay();
-                map.getOverlays().add(0, routeOverlay);
-                map.invalidate();
+
+                if (routeOverlay != null) {
+                    map.getOverlays().add(0, routeOverlay);
+                    map.invalidate();
+                }
+
                 oldDestination = destination;
             });
         };

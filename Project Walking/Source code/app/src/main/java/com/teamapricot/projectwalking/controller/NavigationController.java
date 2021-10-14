@@ -9,7 +9,7 @@ import com.teamapricot.projectwalking.handlers.LocationHandler;
 import com.teamapricot.projectwalking.model.NavigationModel;
 import com.teamapricot.projectwalking.observe.Observer;
 import com.teamapricot.projectwalking.view.dialogs.ChooseDistanceDialog;
-import com.teamapricot.projectwalking.view.dialogs.ReplaceDestinationDialog;
+import com.teamapricot.projectwalking.view.dialogs.RemoveDestinationDialog;
 
 import org.osmdroid.bonuspack.routing.OSRMRoadManager;
 import org.osmdroid.bonuspack.routing.RoadManager;
@@ -107,8 +107,8 @@ public class NavigationController {
     private void removeDestination(View button) {
         button.setOnClickListener(view -> {
             if(navigationModel.getDestination() != null) {
-                ReplaceDestinationDialog dialog =
-                        new ReplaceDestinationDialog(this.activity, () -> { navigationModel.createDestination(roadManager); });
+                RemoveDestinationDialog dialog =
+                        new RemoveDestinationDialog(this.activity, () -> { navigationModel.removeDestination(); });
                 dialog.show(activity.getSupportFragmentManager(), "NavigationController");
             }
         });
