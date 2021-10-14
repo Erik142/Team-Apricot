@@ -221,6 +221,13 @@ public class MainActivity extends AppCompatActivity {
 
                 GeoPoint destination = model.getDestination();
 
+                if(destination !=null) {
+                    //center on user movement
+                    locationOverlay.setEnableAutoStop(false);
+                    locationOverlay.enableFollowLocation();
+                    map.invalidate();
+
+                }
                 if (destination == null || destination == oldDestination) {
                     return;
                 }
