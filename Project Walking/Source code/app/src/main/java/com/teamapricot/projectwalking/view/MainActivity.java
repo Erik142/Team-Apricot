@@ -216,15 +216,19 @@ public class MainActivity extends AppCompatActivity {
     private Observer<NavigationModel> createNavigationObserver() {
         return model -> {
             runOnUiThread(() -> {
-                mapController.setZoom(model.getZoomLevel());
-
                 GeoPoint location = model.getUserLocation();
+                GeoPoint destination = model.getDestination();
 
-                if (!mapCentered && location != null) {
-                    mapController.setCenter(location);
+                if (!mapCentered) {
+                    mapController.setZoom(model.getZoomLevel());
+                    if (location != null) {
+                        mapController.setCenter(location);
+                        mapCentered = true;
+                        oldDestination = destination;
+                        return;
+                    }
                 }
 
-                GeoPoint destination = model.getDestination();
 
                 if (destination == null || destination == oldDestination) {
                     return;
@@ -243,7 +247,7 @@ public class MainActivity extends AppCompatActivity {
                 routeOverlay = model.getRouteOverlay();
                 map.getOverlays().add(0, routeOverlay);
                 map.invalidate();
-                mapCentered = true;
+                oldDestination = destination;
             });
         };
     }
