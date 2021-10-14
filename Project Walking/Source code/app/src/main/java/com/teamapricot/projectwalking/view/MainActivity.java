@@ -96,7 +96,6 @@ public class MainActivity extends AppCompatActivity {
         cameraController = new CameraController(this);
 
         View openCameraButton = findViewById(R.id.open_camera_fab);
-        setCameraButtonVisibility(View.INVISIBLE);
 
         cameraController.registerOnClickListener(openCameraButton);
         cameraController.registerObserver(createCameraObserver());
@@ -149,30 +148,36 @@ public class MainActivity extends AppCompatActivity {
                 GeoPoint location = model.getUserLocation();
                 GeoPoint destination = model.getDestination();
                 if (destination == null) {
-                    setCameraButtonVisibility(View.INVISIBLE);
+                    setButtonVisibility(R.id.open_camera_fab, View.GONE);
+                    setButtonVisibility(R.id.add_destination_fab, View.VISIBLE);
+                    setButtonVisibility(R.id.remove_destination_fab, View.GONE);
                     return;
                 }
                 double distance = location.distanceToAsDouble(destination);
                 Log.d("observer", "distance = " + distance);
                 if (distance > ALLOWED_DISTANCE) {
-                    setCameraButtonVisibility(View.INVISIBLE);
+                    setButtonVisibility(R.id.open_camera_fab, View.GONE);
+                    setButtonVisibility(R.id.add_destination_fab, View.GONE);
+                    setButtonVisibility(R.id.remove_destination_fab, View.VISIBLE);
                     return;
                 }
-                setCameraButtonVisibility(View.VISIBLE);
+                setButtonVisibility(R.id.open_camera_fab, View.VISIBLE);
+                setButtonVisibility(R.id.add_destination_fab, View.GONE);
+                setButtonVisibility(R.id.remove_destination_fab, View.GONE);
             });
         });
     }
 
     /**
-     * Updates the camera visibility if it would change.
+     * Updates the visibility for the specified button if it would change.
      *
      * @param visibility - The wanted visibility (e.g. {@code View.VISIBLE})
      */
-    public void setCameraButtonVisibility(int visibility) {
-        View cameraButton = this.findViewById(R.id.open_camera_fab);
-        if (cameraButton.getVisibility() != visibility) {
-            cameraButton.setVisibility(visibility);
-            cameraButton.invalidate();
+    public void setButtonVisibility(int buttonId, int visibility) {
+        View button = this.findViewById(buttonId);
+        if (button.getVisibility() != visibility) {
+            button.setVisibility(visibility);
+            button.invalidate();
         }
     }
 
