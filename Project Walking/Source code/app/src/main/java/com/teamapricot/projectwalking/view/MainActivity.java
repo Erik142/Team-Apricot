@@ -1,10 +1,26 @@
 package com.teamapricot.projectwalking.view;
 
+import android.Manifest;
 import android.content.Context;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.teamapricot.projectwalking.R;
+import com.teamapricot.projectwalking.controller.CameraController;
+import com.teamapricot.projectwalking.controller.ImageOverlayController;
+import com.teamapricot.projectwalking.controller.NavigationController;
+import com.teamapricot.projectwalking.controller.NotificationController;
+import com.teamapricot.projectwalking.handlers.PermissionHandler;
+import com.teamapricot.projectwalking.model.CameraModel;
+import com.teamapricot.projectwalking.model.NavigationModel;
+import com.teamapricot.projectwalking.model.database.Database;
+import com.teamapricot.projectwalking.observe.Observer;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
@@ -16,20 +32,10 @@ import org.osmdroid.views.overlay.Polyline;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
-import android.util.Log;
-import android.view.View;
-import android.widget.Toast;
-
-import com.teamapricot.projectwalking.R;
-import com.teamapricot.projectwalking.controller.ImageOverlayController;
-import com.teamapricot.projectwalking.controller.NavigationController;
-import com.teamapricot.projectwalking.controller.CameraController;
-import com.teamapricot.projectwalking.model.CameraModel;
-import com.teamapricot.projectwalking.model.NavigationModel;
-import com.teamapricot.projectwalking.controller.NotificationController;
-import com.teamapricot.projectwalking.observe.Observer;
+import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity {
+    private static final double ALLOWED_DISTANCE = 20;
     private NavigationController navigationController;
     private CameraController cameraController;
     private ImageOverlayController imageOverlayController;
@@ -38,7 +44,13 @@ public class MainActivity extends AppCompatActivity {
     private MyLocationNewOverlay locationOverlay;
     private NotificationController notificationController;
 
-    boolean mapCentered;
+    private Marker destinationMarker = null;
+    private GeoPoint oldDestination = null;
+    private Polyline routeOverlay = null;
+
+    private Button button;
+
+    private boolean mapCentered;
 
     private MapView map = null;
 
@@ -49,6 +61,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         init();
+
+        // TODO: Create controller and model classes that will use the database after the database has been successfully instantiated
+        try {
+            Database database = Database.getDatabase(this).get();
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+            return;
+        }
     }
 
     @Override
@@ -71,12 +91,14 @@ public class MainActivity extends AppCompatActivity {
         notificationController = new NotificationController(getApplicationContext());
         notificationController.SendNotification(false);
         initImageOverlay();
+        initCameraButtonVisibility();
     }
 
     private void initCamera() {
         cameraController = new CameraController(this);
 
         View openCameraButton = findViewById(R.id.open_camera_fab);
+        setCameraButtonVisibility(View.INVISIBLE);
 
         cameraController.registerOnClickListener(openCameraButton);
         cameraController.registerObserver(createCameraObserver());
@@ -100,18 +122,58 @@ public class MainActivity extends AppCompatActivity {
 
         map.getOverlays().add(locationOverlay);
 
+        button = findViewById(R.id.new_destination_button);
         navigationController.registerObserver(createNavigationObserver());
         navigationController.start();
+        navigationController.registerNewDestinationButtonListeners(button);
     }
 
     private void initImageOverlay() {
-        if(map == null) {
+        if (map == null) {
             Log.e("initImageOverlay", "MapView not initialized");
             return;
         }
 
         imageOverlayController = new ImageOverlayController(this, new ImageOverlayView(map));
         imageOverlayController.initImageOverlays();
+    }
+
+    private void initCameraButtonVisibility() {
+        if (map == null || navigationController == null) {
+            Log.e("initCameraButtonVisibility", "Initialization failed earlier");
+            return;
+        }
+
+        navigationController.registerObserver(model -> {
+            runOnUiThread(() -> {
+                GeoPoint location = model.getUserLocation();
+                GeoPoint destination = model.getDestination();
+                if (destination == null) {
+                    setCameraButtonVisibility(View.INVISIBLE);
+                    return;
+                }
+                double distance = location.distanceToAsDouble(destination);
+                Log.d("observer", "distance = " + distance);
+                if (distance > ALLOWED_DISTANCE) {
+                    setCameraButtonVisibility(View.INVISIBLE);
+                    return;
+                }
+                setCameraButtonVisibility(View.VISIBLE);
+            });
+        });
+    }
+
+    /**
+     * Updates the camera visibility if it would change.
+     *
+     * @param visibility - The wanted visibility (e.g. {@code View.VISIBLE})
+     */
+    public void setCameraButtonVisibility(int visibility) {
+        View cameraButton = this.findViewById(R.id.open_camera_fab);
+        if (cameraButton.getVisibility() != visibility) {
+            cameraButton.setVisibility(visibility);
+            cameraButton.invalidate();
+        }
     }
 
     /**
@@ -155,25 +217,28 @@ public class MainActivity extends AppCompatActivity {
 
                 if (!mapCentered && location != null) {
                     mapController.setCenter(location);
-
-                    GeoPoint destination = model.getDestination();
-
-                    if (destination != null) {
-                        addMarker(getApplicationContext(), map, destination);
-
-                        Polyline routeOverlay = model.getRouteOverlay();
-                        map.getOverlays().add(routeOverlay);
-                        map.invalidate();
-
-                        mapCentered = true;
-
-                        //center on user movement
-                        locationOverlay.setEnableAutoStop(false);
-                        locationOverlay.enableFollowLocation();
-                        map.invalidate();
-                        
-                    }
                 }
+
+                GeoPoint destination = model.getDestination();
+
+                if (destination == null || destination == oldDestination) {
+                    return;
+                }
+
+                if(destinationMarker != null) {
+                    destinationMarker.setPosition(destination);
+                } else {
+                    destinationMarker = addMarker(map, destination);
+                }
+
+                if(routeOverlay != null) {
+                    map.getOverlays().remove(routeOverlay);
+                }
+
+                routeOverlay = model.getRouteOverlay();
+                map.getOverlays().add(0, routeOverlay);
+                map.invalidate();
+                mapCentered = true;
             });
         };
     }
@@ -181,7 +246,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * description: sets marker at given location on map
      */
-    public static Marker addMarker(Context context, MapView map, GeoPoint position) {
+    public static Marker addMarker(MapView map, GeoPoint position) {
         Marker marker = new Marker(map);
         marker.setPosition(position);
         marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);

@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Fun Walking</string>
+    <string name="new_destination_button_title">Dest</string>
 </resources>

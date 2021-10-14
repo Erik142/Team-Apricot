@@ -6,6 +6,8 @@ import android.util.Log;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.exifinterface.media.ExifInterface;
 
+import org.osmdroid.util.GeoPoint;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -183,8 +185,10 @@ public class StorageHandler {
      * @param lon - Longitude of point
      * @return The distance squared
      */
-    private double distanceSq(ImageFileData img, double lat, double lon) {
-        return Math.pow(img.getLatitude() - lat, 2) + Math.pow(img.getLongitude() - lon, 2);
+    private double distance(ImageFileData img, double lat, double lon) {
+        GeoPoint pos = new GeoPoint(lat, lon);
+        GeoPoint imgPos = new GeoPoint(img.getLatitude(), img.getLongitude());
+        return pos.distanceToAsDouble(imgPos);
     }
 
     /**
@@ -197,7 +201,7 @@ public class StorageHandler {
      */
     public List<ImageFileData> listImageFilesNearPoint(double latitude, double longitude, double distance) {
         Log.d(TAG, "List of nearby image files requested");
-        return imageFileStream().filter(image -> distanceSq(image, latitude, longitude) <= distance * distance)
+        return imageFileStream().filter(image -> distance(image, latitude, longitude) <= distance)
                 .collect(Collectors.toList());
     }
 }
