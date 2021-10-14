@@ -226,6 +226,12 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
 
+                if(destination !=null) {
+                    //center on user movement
+                    locationOverlay.setEnableAutoStop(false);
+                    locationOverlay.enableFollowLocation();
+                    map.invalidate();
+                }
                 if (destination == oldDestination) {
                     return;
                 }
