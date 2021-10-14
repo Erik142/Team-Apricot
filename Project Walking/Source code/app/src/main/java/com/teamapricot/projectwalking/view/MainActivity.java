@@ -171,6 +171,7 @@ public class MainActivity extends AppCompatActivity {
                         locationOverlay.setEnableAutoStop(false);
                         locationOverlay.enableFollowLocation();
                         map.invalidate();
+                        
                     }
                 }
             });
