@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
     private IMapController mapController;
     private MyLocationNewOverlay locationOverlay;
     private NotificationController notificationController;
+    private NavigationModel navigationModel;
 
     private ToolbarController toolbarController;
 
@@ -52,7 +53,10 @@ public class MainActivity extends AppCompatActivity {
     private GeoPoint oldDestination = null;
     private Polyline routeOverlay = null;
 
+    MenuItem checkboxItem;
+
     private boolean mapCentered;
+    private boolean previousFollowLocation;
 
     private MapView map = null;
 
@@ -90,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.toolbar_menu, menu);
+        checkboxItem = menu.findItem(R.id.action_follow_location);
         return true;
     }
 
@@ -99,6 +104,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void init() {
+        initModels();
         initToolbar();
         initNavigation();
         initCamera();
@@ -108,10 +114,14 @@ public class MainActivity extends AppCompatActivity {
         initCameraButtonVisibility();
     }
 
+    private void initModels() {
+        this.navigationModel = new NavigationModel();
+    }
+
     private void initToolbar() {
         Toolbar myToolbar = findViewById(R.id.main_toolbar);
         setSupportActionBar(myToolbar);
-        toolbarController = new ToolbarController();
+        toolbarController = new ToolbarController(this.navigationModel);
     }
 
     private void initCamera() {
@@ -129,15 +139,17 @@ public class MainActivity extends AppCompatActivity {
         Context ctx = getApplicationContext();
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
 
-        navigationController = new NavigationController(this);
+        navigationController = new NavigationController(navigationModel, this);
 
         map = findViewById(R.id.map);
         map.setTileSource(TileSourceFactory.MAPNIK);
+        map.setMultiTouchControls(true);
 
         mapController = map.getController();
 
         locationOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(ctx), map);
         locationOverlay.enableMyLocation();
+        locationOverlay.setEnableAutoStop(false);
 
         map.getOverlays().add(locationOverlay);
 
@@ -170,11 +182,13 @@ public class MainActivity extends AppCompatActivity {
                 GeoPoint location = model.getUserLocation();
                 GeoPoint destination = model.getDestination();
                 if (destination == null) {
+                    checkboxItem.setEnabled(false);
                     setButtonVisibility(R.id.open_camera_fab, View.GONE);
                     setButtonVisibility(R.id.add_destination_fab, View.VISIBLE);
                     setButtonVisibility(R.id.remove_destination_fab, View.GONE);
                     return;
                 }
+                checkboxItem.setEnabled(true);
                 double distance = location.distanceToAsDouble(destination);
                 Log.d("observer", "distance = " + distance);
                 if (distance > ALLOWED_DISTANCE) {
@@ -242,6 +256,7 @@ public class MainActivity extends AppCompatActivity {
                 GeoPoint destination = model.getDestination();
 
                 if (!mapCentered) {
+                    previousFollowLocation = model.getFollowLocation();
                     mapController.setZoom(model.getZoomLevel());
                     if (location != null) {
                         mapController.setCenter(location);
@@ -251,12 +266,27 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
 
-                if(destination !=null) {
+                if(destination != null && destination != oldDestination) {
                     //center on user movement
-                    locationOverlay.setEnableAutoStop(false);
-                    locationOverlay.enableFollowLocation();
+                    if (!model.getFollowLocation() && model.getBoundingBox() != null) {
+                        locationOverlay.disableFollowLocation();
+                        map.zoomToBoundingBox(model.getBoundingBox(), true, 150);
+                    }
                     map.invalidate();
                 }
+
+                if (model.getFollowLocation() != previousFollowLocation) {
+                    if (model.getFollowLocation()) {
+                        locationOverlay.enableFollowLocation();
+                    }
+                    else {
+                        locationOverlay.disableFollowLocation();
+                    }
+                    map.invalidate();
+                    previousFollowLocation = model.getFollowLocation();
+                    checkboxItem.setChecked(model.getFollowLocation());
+                }
+
                 if (destination == oldDestination) {
                     return;
                 }

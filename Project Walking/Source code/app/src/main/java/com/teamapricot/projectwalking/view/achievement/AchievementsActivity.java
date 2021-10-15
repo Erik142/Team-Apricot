@@ -15,8 +15,6 @@ import com.teamapricot.projectwalking.controller.ToolbarController;
  * An activity for showing achievements that have been unlocked for the user
  */
 public class AchievementsActivity extends AppCompatActivity {
-    private ToolbarController toolbarController;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,6 +29,5 @@ public class AchievementsActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("Achievements");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
-        toolbarController = new ToolbarController();
     }
 }

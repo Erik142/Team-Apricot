@@ -6,15 +6,17 @@ import com.teamapricot.projectwalking.observe.ObservableBase;
 
 import org.osmdroid.bonuspack.routing.Road;
 import org.osmdroid.bonuspack.routing.RoadManager;
+import org.osmdroid.util.BoundingBox;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.overlay.Polyline;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 /**
  * @author Erik Wahlberger
- * @version 2021-09-28
+ * @version 2021-10-14
  *
  * Model class for the navigation functionality
  */
@@ -24,8 +26,10 @@ public class NavigationModel extends ObservableBase<NavigationModel> {
     private GeoPoint userLocation;
     private GeoPoint destination;
     private Polyline routeOverlay;
+    private BoundingBox boundingBox;
     private double zoomLevel;
     private int distanceChoice = 0;
+    private boolean followLocation;
 
     /**
      * Get the user location
@@ -38,6 +42,10 @@ public class NavigationModel extends ObservableBase<NavigationModel> {
     public GeoPoint getDestination() { return this.destination; }
 
     public Polyline getRouteOverlay() { return this.routeOverlay; }
+
+    public BoundingBox getBoundingBox() { return this.boundingBox; }
+
+    public boolean getFollowLocation() { return this.followLocation; }
 
     /**
      * Get the distance choice
@@ -80,17 +88,29 @@ public class NavigationModel extends ObservableBase<NavigationModel> {
             Road road = roadManager.getRoad(points);
 
             this.routeOverlay = RoadManager.buildRoadOverlay(road);
+            BoundingBox routeBoundingBox = this.routeOverlay.getBounds();
+
+            if (routeBoundingBox != null) {
+                points.add(new GeoPoint(routeBoundingBox.getLatNorth(), routeBoundingBox.getLonWest()));
+                points.add(new GeoPoint(routeBoundingBox.getLatNorth(), routeBoundingBox.getLonEast()));
+                points.add(new GeoPoint(routeBoundingBox.getLatSouth(), routeBoundingBox.getLonWest()));
+                points.add(new GeoPoint(routeBoundingBox.getLatSouth(), routeBoundingBox.getLonEast()));
+            }
+
+            this.boundingBox = calculateBoundingBox(points);
+            this.followLocation = false;
         }).thenRun(() -> {
             updateObservers(this);
         });
     }
 
     /**
-     * Sets the destination and routeOverlay to null, then updates all observers
+     * Sets the destination and routeOverlay to null, disables following user location, then updates all observers
      */
     public void removeDestination() {
         this.destination = null;
         this.routeOverlay = null;
+        this.followLocation = false;
         updateObservers(this);
     }
 
@@ -100,6 +120,11 @@ public class NavigationModel extends ObservableBase<NavigationModel> {
      */
     public void setUserLocation(GeoPoint location) {
         this.userLocation = location;
+        updateObservers(this);
+    }
+
+    public void setFollowLocation(boolean followLocation) {
+        this.followLocation = followLocation;
         updateObservers(this);
     }
 
@@ -114,5 +139,37 @@ public class NavigationModel extends ObservableBase<NavigationModel> {
 
     public void setDistanceChoice(int distanceChoice) {
         this.distanceChoice = distanceChoice;
+    }
+
+    /**
+     * Calculates the BoundingBox for the specified points (Takes the largest/smallest longitudes and latitudes for the specified points and creates a BoundingBox for them)
+     * @param points The points
+     * @return A BoundingBox
+     */
+    private BoundingBox calculateBoundingBox(List<GeoPoint> points) {
+        double north = -180;
+        double south = 180;
+        double west = 180;
+        double east = -180;
+
+        for (GeoPoint point : points) {
+            if (point.getLatitude() > north) {
+                north = point.getLatitude();
+            }
+
+            if (point.getLongitude() < south) {
+                south = point.getLatitude();
+            }
+
+            if (point.getLongitude() > east) {
+                east = point.getLongitude();
+            }
+
+            if (point.getLongitude() < west) {
+                west = point.getLongitude();
+            }
+        }
+
+        return new BoundingBox(north, east, south, west);
     }
 }

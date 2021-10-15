@@ -7,15 +7,22 @@ import android.content.Intent;
 import android.view.MenuItem;
 
 import com.teamapricot.projectwalking.R;
+import com.teamapricot.projectwalking.model.NavigationModel;
 import com.teamapricot.projectwalking.view.achievement.AchievementsActivity;
 
 /**
  * @author Erik Wahlberger
- * @version 2021-10-12
+ * @version 2021-10-14
  *
  * A Controller class used to decide what happens when buttons are clicked on the {@link Toolbar}
  */
 public class ToolbarController {
+    private NavigationModel navigationModel;
+
+    public ToolbarController(NavigationModel navigationModel) {
+        this.navigationModel = navigationModel;
+    }
+
     /**
      * Decides what to do when a menu item has been clicked in the Toolbar
      * @param item The {@link MenuItem} that has been clicked
@@ -26,8 +33,11 @@ public class ToolbarController {
         switch (item.getItemId()) {
             case R.id.action_achievements:
                 return openAchievements(parent);
+            case R.id.action_follow_location:
+                navigationModel.setFollowLocation(!item.isChecked());
+                return true;
             default:
-                return parent.onOptionsItemSelected(item);
+                return false;
         }
     }
 
