@@ -37,7 +37,7 @@ import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity {
     private static final double ALLOWED_DISTANCE = 20;
-    
+
     private NavigationController navigationController;
     private CameraController cameraController;
     private ImageOverlayController imageOverlayController;
@@ -112,6 +112,7 @@ public class MainActivity extends AppCompatActivity {
         notificationController.SendNotification(false);
         initImageOverlay();
         initCameraButtonVisibility();
+        navigationController.start(locationOverlay);
     }
 
     private void initModels() {
@@ -156,7 +157,6 @@ public class MainActivity extends AppCompatActivity {
         View addDestinationButton = findViewById(R.id.add_destination_fab);
         View removeDestinationButton = findViewById(R.id.remove_destination_fab);
         navigationController.registerObserver(createNavigationObserver());
-        navigationController.start();
         navigationController.registerOnClickListener(addDestinationButton);
         navigationController.registerOnClickListener(removeDestinationButton);
     }
@@ -182,7 +182,9 @@ public class MainActivity extends AppCompatActivity {
                 GeoPoint location = model.getUserLocation();
                 GeoPoint destination = model.getDestination();
                 if (destination == null) {
-                    checkboxItem.setEnabled(false);
+                    if (checkboxItem != null) {
+                        checkboxItem.setEnabled(false);
+                    }
                     setButtonVisibility(R.id.open_camera_fab, View.GONE);
                     setButtonVisibility(R.id.add_destination_fab, View.VISIBLE);
                     setButtonVisibility(R.id.remove_destination_fab, View.GONE);
@@ -219,6 +221,7 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Creates a new {@code Observer} object for the Camera functionality
+     * 
      * @return
      */
     private Observer<CameraModel> createCameraObserver() {
@@ -247,7 +250,9 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Creates a new {@code Observer} object for the navigation functionality
-     * @return An {@code Observer<NavigationModel>} object to observe changes in a {@code NavigationModel} and update the UI correspondingly
+     * 
+     * @return An {@code Observer<NavigationModel>} object to observe changes in a
+     *         {@code NavigationModel} and update the UI correspondingly
      */
     private Observer<NavigationModel> createNavigationObserver() {
         return model -> {
@@ -266,8 +271,8 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
 
-                if(destination != null && destination != oldDestination) {
-                    //center on user movement
+                if (destination != null && destination != oldDestination) {
+                    // center on user movement
                     if (!model.getFollowLocation() && model.getBoundingBox() != null) {
                         locationOverlay.disableFollowLocation();
                         map.zoomToBoundingBox(model.getBoundingBox(), true, 150);
@@ -278,8 +283,7 @@ public class MainActivity extends AppCompatActivity {
                 if (model.getFollowLocation() != previousFollowLocation) {
                     if (model.getFollowLocation()) {
                         locationOverlay.enableFollowLocation();
-                    }
-                    else {
+                    } else {
                         locationOverlay.disableFollowLocation();
                     }
                     map.invalidate();
@@ -291,7 +295,7 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
 
-                if(destinationMarker != null && destination == null) {
+                if (destinationMarker != null && destination == null) {
                     map.getOverlays().remove(destinationMarker);
                     map.invalidate();
                     destinationMarker = null;
@@ -299,7 +303,7 @@ public class MainActivity extends AppCompatActivity {
                     destinationMarker = addMarker(map, destination);
                 }
 
-                if(routeOverlay != null) {
+                if (routeOverlay != null) {
                     map.getOverlays().remove(routeOverlay);
                     map.invalidate();
                 }
