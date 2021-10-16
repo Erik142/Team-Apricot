@@ -172,19 +172,14 @@ public class MainActivity extends AppCompatActivity {
         navigationController.registerOnClickListener(removeDestinationButton);
     }
 
+    /**
+     * Shows a loading screen if the map has not been initialized
+     * @param tilesOverlay The {@link TilesOverlay} to use to check whether or not the map has been initialized
+     */
     private void showLoadingScreen(TilesOverlay tilesOverlay) {
         CompletableFuture.runAsync(() -> {
             if (!tilesOverlay.getTileStates().isDone()) {
-                Log.d("MainActivity", "Map is loading...");
                 runOnUiThread(() -> mapLoadingDialog.show(getSupportFragmentManager(), "MapLoading"));
-
-                while (!tilesOverlay.getTileStates().isDone()) {
-                    try {
-                        Thread.sleep(500);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
             }
         }, Executors.newSingleThreadExecutor());
     }
