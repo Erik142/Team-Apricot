@@ -25,14 +25,6 @@ public class MapLoadingDialog extends DialogFragment {
         this.activity = activity;
     }
 
-    public void updateProgress(int progress) {
-        this.progress = progress;
-
-        if (progressBar != null) {
-            progressBar.setProgress(progress);
-        }
-    }
-
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstance) {
