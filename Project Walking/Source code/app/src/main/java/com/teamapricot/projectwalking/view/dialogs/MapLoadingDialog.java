@@ -37,9 +37,13 @@ public class MapLoadingDialog extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstance) {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
         dialogBuilder.setTitle(TITLE)
+                .setCancelable(false)
                 .setView(R.layout.dialog_map_loading);
 
-        return dialogBuilder.create();
+        Dialog dialog = dialogBuilder.create();
+        dialog.setCanceledOnTouchOutside(false);
+
+        return dialog;
     }
 
     @Override
