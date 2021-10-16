@@ -3,6 +3,7 @@ package com.teamapricot.projectwalking.view.dialogs;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ProgressBar;
 
@@ -39,6 +40,15 @@ public class MapLoadingDialog extends DialogFragment {
         dialogBuilder.setTitle(TITLE)
                 .setCancelable(false)
                 .setView(R.layout.dialog_map_loading);
+
+        dialogBuilder.setOnKeyListener((dialog, keyCode, event) -> {
+            if(keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
+                return true; // Consumed
+            }
+            else {
+                return false; // Not consumed
+            }
+        });
 
         Dialog dialog = dialogBuilder.create();
         dialog.setCanceledOnTouchOutside(false);
