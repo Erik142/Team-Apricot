@@ -30,12 +30,13 @@ public class Board extends ObservableBase<Board> {
     private List<Achievement> achievements;
 
 
-/**
-* Constructor for creating Board-object.
- * @param ph database access object for getting photo-objects from database.
- * @param rd database access object for getting Route-objects from database.
-*/
-    public Board(PhotoDao ph, RouteDao rd, AchievementDao ad){
+    /**
+     * Constructor for creating Board-object.
+     *
+     * @param ph database access object for getting photo-objects from database.
+     * @param rd database access object for getting Route-objects from database.
+     */
+    public Board(PhotoDao ph, RouteDao rd, AchievementDao ad) {
         this.ph = ph;
         this.rd = rd;
         this.ad = ad;
@@ -46,7 +47,7 @@ public class Board extends ObservableBase<Board> {
         this.nrPhotos = ph.getNrPhotos();
         this.routes = rd.getLatestRoutes(10);
         this.photos = ph.getLatestPhotos(10);
-        updateAchievements(rDist,nrPhotos);
+        updateAchievements(rDist, nrPhotos);
         this.achievements = ad.getAllAchievements();
         updateObservers(this);
     }
@@ -54,17 +55,18 @@ public class Board extends ObservableBase<Board> {
     public List<Achievement> getAchievements() {
         return this.achievements;
     }
-/**
-* Method for checking for and updating achievements.
-*/
-private void updateAchievements(double distance, int nrPhotos){
 
-    ad.updateAchievementsDistance(distance);
-    ad.updateAchievementsPhotos(nrPhotos);
+    /**
+     * Method for checking for and updating achievements.
+     */
+    private void updateAchievements(double distance, int nrPhotos) {
 
-}
+        ad.updateAchievementsDistance(distance);
+        ad.updateAchievementsPhotos(nrPhotos);
 
-private void insertAchievementData(){
+    }
 
-}
+    private void insertAchievementData() {
+
+    }
 }
