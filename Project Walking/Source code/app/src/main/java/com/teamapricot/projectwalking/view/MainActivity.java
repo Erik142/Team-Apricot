@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,6 +15,7 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.teamapricot.projectwalking.R;
 import com.teamapricot.projectwalking.controller.CameraController;
+import com.teamapricot.projectwalking.controller.DistanceController;
 import com.teamapricot.projectwalking.controller.ImageOverlayController;
 import com.teamapricot.projectwalking.controller.NavigationController;
 import com.teamapricot.projectwalking.controller.NotificationController;
@@ -59,6 +61,9 @@ public class MainActivity extends AppCompatActivity {
     private boolean previousFollowLocation;
 
     private MapView map = null;
+
+    Button Statistics;
+    private DistanceController distanceController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,6 +117,7 @@ public class MainActivity extends AppCompatActivity {
         notificationController.SendNotification(false);
         initImageOverlay();
         initCameraButtonVisibility();
+        //GetDistance();
     }
 
     private void initModels() {
@@ -327,4 +333,12 @@ public class MainActivity extends AppCompatActivity {
         map.invalidate();
         return marker;
     }
+/*
+    private void GetDistance(){
+        Statistics = findViewById(R.id.statistics);
+        distanceController.registerOnClickListener(Statistics,this);
+
+    }
+
+ */
 }
