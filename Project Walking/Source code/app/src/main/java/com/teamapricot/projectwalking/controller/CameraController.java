@@ -48,7 +48,7 @@ public class CameraController {
         this.activity = activity;
         this.permissionHandler = new PermissionHandler(this.activity);
         this.cameraHandler = new CameraHandler(this.activity);
-        this.storageHandler = new StorageHandler(this.activity);
+        this.storageHandler = StorageHandler.getInstance(this.activity);
         this.cameraModel = new CameraModel();
     }
 

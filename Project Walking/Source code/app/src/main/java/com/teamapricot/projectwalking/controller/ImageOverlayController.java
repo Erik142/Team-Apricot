@@ -64,7 +64,7 @@ public class ImageOverlayController {
     public ImageOverlayController(AppCompatActivity activity, ImageOverlayView view) {
         this.activity = activity;
         this.imageOverlayView = view;
-        this.storageHandler = new StorageHandler(activity);
+        this.storageHandler = StorageHandler.getInstance(activity);
         this.imageController = new ImageController(activity);
     }
 

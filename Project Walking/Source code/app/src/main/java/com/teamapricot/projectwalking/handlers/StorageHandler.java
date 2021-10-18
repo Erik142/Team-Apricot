@@ -6,6 +6,10 @@ import android.util.Log;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.exifinterface.media.ExifInterface;
 
+import com.teamapricot.projectwalking.model.database.Database;
+import com.teamapricot.projectwalking.model.database.dao.PhotoDao;
+import com.teamapricot.projectwalking.model.database.dao.RouteDao;
+
 import org.osmdroid.util.GeoPoint;
 
 import java.io.File;
@@ -37,12 +41,42 @@ public class StorageHandler {
 
     private final AppCompatActivity activity;
 
+    private static StorageHandler instance;
+
+    private PhotoDao photoDao = null;
+    private RouteDao routeDao = null;
+
     /**
-     * Creates a new instance of the {@code ImageFileHandler} class, using the specified {@code AppCompatActivity}
+     * Private constructor.
+     * @param activity The associated activity
+     */
+    private StorageHandler(AppCompatActivity activity) {
+        this.activity = activity;
+        Database.getDatabase(activity.getApplicationContext()).thenAccept(database -> {
+            photoDao = database.photoDao();
+            routeDao = database.routeDao();
+        });
+    }
+
+    /**
+     * Creates a new instance of the {@code StorageHandler} class if necessary, using the
+     * specified {@code AppCompatActivity}. If not necessary, it just returns the existing
+     * instance.
      * @param activity The activity used for retrieving external storage directory paths
      */
-    public StorageHandler(AppCompatActivity activity) {
-        this.activity = activity;
+    public static StorageHandler getInstance(AppCompatActivity activity) {
+        if(instance == null) {
+            instance = new StorageHandler(activity);
+        }
+        return instance;
+    }
+
+    /**
+     * Is the database ready?
+     * @return True if ready, false if not.
+     */
+    public boolean databaseIsReady() {
+        return photoDao != null && routeDao != null;
     }
 
     /**
