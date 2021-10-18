@@ -22,6 +22,7 @@ import com.teamapricot.projectwalking.model.CameraModel;
 import com.teamapricot.projectwalking.model.NavigationModel;
 import com.teamapricot.projectwalking.model.database.Database;
 import com.teamapricot.projectwalking.observe.Observer;
+import com.teamapricot.projectwalking.view.dialogs.MapLoadingDialog;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
@@ -30,14 +31,17 @@ import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.Polyline;
+import org.osmdroid.views.overlay.TilesOverlay;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity {
     private static final double ALLOWED_DISTANCE = 20;
-    
+
     private NavigationController navigationController;
     private CameraController cameraController;
     private ImageOverlayController imageOverlayController;
@@ -60,6 +64,8 @@ public class MainActivity extends AppCompatActivity {
 
     private MapView map = null;
 
+    private final MapLoadingDialog mapLoadingDialog = new MapLoadingDialog(this);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,14 +86,18 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        map.onResume();
+        if (map != null) {
+            map.onResume();
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
 
-        map.onPause();
+        if (map != null) {
+            map.onPause();
+        }
     }
 
     @Override
@@ -112,6 +122,7 @@ public class MainActivity extends AppCompatActivity {
         notificationController.SendNotification(false);
         initImageOverlay();
         initCameraButtonVisibility();
+        navigationController.start(locationOverlay);
     }
 
     private void initModels() {
@@ -144,6 +155,7 @@ public class MainActivity extends AppCompatActivity {
         map = findViewById(R.id.map);
         map.setTileSource(TileSourceFactory.MAPNIK);
         map.setMultiTouchControls(true);
+        showLoadingScreen(map.getOverlayManager().getTilesOverlay());
 
         mapController = map.getController();
 
@@ -156,9 +168,20 @@ public class MainActivity extends AppCompatActivity {
         View addDestinationButton = findViewById(R.id.add_destination_fab);
         View removeDestinationButton = findViewById(R.id.remove_destination_fab);
         navigationController.registerObserver(createNavigationObserver());
-        navigationController.start();
         navigationController.registerOnClickListener(addDestinationButton);
         navigationController.registerOnClickListener(removeDestinationButton);
+    }
+
+    /**
+     * Shows a loading screen if the map has not been initialized
+     * @param tilesOverlay The {@link TilesOverlay} to use to check whether or not the map has been initialized
+     */
+    private void showLoadingScreen(TilesOverlay tilesOverlay) {
+        CompletableFuture.runAsync(() -> {
+            if (!tilesOverlay.getTileStates().isDone()) {
+                runOnUiThread(() -> mapLoadingDialog.show(getSupportFragmentManager(), "MapLoading"));
+            }
+        }, Executors.newSingleThreadExecutor());
     }
 
     private void initImageOverlay() {
@@ -182,7 +205,9 @@ public class MainActivity extends AppCompatActivity {
                 GeoPoint location = model.getUserLocation();
                 GeoPoint destination = model.getDestination();
                 if (destination == null) {
-                    checkboxItem.setEnabled(false);
+                    if (checkboxItem != null) {
+                        checkboxItem.setEnabled(false);
+                    }
                     setButtonVisibility(R.id.open_camera_fab, View.GONE);
                     setButtonVisibility(R.id.add_destination_fab, View.VISIBLE);
                     setButtonVisibility(R.id.remove_destination_fab, View.GONE);
@@ -219,6 +244,7 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Creates a new {@code Observer} object for the Camera functionality
+     * 
      * @return
      */
     private Observer<CameraModel> createCameraObserver() {
@@ -247,7 +273,9 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Creates a new {@code Observer} object for the navigation functionality
-     * @return An {@code Observer<NavigationModel>} object to observe changes in a {@code NavigationModel} and update the UI correspondingly
+     * 
+     * @return An {@code Observer<NavigationModel>} object to observe changes in a
+     *         {@code NavigationModel} and update the UI correspondingly
      */
     private Observer<NavigationModel> createNavigationObserver() {
         return model -> {
@@ -262,12 +290,13 @@ public class MainActivity extends AppCompatActivity {
                         mapController.setCenter(location);
                         mapCentered = true;
                         oldDestination = destination;
+                        mapLoadingDialog.dismiss();
                         return;
                     }
                 }
 
-                if(destination != null && destination != oldDestination) {
-                    //center on user movement
+                if (destination != null && destination != oldDestination) {
+                    // center on user movement
                     if (!model.getFollowLocation() && model.getBoundingBox() != null) {
                         locationOverlay.disableFollowLocation();
                         map.zoomToBoundingBox(model.getBoundingBox(), true, 150);
@@ -278,8 +307,7 @@ public class MainActivity extends AppCompatActivity {
                 if (model.getFollowLocation() != previousFollowLocation) {
                     if (model.getFollowLocation()) {
                         locationOverlay.enableFollowLocation();
-                    }
-                    else {
+                    } else {
                         locationOverlay.disableFollowLocation();
                     }
                     map.invalidate();
@@ -291,7 +319,7 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
 
-                if(destinationMarker != null && destination == null) {
+                if (destinationMarker != null && destination == null) {
                     map.getOverlays().remove(destinationMarker);
                     map.invalidate();
                     destinationMarker = null;
@@ -299,7 +327,7 @@ public class MainActivity extends AppCompatActivity {
                     destinationMarker = addMarker(map, destination);
                 }
 
-                if(routeOverlay != null) {
+                if (routeOverlay != null) {
                     map.getOverlays().remove(routeOverlay);
                     map.invalidate();
                 }

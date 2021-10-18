@@ -1,6 +1,7 @@
 package com.teamapricot.projectwalking.model;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.teamapricot.projectwalking.observe.ObservableBase;
 
@@ -9,19 +10,21 @@ import org.osmdroid.bonuspack.routing.RoadManager;
 import org.osmdroid.util.BoundingBox;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.overlay.Polyline;
+import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
 
 /**
  * @author Erik Wahlberger
- * @version 2021-10-14
+ * @version 2021-10-16
  *
- * Model class for the navigation functionality
+ *          Model class for the navigation functionality
  */
 public class NavigationModel extends ObservableBase<NavigationModel> {
-    private final int[] DISTANCES = new int[] {300, 750, 1500};
+    private final int[] DISTANCES = new int[] { 300, 750, 1500 };
 
     private GeoPoint userLocation;
     private GeoPoint destination;
@@ -29,26 +32,37 @@ public class NavigationModel extends ObservableBase<NavigationModel> {
     private BoundingBox boundingBox;
     private double zoomLevel;
     private int distanceChoice = 0;
-    private boolean followLocation;
+    private boolean followLocation = false;
+    private boolean locationUpdates = false;
 
     /**
      * Get the user location
+     * 
      * @return The location as a {@code GeoPoint} object
      */
     public GeoPoint getUserLocation() {
         return this.userLocation;
     }
 
-    public GeoPoint getDestination() { return this.destination; }
+    public GeoPoint getDestination() {
+        return this.destination;
+    }
 
-    public Polyline getRouteOverlay() { return this.routeOverlay; }
+    public Polyline getRouteOverlay() {
+        return this.routeOverlay;
+    }
 
-    public BoundingBox getBoundingBox() { return this.boundingBox; }
+    public BoundingBox getBoundingBox() {
+        return this.boundingBox;
+    }
 
-    public boolean getFollowLocation() { return this.followLocation; }
+    public boolean getFollowLocation() {
+        return this.followLocation;
+    }
 
     /**
      * Get the distance choice
+     * 
      * @return The distance choice (0 to 2 where 0 means short and 2 means long)
      */
     public int getDistanceChoice() {
@@ -57,6 +71,7 @@ public class NavigationModel extends ObservableBase<NavigationModel> {
 
     /**
      * Get the zoom level for the map
+     * 
      * @return The zoom level as a {@code double} value
      */
     public double getZoomLevel() {
@@ -67,12 +82,12 @@ public class NavigationModel extends ObservableBase<NavigationModel> {
         createDestination(roadManager, DISTANCES[distanceChoice]);
     }
 
-    public void createDestination(RoadManager roadManager, double radius ) {
+    public void createDestination(RoadManager roadManager, double radius) {
         if (userLocation == null) {
             return;
         }
 
-        //deg is angle and len is distance
+        // deg is angle and len is distance
         double len = 0.8 * radius + 0.2 * radius * Math.random();
         double deg = Math.random() * 360;
 
@@ -105,7 +120,43 @@ public class NavigationModel extends ObservableBase<NavigationModel> {
     }
 
     /**
-     * Sets the destination and routeOverlay to null, disables following user location, then updates all observers
+     * Enables user location updates, and updates all observers
+     * @param locationOverlay The {@link MyLocationNewOverlay} to retrieve the location from
+     * @param updateIntervalMs The location update interval in milliseconds
+     */
+    public void enableLocationUpdates(MyLocationNewOverlay locationOverlay, long updateIntervalMs) {
+        setLocationUpdates(true);
+
+        CompletableFuture.runAsync(() -> {
+            while (getLocationUpdates()) {
+                setUserLocation(locationOverlay.getMyLocation());
+                try {
+                    Thread.sleep(updateIntervalMs);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, Executors.newSingleThreadExecutor());
+    }
+
+    /**
+     * Disables location updates
+     */
+    public void disableLocationUpdates() {
+        setLocationUpdates(false);
+    }
+
+    private synchronized void setLocationUpdates(boolean locationUpdates) {
+        this.locationUpdates = locationUpdates;
+    }
+
+    private synchronized boolean getLocationUpdates() {
+        return this.locationUpdates;
+    }
+
+    /**
+     * Sets the destination and routeOverlay to null, disables following user,
+     * then updates all observers
      */
     public void removeDestination() {
         this.destination = null;
@@ -116,6 +167,7 @@ public class NavigationModel extends ObservableBase<NavigationModel> {
 
     /**
      * Sets the user location and updates all observers
+     * 
      * @param location the value for the user location
      */
     public void setUserLocation(GeoPoint location) {
@@ -130,6 +182,7 @@ public class NavigationModel extends ObservableBase<NavigationModel> {
 
     /**
      * Sets the zoom level for the map and updates all observers
+     * 
      * @param zoomLevel the zoom level as a {@code double} value
      */
     public void setZoomLevel(double zoomLevel) {
@@ -142,7 +195,10 @@ public class NavigationModel extends ObservableBase<NavigationModel> {
     }
 
     /**
-     * Calculates the BoundingBox for the specified points (Takes the largest/smallest longitudes and latitudes for the specified points and creates a BoundingBox for them)
+     * Calculates the BoundingBox for the specified points (Takes the
+     * largest/smallest longitudes and latitudes for the specified points and
+     * creates a BoundingBox for them)
+     * 
      * @param points The points
      * @return A BoundingBox
      */
