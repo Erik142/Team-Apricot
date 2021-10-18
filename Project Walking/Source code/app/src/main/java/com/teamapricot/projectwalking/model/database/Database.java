@@ -39,7 +39,6 @@ public abstract class Database extends RoomDatabase {
         return CompletableFuture.supplyAsync(() -> {
             if (database == null) {
                 database = Room.databaseBuilder(context, Database.class, DATABASE_NAME).fallbackToDestructiveMigration().build();
-                database.clearAllTables();
             }
 
             return database;
