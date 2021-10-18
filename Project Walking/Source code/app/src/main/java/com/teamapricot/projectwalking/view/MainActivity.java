@@ -122,6 +122,7 @@ public class MainActivity extends AppCompatActivity {
         notificationController.SendNotification(false);
         initImageOverlay();
         initCameraButtonVisibility();
+        navigationController.start(locationOverlay);
     }
 
     private void initModels() {
@@ -167,7 +168,6 @@ public class MainActivity extends AppCompatActivity {
         View addDestinationButton = findViewById(R.id.add_destination_fab);
         View removeDestinationButton = findViewById(R.id.remove_destination_fab);
         navigationController.registerObserver(createNavigationObserver());
-        navigationController.start();
         navigationController.registerOnClickListener(addDestinationButton);
         navigationController.registerOnClickListener(removeDestinationButton);
     }
@@ -205,7 +205,9 @@ public class MainActivity extends AppCompatActivity {
                 GeoPoint location = model.getUserLocation();
                 GeoPoint destination = model.getDestination();
                 if (destination == null) {
-                    checkboxItem.setEnabled(false);
+                    if (checkboxItem != null) {
+                        checkboxItem.setEnabled(false);
+                    }
                     setButtonVisibility(R.id.open_camera_fab, View.GONE);
                     setButtonVisibility(R.id.add_destination_fab, View.VISIBLE);
                     setButtonVisibility(R.id.remove_destination_fab, View.GONE);
