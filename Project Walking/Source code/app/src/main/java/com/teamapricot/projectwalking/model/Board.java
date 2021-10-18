@@ -44,8 +44,8 @@ public class Board extends ObservableBase<Board> {
     public void init() {
         this.rDist = rd.getTotalDist();
         this.nrPhotos = ph.getNrPhotos();
-        this.routes = rd.getLatestRoutes();
-        this.photos = ph.getAllPhotos();
+        this.routes = rd.getLatestRoutes(10);
+        this.photos = ph.getLatestPhotos(10);
         updateAchievements(rDist,nrPhotos);
         this.achievements = ad.getAllAchievements();
         updateObservers(this);
