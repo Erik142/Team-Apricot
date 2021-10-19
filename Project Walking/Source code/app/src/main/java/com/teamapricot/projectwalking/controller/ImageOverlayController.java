@@ -10,7 +10,8 @@ import android.util.Log;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.teamapricot.projectwalking.handlers.StorageHandler;
-import com.teamapricot.projectwalking.handlers.StorageHandler.ImageFileData;
+import com.teamapricot.projectwalking.handlers.StorageHandler.PhotoWithLocation;
+import com.teamapricot.projectwalking.model.database.Photo;
 import com.teamapricot.projectwalking.view.ImageOverlayView;
 
 import org.osmdroid.api.IGeoPoint;
@@ -37,7 +38,7 @@ public class ImageOverlayController {
     private final StorageHandler storageHandler;
     private final ImageController imageController;
 
-    private final Map<File, ImageMarker> iconOverlays = new HashMap<>();
+    private final Map<String, ImageMarker> iconOverlays = new HashMap<>();
 
     /**
      * @author Daniel Brännvall
@@ -70,29 +71,29 @@ public class ImageOverlayController {
 
     /**
      * Adds a thumbnail to the map.
-     *
-     * @param file - Image file
+     * @param photo The file and position of the photo to use
      */
-    public void addImageOverlay(File file) {
-        if (iconOverlays.containsKey(file)) {
-            Log.d(TAG, "Overlay for " + file.toString() + " already exists");
+    public void addImageOverlay(PhotoWithLocation photo) {
+        if(photo == null) {
+            Log.d(TAG, "Photo not found");
             return;
         }
 
-        ImageFileData img = storageHandler.getImageFileData(file);
-        if (img == null) {
-            Log.d(TAG, "Not an image file");
+        String filename = photo.getFilename();
+
+        if (iconOverlays.containsKey(filename)) {
+            Log.d(TAG, "Overlay for " + filename + " already exists");
             return;
         }
 
-        GeoPoint location = new GeoPoint(img.getLatitude(), img.getLongitude());
-        Bitmap image = BitmapFactory.decodeFile(img.getFile().getPath());
+        GeoPoint location = new GeoPoint(photo.getLatitude(), photo.getLongitude());
+        Bitmap image = BitmapFactory.decodeFile(filename);
         int[] tnSize = imageOverlayView.thumbnailSize(image.getWidth(), image.getHeight());
         Bitmap thumbnail = ThumbnailUtils.extractThumbnail(image, tnSize[0], tnSize[1]);
         Drawable icon = new BitmapDrawable(activity.getResources(), thumbnail);
-        ImageMarker iconOverlay = new ImageMarker(file);
+        ImageMarker iconOverlay = new ImageMarker(new File(filename));
         iconOverlay.set(location, icon);
-        iconOverlays.put(file, iconOverlay);
+        iconOverlays.put(filename, iconOverlay);
         imageOverlayView.addIconOverlay(iconOverlay);
     }
 
@@ -115,10 +116,13 @@ public class ImageOverlayController {
      * Initializes the image overlays.
      */
     public void initImageOverlays() {
-        for (ImageFileData img : storageHandler.listImageFiles()) {
-            File file = img.getFile();
-            Log.d(TAG, "Adding overlay for " + file.toString());
-            addImageOverlay(file);
+        for (Photo photo : storageHandler.listPhotos()) {
+            PhotoWithLocation pwl = storageHandler.getPhotoWithLocation(photo);
+            Log.d(TAG, "Adding overlay for " + pwl.getFilename());
+            addImageOverlay(pwl);
         }
+    }
+
+    public void addNewImageOverlays() {
     }
 }

@@ -2,6 +2,7 @@ package com.teamapricot.projectwalking.model.database.dao;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
@@ -14,10 +15,8 @@ import java.util.List;
 /**
  * @author Erik Wahlberger, Joakim Tubring
  * @version 2021-10-12
- */
-
-/**
- * Database access-object for Routes-table.
+ *
+ * Database access object for Routes table.
  */
 @Dao
 public interface RouteDao {
@@ -47,8 +46,34 @@ public interface RouteDao {
     List<Route> getLatestRoutes(long limit);
 
     /**
-     * Update observers when unfinished routes change.
+     * Get the route identified by a route id.
+     * @param routeId The route id
+     * @return The route
      */
-    @Query("SELECT * FROM Routes WHERE done = 0")
-    LiveData<List<Route>> getNotDoneRoutesLive();
+    @Query("SELECT * From Routes WHERE routeId = :routeId")
+    Route getRouteById(long routeId);
+
+    /**
+     * Get an open route (if one exists).
+     */
+    @Query("SELECT * From Routes WHERE done = 0")
+    Route getOpenRoute();
+
+    /**
+     * Delete a route.
+     */
+    @Delete
+    int deleteOne(Route route);
+
+    /**
+     * Delete open routes.
+     */
+    @Query("DELETE FROM Routes WHERE done = 0")
+    int deleteOpenRoutes();
+
+    /**
+     * Update a route.
+     */
+    @Update
+    int updateOne(Route route);
 }

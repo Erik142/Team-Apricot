@@ -1,8 +1,7 @@
 package com.teamapricot.projectwalking.model;
 
-import android.content.Context;
-import android.util.Log;
-
+import com.teamapricot.projectwalking.model.database.Route;
+import com.teamapricot.projectwalking.model.database.dao.RouteDao;
 import com.teamapricot.projectwalking.observe.ObservableBase;
 
 import org.osmdroid.bonuspack.routing.Road;
@@ -35,6 +34,13 @@ public class NavigationModel extends ObservableBase<NavigationModel> {
     private boolean followLocation = false;
     private boolean locationUpdates = false;
 
+    private RouteDao routeDao = null;
+
+    private Route route = null;
+
+    public NavigationModel(RouteDao routeDao) {
+        this.routeDao = routeDao;
+    }
     /**
      * Get the user location
      * 
@@ -78,12 +84,25 @@ public class NavigationModel extends ObservableBase<NavigationModel> {
         return zoomLevel;
     }
 
+    /**
+     * Maybe initialize the destination with route from the database.
+     * @param roadManager
+     */
+    public void initDestination(RoadManager roadManager) {
+        route = routeDao.getOpenRoute();
+        if(route == null) {
+            return;
+        }
+        destination = new GeoPoint(route.getEndX(), route.getEndY());
+        updateDestination(roadManager);
+    }
+
     public void createDestination(RoadManager roadManager) {
         createDestination(roadManager, DISTANCES[distanceChoice]);
     }
 
     public void createDestination(RoadManager roadManager, double radius) {
-        if (userLocation == null) {
+        if(userLocation == null) {
             return;
         }
 
@@ -91,10 +110,16 @@ public class NavigationModel extends ObservableBase<NavigationModel> {
         double len = 0.8 * radius + 0.2 * radius * Math.random();
         double deg = Math.random() * 360;
 
-        GeoPoint newDestination = userLocation.destinationPoint(len, deg);
+        destination = userLocation.destinationPoint(len, deg);
 
-        this.destination = newDestination;
+        route = new Route(userLocation.getLatitude(), userLocation.getLongitude(),
+                          destination.getLatitude(), destination.getLongitude(), radius);
+        routeDao.insertOne(route);
 
+        updateDestination(roadManager);
+    }
+
+    private void updateDestination(RoadManager roadManager) {
         CompletableFuture.runAsync(() -> {
             ArrayList<GeoPoint> points = new ArrayList<>();
             points.add(this.getUserLocation());
@@ -114,6 +139,7 @@ public class NavigationModel extends ObservableBase<NavigationModel> {
 
             this.boundingBox = calculateBoundingBox(points);
             this.followLocation = false;
+
         }).thenRun(() -> {
             updateObservers(this);
         });
@@ -159,6 +185,9 @@ public class NavigationModel extends ObservableBase<NavigationModel> {
      * then updates all observers
      */
     public void removeDestination() {
+        if(route != null) {
+            routeDao.deleteOne(route);
+        }
         this.destination = null;
         this.routeOverlay = null;
         this.followLocation = false;

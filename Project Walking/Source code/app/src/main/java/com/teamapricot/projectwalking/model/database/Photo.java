@@ -15,7 +15,8 @@ import androidx.room.PrimaryKey;
  */
 
 @Entity(tableName = "Photos",
-        indices = {@Index("routeId")},
+        indices = {@Index(value = "routeId", unique = true),
+                   @Index(value = "filename", unique = true)},
         foreignKeys = {@ForeignKey(entity = Route.class,
                                    parentColumns = "routeId",
                                    childColumns = "routeId",

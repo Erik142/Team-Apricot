@@ -20,7 +20,7 @@ import java.util.concurrent.Executors;
  * When adding new tables add dao's and class names here.
  */
 
-@androidx.room.Database(entities = { Achievement.class, Photo.class, Route.class}, version = 2)
+@androidx.room.Database(entities = { Achievement.class, Photo.class, Route.class}, version = 3)
 public abstract class Database extends RoomDatabase {
     private static final String DATABASE_NAME = "fun-walking-database";
 
@@ -38,7 +38,10 @@ public abstract class Database extends RoomDatabase {
     public static CompletableFuture<Database> getDatabase(Context context) {
         return CompletableFuture.supplyAsync(() -> {
             if (database == null) {
-                database = Room.databaseBuilder(context, Database.class, DATABASE_NAME).fallbackToDestructiveMigration().build();
+                database = Room.databaseBuilder(context, Database.class, DATABASE_NAME)
+                               .fallbackToDestructiveMigration()
+                               .allowMainThreadQueries() // TODO: No. Just... no.
+                               .build();
             }
 
             return database;
