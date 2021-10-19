@@ -1,0 +1,4 @@
+Update = <false> -> set to true to trigger 1 Update Otherwise increment database version (+1).
+Use a comma (",") to seperate columns.
+Achievement (String), title (String), description (String), type (int), value (int), points(int), nr (int).
+
