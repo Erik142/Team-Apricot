@@ -10,7 +10,9 @@ import com.teamapricot.projectwalking.model.database.dao.PhotoDao;
 import com.teamapricot.projectwalking.model.database.dao.RouteDao;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Supplier;
 
 /**
  * @author Erik Wahlberger, Joakim Tubring
@@ -25,6 +27,7 @@ public abstract class Database extends RoomDatabase {
     private static final String DATABASE_NAME = "fun-walking-database";
 
     private static Database database;
+    private static ExecutorService executorService;
 
     public abstract PhotoDao photoDao();
     public abstract RouteDao routeDao();
@@ -46,6 +49,22 @@ public abstract class Database extends RoomDatabase {
 
             return database;
         }, Executors.newSingleThreadExecutor());
+    }
+
+    public static <T> CompletableFuture<T> performQuery(Supplier<T> supplier) {
+        createExecutorService();
+        return CompletableFuture.supplyAsync(supplier, executorService);
+    }
+
+    public static CompletableFuture<Void> performQuery(Runnable runnable) {
+        createExecutorService();
+        return CompletableFuture.runAsync(runnable, executorService);
+    }
+
+    private static void createExecutorService() {
+        if (executorService == null) {
+            executorService = Executors.newSingleThreadExecutor();
+        }
     }
 }
 
