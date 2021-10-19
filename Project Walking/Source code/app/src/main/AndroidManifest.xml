@@ -19,9 +19,6 @@
         android:theme="@style/Theme.ProjectWalking.NoActionBar"
         tools:replace="android:allowBackup">
         <activity
-            android:name=".view.DistanceActivity"
-            android:exported="true" />
-        <activity
             android:name=".view.achievement.AchievementsActivity"
             android:exported="false"
             android:parentActivityName=".view.MainActivity">

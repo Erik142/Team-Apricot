@@ -2,7 +2,6 @@ package com.teamapricot.projectwalking.view.achievement;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,8 +13,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.teamapricot.projectwalking.R;
-import com.teamapricot.projectwalking.controller.AchievementRecyclerViewAdapter;
-import com.teamapricot.projectwalking.controller.DistanceController;
 import com.teamapricot.projectwalking.controller.StatisticsRecyclerViewAdapter;
 import com.teamapricot.projectwalking.model.Board;
 import com.teamapricot.projectwalking.model.Statistics;
@@ -41,7 +38,6 @@ public class StatisticsFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     TextView txt;
-    private DistanceController distance;
     private RecyclerView.Adapter recyclerViewAdapter;
     private int mColumnCount = 1;
     private static final String ARG_COLUMN_COUNT = "column-count";
@@ -108,10 +104,6 @@ public class StatisticsFragment extends Fragment {
                 board = new Board(photoDao, routeDao, achievementDao);
                 board.addObserver(createBoardObserver());
                 board.init();
-
-                distance = new DistanceController(routeDao);
-                distance.DistanceTravelled();
-                double Dtn = distance.getTotalDistance();
 
         });
         return view;

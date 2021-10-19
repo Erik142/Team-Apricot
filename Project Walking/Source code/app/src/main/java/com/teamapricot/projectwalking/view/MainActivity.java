@@ -15,7 +15,6 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.teamapricot.projectwalking.R;
 import com.teamapricot.projectwalking.controller.CameraController;
-import com.teamapricot.projectwalking.controller.DistanceController;
 import com.teamapricot.projectwalking.controller.ImageOverlayController;
 import com.teamapricot.projectwalking.controller.NavigationController;
 import com.teamapricot.projectwalking.controller.NotificationController;
@@ -69,8 +68,6 @@ public class MainActivity extends AppCompatActivity {
     private MapView map = null;
 
     private final MapLoadingDialog mapLoadingDialog = new MapLoadingDialog(this);
-    Button Statistics;
-    private DistanceController distanceController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,13 +76,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         init();
-
-        try {
-            Database database = Database.getDatabase(this).get();
-        } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
-            return;
-        }
     }
 
     @Override
@@ -379,12 +369,4 @@ public class MainActivity extends AppCompatActivity {
         map.invalidate();
         return marker;
     }
-/*
-    private void GetDistance(){
-        Statistics = findViewById(R.id.statistics);
-        distanceController.registerOnClickListener(Statistics,this);
-
-    }
-
- */
 }
