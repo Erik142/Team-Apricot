@@ -1,15 +1,15 @@
 package com.teamapricot.projectwalking.controller;
 
 import android.Manifest;
-import android.util.Log;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.teamapricot.projectwalking.R;
-import com.teamapricot.projectwalking.handlers.LocationHandler;
 import com.teamapricot.projectwalking.handlers.PermissionHandler;
 import com.teamapricot.projectwalking.model.NavigationModel;
+import com.teamapricot.projectwalking.model.database.Database;
+import com.teamapricot.projectwalking.model.database.dao.RouteDao;
 import com.teamapricot.projectwalking.observe.Observer;
 import com.teamapricot.projectwalking.view.dialogs.ChooseDistanceDialog;
 import com.teamapricot.projectwalking.view.dialogs.PermissionRejectedDialog;
@@ -17,8 +17,9 @@ import com.teamapricot.projectwalking.view.dialogs.RemoveDestinationDialog;
 
 import org.osmdroid.bonuspack.routing.OSRMRoadManager;
 import org.osmdroid.bonuspack.routing.RoadManager;
-import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
+
+import java.util.concurrent.ExecutionException;
 
 /**
  * @author Erik Wahlberger
@@ -35,6 +36,8 @@ public class NavigationController {
     private NavigationModel navigationModel;
     private RoadManager roadManager;
 
+    private RouteDao routeDao = null;
+
     /**
      * Creates a new instance of the {@code NavigationController class} for the
      * specified {@code AppCompatActivity}.
@@ -47,6 +50,17 @@ public class NavigationController {
         this.activity = activity;
         roadManager = new OSRMRoadManager(activity, "Fun Walking");
         ((OSRMRoadManager) roadManager).setMean(OSRMRoadManager.MEAN_BY_FOOT);
+        try {
+            Database database = Database.getDatabase(activity.getApplicationContext()).get();
+            routeDao = database.routeDao();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        // In the future, when route creation and taking photos work there too, exchange
+        // the delete below with "navigationModel.initDestination(roadManager);" to
+        // actually use the old open destination.
+        routeDao.deleteOpenRoutes();
     }
 
     /**
@@ -97,10 +111,10 @@ public class NavigationController {
     public void registerOnClickListener(View button) {
         switch (button.getId()) {
             case R.id.add_destination_fab:
-                addDestination(button);
+                addDestinationClick(button);
                 break;
             case R.id.remove_destination_fab:
-                removeDestination(button);
+                removeDestinationClick(button);
                 break;
         }
     }
@@ -110,7 +124,7 @@ public class NavigationController {
      * 
      * @param button The button that will be used to add a destination to the map
      */
-    private void addDestination(View button) {
+    private void addDestinationClick(View button) {
         button.setOnClickListener(view -> {
             if (navigationModel.getDestination() == null) {
                 navigationModel.createDestination(roadManager);
@@ -131,7 +145,7 @@ public class NavigationController {
      * @param button The button that will be used to remove a destination from the
      *               map
      */
-    private void removeDestination(View button) {
+    private void removeDestinationClick(View button) {
         button.setOnClickListener(view -> {
             if (navigationModel.getDestination() != null) {
                 RemoveDestinationDialog dialog = new RemoveDestinationDialog(this.activity, () -> {
@@ -140,5 +154,9 @@ public class NavigationController {
                 dialog.show(activity.getSupportFragmentManager(), "NavigationController");
             }
         });
+    }
+
+    public void removeDestination() {
+        navigationModel.removeDestination();
     }
 }
