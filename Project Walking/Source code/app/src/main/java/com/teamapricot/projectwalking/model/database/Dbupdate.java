@@ -23,9 +23,6 @@ public class Dbupdate {
         String line;
 
         while ((line = br.readLine()) != null) {
-            if((br.readLine().endsWith("."))){
-                continue;
-            }
             String[] tmp = line.split(",");
             Achievement aTmp = new Achievement(tmp[0], tmp[1], tmp[2], false,
                     Integer.parseInt(tmp[3]), Integer.parseInt(tmp[4]),
