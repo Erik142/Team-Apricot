@@ -1,11 +1,23 @@
 package com.teamapricot.projectwalking.view.achievement;
 
+import android.content.Context;
 import android.os.Bundle;
-import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.teamapricot.projectwalking.R;
+import com.teamapricot.projectwalking.controller.AchievementRecyclerViewAdapter;
+import com.teamapricot.projectwalking.controller.DistanceController;
+import com.teamapricot.projectwalking.model.database.Database;
+import com.teamapricot.projectwalking.model.database.dao.PhotoDao;
+import com.teamapricot.projectwalking.model.database.dao.RouteDao;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -19,6 +31,11 @@ public class StatisticsFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    TextView txt;
+    private DistanceController distance;
+    private int mColumnCount = 1;
+    private RecyclerView.Adapter recyclerViewAdapter;
+    private static final String ARG_COLUMN_COUNT = "column-count";
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -44,14 +61,14 @@ public class StatisticsFragment extends Fragment {
 
     public StatisticsFragment() {
         // Required empty public constructor
+
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
     }
 
@@ -59,6 +76,29 @@ public class StatisticsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_statistics, container, false);
+        View view = inflater.inflate(R.layout.fragment_statistics, container, false);
+
+        if (view instanceof RecyclerView) {
+            Context context = view.getContext();
+            RecyclerView recyclerView = (RecyclerView) view;
+            if (mColumnCount <= 1) {
+                recyclerView.setLayoutManager(new LinearLayoutManager(context));
+            } else {
+                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
+            }
+            recyclerView.setAdapter(new AchievementRecyclerViewAdapter(distance));
+            this.recyclerViewAdapter = recyclerView.getAdapter();
+
+            Database.getDatabase(getActivity().getApplicationContext()).thenAccept(database -> {
+                PhotoDao photoDao = database.photoDao();
+                //RouteDao routeDao = database.routeDao();
+                    RouteDao routeDao = database.routeDao();
+                    distance = new DistanceController(routeDao);
+                    distance.DistanceTravelled();
+                    double Dtn = distance.getTotalDistance();
+
+            });
+        }
+        return view;
     }
 }
