@@ -2,6 +2,7 @@ package com.teamapricot.projectwalking.view.achievement;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,9 +16,17 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.teamapricot.projectwalking.R;
 import com.teamapricot.projectwalking.controller.AchievementRecyclerViewAdapter;
 import com.teamapricot.projectwalking.controller.DistanceController;
+import com.teamapricot.projectwalking.controller.StatisticsRecyclerViewAdapter;
+import com.teamapricot.projectwalking.model.Board;
+import com.teamapricot.projectwalking.model.Statistics;
 import com.teamapricot.projectwalking.model.database.Database;
+import com.teamapricot.projectwalking.model.database.dao.AchievementDao;
 import com.teamapricot.projectwalking.model.database.dao.PhotoDao;
 import com.teamapricot.projectwalking.model.database.dao.RouteDao;
+import com.teamapricot.projectwalking.observe.Observer;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -33,13 +42,16 @@ public class StatisticsFragment extends Fragment {
     private static final String ARG_PARAM2 = "param2";
     TextView txt;
     private DistanceController distance;
-    private int mColumnCount = 1;
     private RecyclerView.Adapter recyclerViewAdapter;
+    private int mColumnCount = 1;
     private static final String ARG_COLUMN_COUNT = "column-count";
 
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    private Board board;
+    private List<Statistics> statistics;
 
     /**
      * Use this factory method to create a new instance of
@@ -61,7 +73,7 @@ public class StatisticsFragment extends Fragment {
 
     public StatisticsFragment() {
         // Required empty public constructor
-
+        statistics = new ArrayList<>();
     }
 
     @Override
@@ -77,28 +89,42 @@ public class StatisticsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_statistics, container, false);
+        RecyclerView recyclerView = view.findViewById(R.id.statistics_list);
 
-        if (view instanceof RecyclerView) {
-            Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
-            if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            } else {
-                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
-            }
-            recyclerView.setAdapter(new AchievementRecyclerViewAdapter(distance));
-            this.recyclerViewAdapter = recyclerView.getAdapter();
-
-            Database.getDatabase(getActivity().getApplicationContext()).thenAccept(database -> {
-                PhotoDao photoDao = database.photoDao();
-                //RouteDao routeDao = database.routeDao();
-                    RouteDao routeDao = database.routeDao();
-                    distance = new DistanceController(routeDao);
-                    distance.DistanceTravelled();
-                    double Dtn = distance.getTotalDistance();
-
-            });
+        Context context = view.getContext();
+        if (mColumnCount <= 1) {
+            recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        } else {
+            recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
         }
+        recyclerView.setAdapter(new StatisticsRecyclerViewAdapter(statistics));
+        recyclerViewAdapter = recyclerView.getAdapter();
+
+        Database.getDatabase(getActivity().getApplicationContext()).thenAccept(database -> {
+                PhotoDao photoDao = database.photoDao();
+                RouteDao routeDao = database.routeDao();
+                AchievementDao achievementDao = database.achievementDao();
+
+                board = new Board(photoDao, routeDao, achievementDao);
+                board.addObserver(createBoardObserver());
+                board.init();
+
+                distance = new DistanceController(routeDao);
+                distance.DistanceTravelled();
+                double Dtn = distance.getTotalDistance();
+
+        });
         return view;
+    }
+
+    private Observer<Board> createBoardObserver() {
+        return board -> {
+            getActivity().runOnUiThread(() -> {
+                statistics.clear();
+                statistics.add(new Statistics("Total distance", Double.toString(board.getTotalDistance())));
+                statistics.add(new Statistics("Number of photos taken", Integer.toString(board.getNumberOfPhotos())));
+                recyclerViewAdapter.notifyDataSetChanged();
+            });
+        };
     }
 }

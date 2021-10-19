@@ -5,7 +5,7 @@
     <string name="achievements_title">Title</string>
     <string name="achievements_points">Points</string>
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="statistics_title">title</string>
-    <string name="statistics_value">value</string>
+    <string name="statistics_title">Title</string>
+    <string name="statistics_value">Value</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

@@ -1,5 +1,7 @@
 package com.teamapricot.projectwalking.model;
 
+import android.util.Log;
+
 import com.teamapricot.projectwalking.model.database.Achievement;
 import com.teamapricot.projectwalking.model.database.Photo;
 import com.teamapricot.projectwalking.model.database.Route;
@@ -59,6 +61,15 @@ public class Board extends ObservableBase<Board> {
     /**
      * Method for checking for and updating achievements.
      */
+
+    public double getTotalDistance() {
+        return this.rDist;
+    }
+
+    public int getNumberOfPhotos() {
+        return this.nrPhotos;
+    }
+
     private void updateAchievements(double distance, int nrPhotos) {
 
         ad.updateAchievementsDistance(distance);
