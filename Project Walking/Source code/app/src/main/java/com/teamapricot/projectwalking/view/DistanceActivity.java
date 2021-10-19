@@ -7,10 +7,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.teamapricot.projectwalking.R;
 import com.teamapricot.projectwalking.controller.DistanceController;
-import com.teamapricot.projectwalking.model.database.Database;
-import com.teamapricot.projectwalking.model.database.dao.RouteDao;
-
-import java.util.concurrent.ExecutionException;
 
 public class DistanceActivity extends AppCompatActivity {
     TextView txt;
@@ -20,6 +16,7 @@ public class DistanceActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_distance);
+        /**
         try {
             Database database = Database.getDatabase(this).get();
             RouteDao routeDao = database.routeDao();
@@ -34,6 +31,8 @@ public class DistanceActivity extends AppCompatActivity {
         double Dtn = distance.getTotalDistance();
         txt = findViewById(R.id.Number);
         txt.setText(Double.toString(Dtn));
+
+         */
 
     }
 }

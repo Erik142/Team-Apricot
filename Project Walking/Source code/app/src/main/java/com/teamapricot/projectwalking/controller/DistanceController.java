@@ -1,13 +1,8 @@
 package com.teamapricot.projectwalking.controller;
 
-import android.content.Intent;
-import android.view.View;
-
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.teamapricot.projectwalking.R;
 import com.teamapricot.projectwalking.model.database.dao.RouteDao;
-import com.teamapricot.projectwalking.view.DistanceActivity;
 
 public class DistanceController extends AppCompatActivity {
     private RouteDao routeDao;
@@ -28,7 +23,7 @@ public class DistanceController extends AppCompatActivity {
     }
     /**
      * button to get the statistics and new screen.
-     */
+
     public void registerOnClickListener(View button, AppCompatActivity activity) {
         if (!button.hasOnClickListeners()) {
             button.setOnClickListener(view -> {
@@ -39,6 +34,7 @@ public class DistanceController extends AppCompatActivity {
             });
         }
     }
+     */
 }
 
 
