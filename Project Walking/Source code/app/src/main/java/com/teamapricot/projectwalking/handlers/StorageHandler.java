@@ -1,12 +1,16 @@
 package com.teamapricot.projectwalking.handlers;
 
 import android.os.Environment;
+import android.os.SystemClock;
 import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.exifinterface.media.ExifInterface;
 
-import org.osmdroid.util.GeoPoint;
+import com.teamapricot.projectwalking.model.database.Database;
+import com.teamapricot.projectwalking.model.database.Photo;
+import com.teamapricot.projectwalking.model.database.Route;
+import com.teamapricot.projectwalking.model.database.dao.PhotoDao;
+import com.teamapricot.projectwalking.model.database.dao.RouteDao;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,13 +18,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.concurrent.ExecutionException;
 
 /**
  * @author Erik Wahlberger, Daniel Brännvall
@@ -37,12 +39,38 @@ public class StorageHandler {
 
     private final AppCompatActivity activity;
 
+    private static StorageHandler instance;
+
+    private PhotoDao photoDao = null;
+    private RouteDao routeDao = null;
+
+    private File lastSavedPhoto = null;
     /**
-     * Creates a new instance of the {@code ImageFileHandler} class, using the specified {@code AppCompatActivity}
+     * Private constructor.
+     * @param activity The associated activity
+     */
+    private StorageHandler(AppCompatActivity activity) {
+        this.activity = activity;
+        try {
+            Database database = Database.getDatabase(activity.getApplicationContext()).get();
+            photoDao = database.photoDao();
+            routeDao = database.routeDao();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Creates a new instance of the {@code StorageHandler} class if necessary, using the
+     * specified {@code AppCompatActivity}. If not necessary, it just returns the existing
+     * instance.
      * @param activity The activity used for retrieving external storage directory paths
      */
-    public StorageHandler(AppCompatActivity activity) {
-        this.activity = activity;
+    public static StorageHandler getInstance(AppCompatActivity activity) {
+        if(instance == null) {
+            instance = new StorageHandler(activity);
+        }
+        return instance;
     }
 
     /**
@@ -83,6 +111,12 @@ public class StorageHandler {
 
         file.delete();
 
+        Route route = getOpenRoute();
+        photoDao.insertPhoto(new Photo(outputFile.toString(), route.getRouteId()));
+        route.setDone(true);
+        routeDao.updateOne(route);
+        lastSavedPhoto = outputFile;
+
         return outputFile;
     }
 
@@ -100,17 +134,30 @@ public class StorageHandler {
      * @author Daniel Brännvall
      * @version 2021-09-27
      *
-     * Data about an image file.
+     * Data about a photo.
      */
-    public static class ImageFileData {
-        private final File file;
+    public static class PhotoWithLocation {
+        private final long photoId;
+        private final String filename;
         private final double latitude;
         private final double longitude;
+        private final long routeId;
 
-        public ImageFileData(File file, double latitude, double longitude) {
-            this.file = file;
+        public PhotoWithLocation(long photoId, String filename, double latitude,
+                                 double longitude, long routeId) {
+            this.photoId = photoId;
+            this.filename = filename;
             this.latitude = latitude;
             this.longitude = longitude;
+            this.routeId = routeId;
+        }
+
+        public long getPhotoId() {
+            return photoId;
+        }
+
+        public String getFilename() {
+            return filename;
         }
 
         public double getLatitude() {
@@ -121,87 +168,68 @@ public class StorageHandler {
             return longitude;
         }
 
-        public File getFile() {
-            return file;
+        public long getRouteId() {
+            return routeId;
         }
     }
 
     /**
-     * Reads the location data of a file and creates an ImageFileData object.
-     *
-     * @param file - The file to examine
-     * @return The image file data
-     */
-    public ImageFileData getImageFileData(File file) {
-        FileInputStream input = null;
-        try {
-            input = new FileInputStream(file);
-            ExifInterface exif = new ExifInterface(input);
-            double[] latLong = exif.getLatLong();
-            if (latLong != null) {
-                Log.d(TAG, "Created file data object for " + file.getName());
-                return new ImageFileData(file, latLong[0], latLong[1]);
-            }
-        } catch (IOException e) {
-            Log.d(TAG, e.getLocalizedMessage());
-        } finally {
-            try {
-                input.close();
-            } catch (IOException e) {
-                Log.w(TAG, e.getLocalizedMessage());
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Creates a stream of File objects for the files in storage.
-     *
-     * @return The stream
-     */
-    private Stream<ImageFileData> imageFileStream() {
-        File[] files = getImageDirectory().listFiles();
-        if (files == null) {
-            return Stream.empty();
-        }
-        return Arrays.stream(files).map(this::getImageFileData).filter(Objects::nonNull);
-    }
-
-    /**
-     * Lists the image files in storage.
-     *
+     * Lists the photos in storage.
      * @return The list
      */
-    public List<ImageFileData> listImageFiles() {
-        Log.d(TAG, "List of image files requested");
-        return imageFileStream().collect(Collectors.toList());
+    public List<Photo> listPhotos() {
+        Log.d(TAG, "List of photos requested");
+        return photoDao.getAllPhotos();
     }
 
     /**
-     * Calculates the squared distance between the image location and the specified point.
-     *
-     * @param img - Image data
-     * @param lat - Latitude of point
-     * @param lon - Longitude of point
-     * @return The distance squared
-     */
-    private double distance(ImageFileData img, double lat, double lon) {
-        GeoPoint pos = new GeoPoint(lat, lon);
-        GeoPoint imgPos = new GeoPoint(img.getLatitude(), img.getLongitude());
-        return pos.distanceToAsDouble(imgPos);
-    }
-
-    /**
-     * Lists the image files within a certain distance of a point.
-     *
-     * @param latitude  - Latitude of point
-     * @param longitude - Longitude of point
-     * @param distance  - Maximum distance from the point
+     * Lists the photos in storage with added location info.
      * @return The list
      */
-    public List<ImageFileData> listImageFilesNearPoint(double latitude, double longitude, double distance) {
-        Log.d(TAG, "List of nearby image files requested");
-        return imageFileStream().filter(image -> distance(image, latitude, longitude) <= distance)
-                .collect(Collectors.toList());
+    public List<PhotoWithLocation> listPhotosWithLocation() {
+        Log.d(TAG, "List of photos with location requested");
+        ArrayList<PhotoWithLocation> photosWithLocation = new ArrayList<>();
+        for(Photo photo : listPhotos()) {
+            PhotoWithLocation pwl = getPhotoWithLocation(photo);
+            if(pwl == null) {
+                continue;
+            }
+            photosWithLocation.add(pwl);
+        }
+        return photosWithLocation;
+    }
+
+    /**
+     * Get an open route from the database (if one exists).
+     */
+    public Route getOpenRoute() {
+        return routeDao.getOpenRoute();
+    }
+
+    /**
+     * Get the last photo from the database.
+     */
+    public Photo getLastPhoto() {
+        if(lastSavedPhoto == null) {
+            return null;
+        }
+        return photoDao.getPhotoByFilename(lastSavedPhoto.toString());
+    }
+
+    /**
+     * Get routeId and location for photo.
+     * @param photo
+     * @return A photo with extra data
+     */
+    public PhotoWithLocation getPhotoWithLocation(Photo photo) {
+        if(photo == null) {
+            return null;
+        }
+        Route route = routeDao.getRouteById(photo.getRouteId());
+        if(route == null) {
+            return null;
+        }
+        return new PhotoWithLocation(photo.getPhotoId(), photo.getFilename(),
+                                     route.getEndX(), route.getEndY(), route.getRouteId());
     }
 }

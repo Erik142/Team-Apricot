@@ -20,9 +20,11 @@ import com.teamapricot.projectwalking.controller.ImageOverlayController;
 import com.teamapricot.projectwalking.controller.NavigationController;
 import com.teamapricot.projectwalking.controller.NotificationController;
 import com.teamapricot.projectwalking.controller.ToolbarController;
+import com.teamapricot.projectwalking.handlers.StorageHandler;
 import com.teamapricot.projectwalking.model.CameraModel;
 import com.teamapricot.projectwalking.model.NavigationModel;
 import com.teamapricot.projectwalking.model.database.Database;
+import com.teamapricot.projectwalking.model.database.Photo;
 import com.teamapricot.projectwalking.observe.Observer;
 import com.teamapricot.projectwalking.view.dialogs.MapLoadingDialog;
 
@@ -130,7 +132,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initModels() {
-        this.navigationModel = new NavigationModel();
+        try {
+            Database database = Database.getDatabase(this.getApplicationContext()).get();
+            this.navigationModel = new NavigationModel(database.routeDao());
+        } catch (InterruptedException |ExecutionException e) {
+            e.printStackTrace();
+        }
     }
 
     private void initToolbar() {
@@ -217,10 +224,16 @@ public class MainActivity extends AppCompatActivity {
                     setButtonVisibility(R.id.remove_destination_fab, View.GONE);
                     return;
                 }
-                checkboxItem.setEnabled(true);
-                double distance = location.distanceToAsDouble(destination);
-                Log.d("observer", "distance = " + distance);
-                if (distance > ALLOWED_DISTANCE) {
+                if(checkboxItem != null) {
+                    checkboxItem.setEnabled(true);
+                }
+                if(location == null) {
+                    setButtonVisibility(R.id.open_camera_fab, View.GONE);
+                    setButtonVisibility(R.id.add_destination_fab, View.VISIBLE);
+                    setButtonVisibility(R.id.remove_destination_fab, View.GONE);
+                    return;
+                }
+                if (location.distanceToAsDouble(destination) > ALLOWED_DISTANCE) {
                     setButtonVisibility(R.id.open_camera_fab, View.GONE);
                     setButtonVisibility(R.id.add_destination_fab, View.GONE);
                     setButtonVisibility(R.id.remove_destination_fab, View.VISIBLE);
@@ -259,6 +272,12 @@ public class MainActivity extends AppCompatActivity {
                 switch (model.getStatus()) {
                     case Done:
                         toastMessage = "Nice photo!";
+                        navigationController.removeDestination();
+                        StorageHandler sh = StorageHandler.getInstance(this);
+                        Photo photo = sh.getLastPhoto();
+                        if(photo != null) {
+                            imageOverlayController.addImageOverlay(sh.getPhotoWithLocation(photo));
+                        }
                         break;
                     case ErrorSavingFinalPhoto:
                         toastMessage = "An error occurred while copying image to external storage";
