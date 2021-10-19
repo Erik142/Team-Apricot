@@ -129,6 +129,7 @@ public class MainActivity extends AppCompatActivity {
         initImageOverlay();
         initCameraButtonVisibility();
         //GetDistance();
+        navigationController.start(this.locationOverlay);
     }
 
     private void initModels() {
