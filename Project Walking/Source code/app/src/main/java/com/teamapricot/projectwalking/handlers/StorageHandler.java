@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ExecutionException;
 
 /**
  * @author Erik Wahlberger, Daniel Brännvall
@@ -50,10 +51,13 @@ public class StorageHandler {
      */
     private StorageHandler(AppCompatActivity activity) {
         this.activity = activity;
-        Database.getDatabase(activity.getApplicationContext()).thenAccept(database -> {
+        try {
+            Database database = Database.getDatabase(activity.getApplicationContext()).get();
             photoDao = database.photoDao();
             routeDao = database.routeDao();
-        });
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -67,23 +71,6 @@ public class StorageHandler {
             instance = new StorageHandler(activity);
         }
         return instance;
-    }
-
-    /**
-     * Is the database ready?
-     * @return True if ready, false if not.
-     */
-    private boolean databaseIsReady() {
-        return photoDao != null && routeDao != null;
-    }
-
-    /**
-     * Wait for database.
-     */
-    private void waitForDatabase() {
-        while(!databaseIsReady()) {
-            SystemClock.sleep(200);
-        }
     }
 
     /**
@@ -200,7 +187,6 @@ public class StorageHandler {
      * @return The list
      */
     public List<PhotoWithLocation> listPhotosWithLocation() {
-        waitForDatabase();
         Log.d(TAG, "List of photos with location requested");
         ArrayList<PhotoWithLocation> photosWithLocation = new ArrayList<>();
         for(Photo photo : listPhotos()) {
@@ -217,7 +203,6 @@ public class StorageHandler {
      * Get an open route from the database (if one exists).
      */
     public Route getOpenRoute() {
-        waitForDatabase();
         return routeDao.getOpenRoute();
     }
 

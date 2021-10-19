@@ -128,9 +128,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initModels() {
-        Database.getDatabase(this.getApplicationContext()).thenAccept(database -> {
+        try {
+            Database database = Database.getDatabase(this.getApplicationContext()).get();
             this.navigationModel = new NavigationModel(database.routeDao());
-        });
+        } catch (InterruptedException |ExecutionException e) {
+            e.printStackTrace();
+        }
     }
 
     private void initToolbar() {

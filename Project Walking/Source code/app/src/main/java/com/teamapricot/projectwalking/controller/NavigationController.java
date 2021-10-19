@@ -19,6 +19,8 @@ import org.osmdroid.bonuspack.routing.OSRMRoadManager;
 import org.osmdroid.bonuspack.routing.RoadManager;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
+import java.util.concurrent.ExecutionException;
+
 /**
  * @author Erik Wahlberger
  * @version 2021-10-16
@@ -48,11 +50,17 @@ public class NavigationController {
         this.activity = activity;
         roadManager = new OSRMRoadManager(activity, "Fun Walking");
         ((OSRMRoadManager) roadManager).setMean(OSRMRoadManager.MEAN_BY_FOOT);
-        Database.getDatabase(activity.getApplicationContext()).thenAccept(database -> {
+        try {
+            Database database = Database.getDatabase(activity.getApplicationContext()).get();
             routeDao = database.routeDao();
-            // navigationModel.initDestination(roadManager);
-            routeDao.deleteOpenRoutes();
-        });
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        // In the future, when route creation and taking photos work there too, exchange
+        // the delete below with "navigationModel.initDestination(roadManager);" to
+        // actually use the old open destination.
+        routeDao.deleteOpenRoutes();
     }
 
     /**
