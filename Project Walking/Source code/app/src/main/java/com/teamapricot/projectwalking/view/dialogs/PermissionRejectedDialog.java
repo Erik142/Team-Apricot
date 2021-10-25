@@ -43,7 +43,7 @@ public class PermissionRejectedDialog extends DialogFragment {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
         dialogBuilder.setTitle(TITLE)
                 .setMessage(message)
-                .setPositiveButton(POSITIVE_BUTTON_TEXT, getOnClickListener(null))
+                .setPositiveButton(POSITIVE_BUTTON_TEXT, getOnClickListener(() -> System.exit(0)))
                 .setNegativeButton(NEGATIVE_BUTTON_TEXT, getOnClickListener(() -> openApplicationSettings()));
 
         return dialogBuilder.create();
@@ -76,5 +76,6 @@ public class PermissionRejectedDialog extends DialogFragment {
         intent.setData(uri);
 
         activity.startActivity(intent);
+        System.exit(0);
     }
 }
