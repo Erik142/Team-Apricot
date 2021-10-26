@@ -114,7 +114,7 @@ public class StatisticsFragment extends Fragment {
         return board -> {
             getActivity().runOnUiThread(() -> {
                 statistics.clear();
-                statistics.add(new Statistics("Total distance", Double.toString(board.getTotalDistance())));
+                statistics.add(new Statistics("Total distance", Math.round(board.getTotalDistance()) + " m"));
                 statistics.add(new Statistics("Number of photos taken", Integer.toString(board.getNumberOfPhotos())));
                 recyclerViewAdapter.notifyDataSetChanged();
             });
