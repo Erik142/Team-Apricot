@@ -121,17 +121,18 @@ public class MainActivity extends AppCompatActivity {
         if (permissionHandler.checkPermission(Manifest.permission.ACCESS_FINE_LOCATION)) {
             initPostPermissions();
         } else {
-            permissionHandler.requestPermissionAsync(Manifest.permission.ACCESS_FINE_LOCATION).thenAccept(permissionGranted -> {
-                if (!permissionGranted) {
-                    PermissionRejectedDialog dialog = new PermissionRejectedDialog(this,
-                            "Permission to access your device's location is required. Please grant access.");
-                    dialog.show(getSupportFragmentManager(), "MainActivity");
-                    while(true) {
-                        SystemClock.sleep(1000);
-                    }
-                }
-                restart(this);
-            });
+            permissionHandler.requestPermissionAsync(Manifest.permission.ACCESS_FINE_LOCATION)
+                    .thenAccept(permissionGranted -> {
+                        if (!permissionGranted) {
+                            PermissionRejectedDialog dialog = new PermissionRejectedDialog(this,
+                                    "Permission to access your device's location is required. Please grant access.");
+                            dialog.show(getSupportFragmentManager(), "MainActivity");
+                            while (true) {
+                                SystemClock.sleep(1000);
+                            }
+                        }
+                        restart(this);
+                    });
         }
     }
 
@@ -144,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
         notificationController.SendNotification(false);
         initImageOverlay();
         initCameraButtonVisibility();
-        //GetDistance();
+        // GetDistance();
         navigationController.start(this.locationOverlay);
     }
 
@@ -203,7 +204,8 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Shows a loading screen if the map has not been initialized
      *
-     * @param tilesOverlay The {@link TilesOverlay} to use to check whether or not the map has been initialized
+     * @param tilesOverlay The {@link TilesOverlay} to use to check whether or not
+     *                     the map has been initialized
      */
     private void showLoadingScreen(TilesOverlay tilesOverlay) {
         CompletableFuture.runAsync(() -> {
@@ -219,7 +221,7 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        imageOverlayController = new ImageOverlayController(this, new ImageOverlayView(map));
+        imageOverlayController = new ImageOverlayController(this, new ImageOverlayView(this, map));
         imageOverlayController.initImageOverlays();
     }
 
@@ -288,20 +290,21 @@ public class MainActivity extends AppCompatActivity {
                 String toastMessage = null;
 
                 switch (model.getStatus()) {
-                    case Done:
-                        toastMessage = "Nice photo!";
-                        navigationController.removeDestination();
-                        StorageHandler sh = StorageHandler.getInstance(this);
-                        Photo photo = sh.getLastPhoto();
+                case Done:
+                    toastMessage = "Nice photo!";
+                    navigationController.removeDestination();
+                    StorageHandler sh = StorageHandler.getInstance(this);
+                    sh.getLastPhoto().thenAccept(photo -> {
                         if (photo != null) {
                             imageOverlayController.addImageOverlay(sh.getPhotoWithLocation(photo));
                         }
-                        break;
-                    case ErrorSavingFinalPhoto:
-                        toastMessage = "An error occurred while copying image to external storage";
-                        break;
-                    default:
-                        break;
+                    });
+                    break;
+                case ErrorSavingFinalPhoto:
+                    toastMessage = "An error occurred while copying image to external storage";
+                    break;
+                default:
+                    break;
                 }
 
                 if (toastMessage != null) {
@@ -316,7 +319,7 @@ public class MainActivity extends AppCompatActivity {
      * Creates a new {@code Observer} object for the navigation functionality
      *
      * @return An {@code Observer<NavigationModel>} object to observe changes in a
-     * {@code NavigationModel} and update the UI correspondingly
+     *         {@code NavigationModel} and update the UI correspondingly
      */
     private Observer<NavigationModel> createNavigationObserver() {
         return model -> {
@@ -402,7 +405,7 @@ public class MainActivity extends AppCompatActivity {
      *
      * @param context The context of the app.
      */
-    private static void restart(Context context){
+    private static void restart(Context context) {
         PackageManager packageManager = context.getPackageManager();
         Intent intent = packageManager.getLaunchIntentForPackage(context.getPackageName());
         ComponentName componentName = intent.getComponent();

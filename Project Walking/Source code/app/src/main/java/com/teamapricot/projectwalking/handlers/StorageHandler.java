@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -111,13 +112,19 @@ public class StorageHandler {
 
         file.delete();
 
-        Route route = getOpenRoute();
-        photoDao.insertPhoto(new Photo(outputFile.toString(), route.getRouteId()));
-        route.setDone(true);
-        routeDao.updateOne(route);
-        lastSavedPhoto = outputFile;
+        try {
+            Route route = getOpenRoute().get();
+            Database.performQuery(() -> photoDao.insertPhoto(new Photo(outputFile.toString(), route.getRouteId()))).get();
+            route.setDone(true);
+            Database.performQuery(() -> routeDao.updateOne(route)).get();
+            lastSavedPhoto = outputFile;
 
-        return outputFile;
+            return outputFile;
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
     /**
@@ -177,43 +184,45 @@ public class StorageHandler {
      * Lists the photos in storage.
      * @return The list
      */
-    public List<Photo> listPhotos() {
+    public CompletableFuture<List<Photo>> listPhotos() {
         Log.d(TAG, "List of photos requested");
-        return photoDao.getAllPhotos();
+        return Database.performQuery(photoDao::getAllPhotos);
     }
 
     /**
      * Lists the photos in storage with added location info.
      * @return The list
      */
-    public List<PhotoWithLocation> listPhotosWithLocation() {
+    public CompletableFuture<List<PhotoWithLocation>> listPhotosWithLocation() {
         Log.d(TAG, "List of photos with location requested");
-        ArrayList<PhotoWithLocation> photosWithLocation = new ArrayList<>();
-        for(Photo photo : listPhotos()) {
-            PhotoWithLocation pwl = getPhotoWithLocation(photo);
-            if(pwl == null) {
-                continue;
+        return listPhotos().thenApply(photos -> {
+            ArrayList<PhotoWithLocation> photosWithLocation = new ArrayList<>();
+            for (Photo photo : photos) {
+                PhotoWithLocation pwl = getPhotoWithLocation(photo);
+                if (pwl == null) {
+                    continue;
+                }
+                photosWithLocation.add(pwl);
             }
-            photosWithLocation.add(pwl);
-        }
-        return photosWithLocation;
+            return photosWithLocation;
+        });
     }
 
     /**
      * Get an open route from the database (if one exists).
      */
-    public Route getOpenRoute() {
-        return routeDao.getOpenRoute();
+    public CompletableFuture<Route> getOpenRoute() {
+        return Database.performQuery(routeDao::getOpenRoute);
     }
 
     /**
      * Get the last photo from the database.
      */
-    public Photo getLastPhoto() {
+    public CompletableFuture<Photo> getLastPhoto() {
         if(lastSavedPhoto == null) {
             return null;
         }
-        return photoDao.getPhotoByFilename(lastSavedPhoto.toString());
+        return Database.performQuery(() -> photoDao.getPhotoByFilename(lastSavedPhoto.toString()));
     }
 
     /**
@@ -225,11 +234,18 @@ public class StorageHandler {
         if(photo == null) {
             return null;
         }
-        Route route = routeDao.getRouteById(photo.getRouteId());
-        if(route == null) {
+        try {
+            Route route = Database.performQuery(() -> routeDao.getRouteById(photo.getRouteId())).get();
+            if (route == null) {
+                return null;
+            }
+            Log.d(TAG, "returning new photo with location");
+            return new PhotoWithLocation(photo.getPhotoId(), photo.getFilename(),
+                    route.getEndX(), route.getEndY(), route.getRouteId());
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            Log.e(TAG, e.getMessage());
             return null;
         }
-        return new PhotoWithLocation(photo.getPhotoId(), photo.getFilename(),
-                                     route.getEndX(), route.getEndY(), route.getRouteId());
     }
 }

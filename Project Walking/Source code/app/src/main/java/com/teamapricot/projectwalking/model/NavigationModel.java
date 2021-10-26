@@ -1,5 +1,6 @@
 package com.teamapricot.projectwalking.model;
 
+import com.teamapricot.projectwalking.model.database.Database;
 import com.teamapricot.projectwalking.model.database.Route;
 import com.teamapricot.projectwalking.model.database.dao.RouteDao;
 import com.teamapricot.projectwalking.observe.ObservableBase;
@@ -46,7 +47,7 @@ public class NavigationModel extends ObservableBase<NavigationModel> {
      * 
      * @return The location as a {@code GeoPoint} object
      */
-    public GeoPoint getUserLocation() {
+    public synchronized GeoPoint getUserLocation() {
         return this.userLocation;
     }
 
@@ -89,12 +90,23 @@ public class NavigationModel extends ObservableBase<NavigationModel> {
      * @param roadManager
      */
     public void initDestination(RoadManager roadManager) {
-        route = routeDao.getOpenRoute();
-        if(route == null) {
-            return;
-        }
-        destination = new GeoPoint(route.getEndX(), route.getEndY());
-        updateDestination(roadManager);
+        Database.performQuery(routeDao::getOpenRoute).thenAccept(route -> {
+            if (route == null) {
+                return;
+            }
+
+            while (getUserLocation() == null) {
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            destination = new GeoPoint(route.getEndX(), route.getEndY());
+            this.route = route;
+            updateDestination(roadManager);
+        });
     }
 
     public void createDestination(RoadManager roadManager) {
@@ -114,9 +126,8 @@ public class NavigationModel extends ObservableBase<NavigationModel> {
 
         route = new Route(userLocation.getLatitude(), userLocation.getLongitude(),
                           destination.getLatitude(), destination.getLongitude(), len);
-        routeDao.insertOne(route);
-
-        updateDestination(roadManager);
+      
+        Database.performQuery(() -> routeDao.insertOne(route)).thenRun(() -> updateDestination(roadManager));
     }
 
     private void updateDestination(RoadManager roadManager) {
@@ -184,9 +195,9 @@ public class NavigationModel extends ObservableBase<NavigationModel> {
      * Sets the destination and routeOverlay to null, disables following user,
      * then updates all observers
      */
-    public void removeDestination() {
-        if(route != null) {
-            routeDao.deleteOne(route);
+    public void removeDestination(boolean removeFromDatabase) {
+        if(route != null && removeFromDatabase) {
+            Database.performQuery(() -> routeDao.deleteOne(route));
         }
         this.destination = null;
         this.routeOverlay = null;
@@ -199,7 +210,7 @@ public class NavigationModel extends ObservableBase<NavigationModel> {
      * 
      * @param location the value for the user location
      */
-    public void setUserLocation(GeoPoint location) {
+    public synchronized void setUserLocation(GeoPoint location) {
         this.userLocation = location;
         updateObservers(this);
     }
