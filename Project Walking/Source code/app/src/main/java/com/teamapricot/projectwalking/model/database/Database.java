@@ -44,7 +44,6 @@ public abstract class Database extends RoomDatabase {
             if (database == null) {
                 database = Room.databaseBuilder(context, Database.class, DATABASE_NAME)
                                .fallbackToDestructiveMigration()
-                               .allowMainThreadQueries() // TODO: No. Just... no.
                                .build();
             }
 
