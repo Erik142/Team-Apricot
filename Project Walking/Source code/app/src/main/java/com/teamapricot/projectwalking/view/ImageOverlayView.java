@@ -4,12 +4,16 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.IconOverlay;
+import org.osmdroid.views.overlay.Overlay;
+import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
+
+import java.util.List;
 
 /**
  * @author Daniel Brännvall
  * @version 2021-10-04
  *
- * View for images overlaid on the map.
+ *          View for images overlaid on the map.
  */
 public class ImageOverlayView {
     private static final String TAG = "ImageOverlayView";
@@ -52,8 +56,19 @@ public class ImageOverlayView {
     public void addIconOverlay(IconOverlay iconOverlay) {
         this.activity.runOnUiThread(() -> {
             mapView.getOverlays().add(iconOverlay);
+            makeSureUserLocationIsVisible();
             mapView.invalidate();
         });
+    }
+
+    public void makeSureUserLocationIsVisible() {
+        List<Overlay> overlays = mapView.getOverlays();
+        Overlay locationOverlay = overlays.stream().filter(o -> o instanceof MyLocationNewOverlay).findAny()
+                .orElse(null);
+        if (locationOverlay != null) {
+            overlays.remove(locationOverlay);
+            overlays.add(locationOverlay);
+        }
     }
 
     /**
@@ -76,7 +91,7 @@ public class ImageOverlayView {
      * @return The width and height of the thumbnail
      */
     public int[] thumbnailSize(int width, int height) {
-        int[] tnSize = {0, 0};
+        int[] tnSize = { 0, 0 };
         if (width > height) {
             tnSize[0] = thumbnailSize;
             tnSize[1] = height * thumbnailSize / width;
