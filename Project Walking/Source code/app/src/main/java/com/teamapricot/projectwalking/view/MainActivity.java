@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -75,13 +76,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         init();
-
-        try {
-            Database database = Database.getDatabase(this).get();
-        } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
-            return;
-        }
     }
 
     @Override
@@ -124,7 +118,8 @@ public class MainActivity extends AppCompatActivity {
         notificationController.SendNotification(false);
         initImageOverlay();
         initCameraButtonVisibility();
-        navigationController.start(locationOverlay);
+        //GetDistance();
+        navigationController.start(this.locationOverlay);
     }
 
     private void initModels() {

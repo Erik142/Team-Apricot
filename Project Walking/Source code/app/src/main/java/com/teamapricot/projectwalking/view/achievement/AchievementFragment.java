@@ -67,28 +67,26 @@ public class AchievementFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.achievement_list, container, false);
+        RecyclerView recyclerView = view.findViewById(R.id.achievement_list);
 
         // Set the adapter
-        if (view instanceof RecyclerView) {
-            Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
-            if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            } else {
-                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
-            }
-            recyclerView.setAdapter(new AchievementRecyclerViewAdapter(achievements));
-            this.recyclerViewAdapter = recyclerView.getAdapter();
-
-            Database.getDatabase(getActivity().getApplicationContext()).thenAccept(database -> {
-                PhotoDao photoDao = database.photoDao();
-                RouteDao routeDao = database.routeDao();
-                AchievementDao achievementDao = database.achievementDao();
-                board = new Board(photoDao, routeDao, achievementDao);
-                board.addObserver(createBoardObserver());
-                board.init();
-            });
+        Context context = view.getContext();
+        if (mColumnCount <= 1) {
+            recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        } else {
+            recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
         }
+        recyclerView.setAdapter(new AchievementRecyclerViewAdapter(achievements));
+        this.recyclerViewAdapter = recyclerView.getAdapter();
+
+        Database.getDatabase(getActivity().getApplicationContext()).thenAccept(database -> {
+            PhotoDao photoDao = database.photoDao();
+            RouteDao routeDao = database.routeDao();
+            AchievementDao achievementDao = database.achievementDao();
+            board = new Board(photoDao, routeDao, achievementDao);
+            board.addObserver(createBoardObserver());
+            board.init();
+        });
         return view;
     }
 
