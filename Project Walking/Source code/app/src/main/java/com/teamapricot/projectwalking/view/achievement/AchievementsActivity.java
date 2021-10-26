@@ -1,6 +1,5 @@
 package com.teamapricot.projectwalking.view.achievement;
 
-import androidx.annotation.NonNull;
 import android.widget.Toolbar;
 
 import androidx.fragment.app.FragmentActivity;
@@ -15,7 +14,7 @@ import com.teamapricot.projectwalking.controller.AchievementViewPagerAdapter;
 
 /**
  * @author Erik Wahlberger
- * @version 2021-10-18
+ * @version 2021-10-26
  *
  * An activity for showing achievements that have been unlocked for the user
  */
@@ -24,16 +23,12 @@ public class AchievementsActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_achievements);
-
         initToolbar();
         ViewPager2 viewPager = findViewById(R.id.achievements_viewpager);
         TabLayout tabLayout = findViewById(R.id.achievements_tab_layout);
-
         AchievementViewPagerAdapter achievementViewPagerAdapter = new AchievementViewPagerAdapter(this);
         viewPager.setAdapter(achievementViewPagerAdapter);
-
         TabLayoutMediator tabLayoutMediator = new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> tab.setText(achievementViewPagerAdapter.getTitle(position)));
-
         tabLayoutMediator.attach();
     }
 

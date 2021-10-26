@@ -47,7 +47,6 @@ public class AchievementViewPagerAdapter extends FragmentStateAdapter {
             case 0:
                 return new AchievementFragment();
             case 1:
-                // TODO: Change to StatisticsFragment
                 return new StatisticsFragment();
             default:
                 return null;
