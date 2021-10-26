@@ -9,8 +9,9 @@ import com.teamapricot.projectwalking.model.database.dao.AchievementDao;
 import com.teamapricot.projectwalking.model.database.dao.PhotoDao;
 import com.teamapricot.projectwalking.model.database.dao.RouteDao;
 
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
 import java.util.function.Supplier;
 
@@ -27,7 +28,7 @@ public abstract class Database extends RoomDatabase {
     private static final String DATABASE_NAME = "fun-walking-database";
 
     private static Database database;
-    private static ExecutorService executorService;
+    private static ConcurrentLinkedQueue<UUID> queuedQueries = new ConcurrentLinkedQueue<>();
 
     public abstract PhotoDao photoDao();
     public abstract RouteDao routeDao();
@@ -52,19 +53,40 @@ public abstract class Database extends RoomDatabase {
     }
 
     public static <T> CompletableFuture<T> performQuery(Supplier<T> supplier) {
-        createExecutorService();
-        return CompletableFuture.supplyAsync(supplier, executorService);
+        return CompletableFuture.supplyAsync(() -> {
+            UUID uuid = generateUuid();
+            queuedQueries.add(uuid);
+            waitForQueries(uuid);
+            T value = supplier.get();
+            queuedQueries.poll();
+            return value;
+        }, Executors.newSingleThreadExecutor());
     }
 
     public static CompletableFuture<Void> performQuery(Runnable runnable) {
-        createExecutorService();
-        return CompletableFuture.runAsync(runnable, executorService);
+        return CompletableFuture.runAsync(() -> {
+            UUID uuid = generateUuid();
+            queuedQueries.add(uuid);
+            waitForQueries(uuid);
+            runnable.run();
+            queuedQueries.poll();
+        }, Executors.newSingleThreadExecutor());
     }
 
-    private static void createExecutorService() {
-        if (executorService == null) {
-            executorService = Executors.newSingleThreadExecutor();
+    private static UUID generateUuid() {
+        return UUID.randomUUID();
+    }
+
+    private static void waitForQueries(UUID uuid) {
+        while (!queuedQueries.peek().equals(uuid)) {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                continue;
+            }
         }
+
+        return;
     }
 }
 
