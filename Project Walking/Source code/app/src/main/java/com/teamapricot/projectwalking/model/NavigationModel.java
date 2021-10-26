@@ -1,5 +1,6 @@
 package com.teamapricot.projectwalking.model;
 
+import com.teamapricot.projectwalking.model.database.Database;
 import com.teamapricot.projectwalking.model.database.Route;
 import com.teamapricot.projectwalking.model.database.dao.RouteDao;
 import com.teamapricot.projectwalking.observe.ObservableBase;
@@ -114,9 +115,7 @@ public class NavigationModel extends ObservableBase<NavigationModel> {
 
         route = new Route(userLocation.getLatitude(), userLocation.getLongitude(),
                           destination.getLatitude(), destination.getLongitude(), radius);
-        routeDao.insertOne(route);
-
-        updateDestination(roadManager);
+        Database.performQuery(() -> routeDao.insertOne(route)).thenRun(() -> updateDestination(roadManager));
     }
 
     private void updateDestination(RoadManager roadManager) {

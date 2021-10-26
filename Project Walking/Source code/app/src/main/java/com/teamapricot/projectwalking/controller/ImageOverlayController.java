@@ -116,11 +116,14 @@ public class ImageOverlayController {
      * Initializes the image overlays.
      */
     public void initImageOverlays() {
-        for (Photo photo : storageHandler.listPhotos()) {
-            PhotoWithLocation pwl = storageHandler.getPhotoWithLocation(photo);
-            Log.d(TAG, "Adding overlay for " + pwl.getFilename());
-            addImageOverlay(pwl);
-        }
+        storageHandler.listPhotos().thenAccept(photos -> {
+
+            for (Photo photo : photos) {
+                PhotoWithLocation pwl = storageHandler.getPhotoWithLocation(photo);
+                Log.d(TAG, "Adding overlay for " + pwl.getFilename());
+                addImageOverlay(pwl);
+            }
+        });
     }
 
     public void addNewImageOverlays() {

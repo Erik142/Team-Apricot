@@ -263,10 +263,11 @@ public class MainActivity extends AppCompatActivity {
                         toastMessage = "Nice photo!";
                         navigationController.removeDestination();
                         StorageHandler sh = StorageHandler.getInstance(this);
-                        Photo photo = sh.getLastPhoto();
-                        if(photo != null) {
-                            imageOverlayController.addImageOverlay(sh.getPhotoWithLocation(photo));
-                        }
+                        sh.getLastPhoto().thenAccept(photo -> {
+                            if (photo != null) {
+                                imageOverlayController.addImageOverlay(sh.getPhotoWithLocation(photo));
+                            }
+                        });
                         break;
                     case ErrorSavingFinalPhoto:
                         toastMessage = "An error occurred while copying image to external storage";
