@@ -123,10 +123,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void init() {
-        initPermissions();
-    }
-
-    private void initPermissions() {
         PermissionHandler permissionHandler = new PermissionHandler(this);
         if (permissionHandler.checkPermission(Manifest.permission.ACCESS_FINE_LOCATION)) {
             initPostPermissions();
@@ -408,8 +404,10 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Restarts the app.
+     *
+     * @param context The context of the app.
      */
-    public static void restart(Context context){
+    private static void restart(Context context){
         PackageManager packageManager = context.getPackageManager();
         Intent intent = packageManager.getLaunchIntentForPackage(context.getPackageName());
         ComponentName componentName = intent.getComponent();
