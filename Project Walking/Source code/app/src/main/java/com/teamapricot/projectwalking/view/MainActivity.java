@@ -75,13 +75,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         init();
-
-        try {
-            Database database = Database.getDatabase(this).get();
-        } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
-            return;
-        }
     }
 
     @Override
