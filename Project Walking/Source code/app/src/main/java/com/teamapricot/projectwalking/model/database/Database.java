@@ -53,7 +53,7 @@ public abstract class Database extends RoomDatabase {
 
     public static <T> CompletableFuture<T> performQuery(Supplier<T> supplier) {
         return CompletableFuture.supplyAsync(() -> {
-            UUID uuid = generateUuid();
+            UUID uuid = UUID.randomUUID();
             queuedQueries.add(uuid);
             waitForQueries(uuid);
             T value = supplier.get();
@@ -64,7 +64,7 @@ public abstract class Database extends RoomDatabase {
 
     public static CompletableFuture<Void> performQuery(Runnable runnable) {
         return CompletableFuture.runAsync(() -> {
-            UUID uuid = generateUuid();
+            UUID uuid = UUID.randomUUID();
             queuedQueries.add(uuid);
             waitForQueries(uuid);
             runnable.run();
@@ -72,9 +72,6 @@ public abstract class Database extends RoomDatabase {
         }, Executors.newSingleThreadExecutor());
     }
 
-    private static UUID generateUuid() {
-        return UUID.randomUUID();
-    }
 
     private static void waitForQueries(UUID uuid) {
         while (!queuedQueries.peek().equals(uuid)) {
