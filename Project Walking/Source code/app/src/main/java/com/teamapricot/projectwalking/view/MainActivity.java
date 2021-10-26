@@ -1,7 +1,12 @@
 package com.teamapricot.projectwalking.view;
 
+import android.Manifest;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
@@ -19,6 +24,7 @@ import com.teamapricot.projectwalking.controller.ImageOverlayController;
 import com.teamapricot.projectwalking.controller.NavigationController;
 import com.teamapricot.projectwalking.controller.NotificationController;
 import com.teamapricot.projectwalking.controller.ToolbarController;
+import com.teamapricot.projectwalking.handlers.PermissionHandler;
 import com.teamapricot.projectwalking.handlers.StorageHandler;
 import com.teamapricot.projectwalking.model.CameraModel;
 import com.teamapricot.projectwalking.model.NavigationModel;
@@ -26,6 +32,7 @@ import com.teamapricot.projectwalking.model.database.Database;
 import com.teamapricot.projectwalking.model.database.Photo;
 import com.teamapricot.projectwalking.observe.Observer;
 import com.teamapricot.projectwalking.view.dialogs.MapLoadingDialog;
+import com.teamapricot.projectwalking.view.dialogs.PermissionRejectedDialog;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
@@ -110,6 +117,25 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void init() {
+        PermissionHandler permissionHandler = new PermissionHandler(this);
+        if (permissionHandler.checkPermission(Manifest.permission.ACCESS_FINE_LOCATION)) {
+            initPostPermissions();
+        } else {
+            permissionHandler.requestPermissionAsync(Manifest.permission.ACCESS_FINE_LOCATION).thenAccept(permissionGranted -> {
+                if (!permissionGranted) {
+                    PermissionRejectedDialog dialog = new PermissionRejectedDialog(this,
+                            "Permission to access your device's location is required. Please grant access.");
+                    dialog.show(getSupportFragmentManager(), "MainActivity");
+                    while(true) {
+                        SystemClock.sleep(1000);
+                    }
+                }
+                restart(this);
+            });
+        }
+    }
+
+    private void initPostPermissions() {
         initModels();
         initToolbar();
         initNavigation();
@@ -126,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             Database database = Database.getDatabase(this.getApplicationContext()).get();
             this.navigationModel = new NavigationModel(database.routeDao());
-        } catch (InterruptedException |ExecutionException e) {
+        } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
     }
@@ -176,6 +202,7 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Shows a loading screen if the map has not been initialized
+     *
      * @param tilesOverlay The {@link TilesOverlay} to use to check whether or not the map has been initialized
      */
     private void showLoadingScreen(TilesOverlay tilesOverlay) {
@@ -215,10 +242,10 @@ public class MainActivity extends AppCompatActivity {
                     setButtonVisibility(R.id.remove_destination_fab, View.GONE);
                     return;
                 }
-                if(checkboxItem != null) {
+                if (checkboxItem != null) {
                     checkboxItem.setEnabled(true);
                 }
-                if(location == null) {
+                if (location == null) {
                     setButtonVisibility(R.id.open_camera_fab, View.GONE);
                     setButtonVisibility(R.id.add_destination_fab, View.VISIBLE);
                     setButtonVisibility(R.id.remove_destination_fab, View.GONE);
@@ -252,7 +279,7 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Creates a new {@code Observer} object for the Camera functionality
-     * 
+     *
      * @return
      */
     private Observer<CameraModel> createCameraObserver() {
@@ -266,7 +293,7 @@ public class MainActivity extends AppCompatActivity {
                         navigationController.removeDestination();
                         StorageHandler sh = StorageHandler.getInstance(this);
                         Photo photo = sh.getLastPhoto();
-                        if(photo != null) {
+                        if (photo != null) {
                             imageOverlayController.addImageOverlay(sh.getPhotoWithLocation(photo));
                         }
                         break;
@@ -287,9 +314,9 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Creates a new {@code Observer} object for the navigation functionality
-     * 
+     *
      * @return An {@code Observer<NavigationModel>} object to observe changes in a
-     *         {@code NavigationModel} and update the UI correspondingly
+     * {@code NavigationModel} and update the UI correspondingly
      */
     private Observer<NavigationModel> createNavigationObserver() {
         return model -> {
@@ -368,5 +395,19 @@ public class MainActivity extends AppCompatActivity {
         map.getOverlays().add(marker);
         map.invalidate();
         return marker;
+    }
+
+    /**
+     * Restarts the app.
+     *
+     * @param context The context of the app.
+     */
+    private static void restart(Context context){
+        PackageManager packageManager = context.getPackageManager();
+        Intent intent = packageManager.getLaunchIntentForPackage(context.getPackageName());
+        ComponentName componentName = intent.getComponent();
+        Intent mainIntent = Intent.makeRestartActivityTask(componentName);
+        context.startActivity(mainIntent);
+        System.exit(0);
     }
 }

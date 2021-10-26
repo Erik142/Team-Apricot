@@ -2,6 +2,10 @@ package com.teamapricot.projectwalking.view;
 
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.IconOverlay;
+import org.osmdroid.views.overlay.Overlay;
+import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
+
+import java.util.List;
 
 /**
  * @author Daniel Brännvall
@@ -47,7 +51,21 @@ public class ImageOverlayView {
      */
     public void addIconOverlay(IconOverlay iconOverlay) {
         mapView.getOverlays().add(iconOverlay);
+        makeSureUserLocationIsVisible();
         mapView.invalidate();
+    }
+
+    public void makeSureUserLocationIsVisible() {
+        List<Overlay> overlays = mapView.getOverlays();
+        Overlay locationOverlay = overlays
+                .stream()
+                .filter(o -> o instanceof MyLocationNewOverlay)
+                .findAny()
+                .orElse(null);
+        if(locationOverlay != null) {
+            overlays.remove(locationOverlay);
+            overlays.add(locationOverlay);
+        }
     }
 
     /**
