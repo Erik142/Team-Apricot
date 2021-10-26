@@ -58,10 +58,6 @@ public class Board extends ObservableBase<Board> {
         return this.achievements;
     }
 
-    /**
-     * Method for checking for and updating achievements.
-     */
-
     public double getTotalDistance() {
         return this.rDist;
     }
@@ -70,6 +66,9 @@ public class Board extends ObservableBase<Board> {
         return this.nrPhotos;
     }
 
+    /**
+     * Method for checking for and updating achievements.
+     */
     private void updateAchievements(double distance, int nrPhotos) {
 
         ad.updateAchievementsDistance(distance);
