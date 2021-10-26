@@ -60,7 +60,7 @@ public class NavigationController {
         // In the future, when route creation and taking photos work there too, exchange
         // the delete below with "navigationModel.initDestination(roadManager);" to
         // actually use the old open destination.
-        routeDao.deleteOpenRoutes();
+        navigationModel.initDestination(roadManager);
     }
 
     /**
@@ -149,7 +149,7 @@ public class NavigationController {
         button.setOnClickListener(view -> {
             if (navigationModel.getDestination() != null) {
                 RemoveDestinationDialog dialog = new RemoveDestinationDialog(this.activity, () -> {
-                    navigationModel.removeDestination();
+                    navigationModel.removeDestination(true);
                 });
                 dialog.show(activity.getSupportFragmentManager(), "NavigationController");
             }
@@ -157,6 +157,6 @@ public class NavigationController {
     }
 
     public void removeDestination() {
-        navigationModel.removeDestination();
+        navigationModel.removeDestination(false);
     }
 }
