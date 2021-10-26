@@ -109,6 +109,10 @@ public class StatisticsFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Creates an {@link Observer} for the {@link Board} class. This {@link Observer} will update the Fragment whenever the {@link Board} class has been updated.
+     * @return
+     */
     private Observer<Board> createBoardObserver() {
         return board -> {
             getActivity().runOnUiThread(() -> {

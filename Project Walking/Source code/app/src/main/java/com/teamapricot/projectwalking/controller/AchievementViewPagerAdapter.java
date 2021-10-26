@@ -12,12 +12,22 @@ import com.teamapricot.projectwalking.view.achievement.StatisticsFragment;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author Erik Wahlberger
+ * @version 2021-10-26
+ *
+ * This is the FragmentStateAdapter used to enable swiping functionality in the AchievementActivity class
+ */
 public class AchievementViewPagerAdapter extends FragmentStateAdapter {
 
     private final int NUM_FRAGMENTS = 2;
 
     private final List<String> fragmentTitles;
 
+    /**
+     * Creates a new instance of the AchievementViewPagerAdapter for the specified {@link FragmentActivity}
+     * @param fragmentActivity The FragmentActivity that this FragmentStateAdapter will be used in.
+     */
     public AchievementViewPagerAdapter(@NonNull FragmentActivity fragmentActivity) {
         super(fragmentActivity);
         fragmentTitles = new ArrayList<>();
@@ -25,6 +35,11 @@ public class AchievementViewPagerAdapter extends FragmentStateAdapter {
         fragmentTitles.add("Statistics");
     }
 
+    /**
+     * Returns the {@link Fragment} at the specified position. Position 0 is an {@link AchievementFragment}, position 1 is a {@link StatisticsFragment}
+     * @param position The zero-indexed position
+     * @return The {@link Fragment} for the specified position, or null if the position is invalid
+     */
     @NonNull
     @Override
     public Fragment createFragment(int position) {

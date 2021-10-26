@@ -16,7 +16,7 @@ import java.util.List;
 
 /**
  * @author Erik Wahlberger
- * @version 2021-10-19
+ * @version 2021-10-26
  *
  * {@link RecyclerView.Adapter} that can display an {@link Statistics}.
  */
@@ -25,7 +25,7 @@ public class StatisticsRecyclerViewAdapter extends RecyclerView.Adapter<Statisti
     private final List<Statistics> mValues;
 
     /**
-     * Creates a new AchievementRecyclerViewAdapter for the specified items
+     * Creates a new StatisticsRecyclerViewAdapter for the specified items
      * @param items The items that will be shown in the {@link RecyclerView}
      */
     public StatisticsRecyclerViewAdapter(List<Statistics> items) {

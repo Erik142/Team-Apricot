@@ -9,9 +9,9 @@ import com.teamapricot.projectwalking.R;
 
 /**
  * @author Erik Wahlberger
- * @version 2021-10-12
+ * @version 2021-10-26
  *
- * Helper class used to bind all {@link View}'s from the Achievement list item layout to {@link View} objects
+ * Helper class used to bind all {@link View}'s from the Statistics list item layout to {@link View} objects
  */
 public class StatisticsListItemBinding {
     public TextView title;
@@ -39,7 +39,7 @@ public class StatisticsListItemBinding {
     }
 
     /**
-     * Static method to inflate an AchievementListItemBinding object from an existing layout file
+     * Static method to inflate an StatisticsListItemBinding object from an existing layout file
      * @param from The {@link LayoutInflater} to use to inflate the view
      * @param parent The parent {@link ViewGroup} for the view
      * @param attachToRoot Attach the inflated view to the root view?
