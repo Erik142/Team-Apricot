@@ -113,7 +113,7 @@ public class NavigationModel extends ObservableBase<NavigationModel> {
         destination = userLocation.destinationPoint(len, deg);
 
         route = new Route(userLocation.getLatitude(), userLocation.getLongitude(),
-                          destination.getLatitude(), destination.getLongitude(), radius);
+                          destination.getLatitude(), destination.getLongitude(), len);
         routeDao.insertOne(route);
 
         updateDestination(roadManager);
