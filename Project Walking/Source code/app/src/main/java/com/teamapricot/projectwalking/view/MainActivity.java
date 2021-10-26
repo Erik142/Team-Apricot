@@ -190,7 +190,7 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        imageOverlayController = new ImageOverlayController(this, new ImageOverlayView(map));
+        imageOverlayController = new ImageOverlayController(this, new ImageOverlayView(this, map));
         imageOverlayController.initImageOverlays();
     }
 

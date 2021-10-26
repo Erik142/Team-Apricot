@@ -1,5 +1,7 @@
 package com.teamapricot.projectwalking.view;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.IconOverlay;
 
@@ -16,6 +18,7 @@ public class ImageOverlayView {
     private int thumbnailSize;
 
     private final MapView mapView;
+    private final AppCompatActivity activity;
 
     /**
      * Constructor.
@@ -23,13 +26,14 @@ public class ImageOverlayView {
      * @param mapView       - The associated map view
      * @param thumbnailSize - The maximum width/height of thumbnails
      */
-    public ImageOverlayView(MapView mapView, int thumbnailSize) {
+    public ImageOverlayView(AppCompatActivity activity, MapView mapView, int thumbnailSize) {
+        this.activity = activity;
         this.mapView = mapView;
         this.thumbnailSize = thumbnailSize;
     }
 
-    public ImageOverlayView(MapView mapView) {
-        this(mapView, DEFAULT_THUMBNAIL_SIZE);
+    public ImageOverlayView(AppCompatActivity activity, MapView mapView) {
+        this(activity, mapView, DEFAULT_THUMBNAIL_SIZE);
     }
 
     public int getThumbnailSize() {
@@ -46,8 +50,10 @@ public class ImageOverlayView {
      * @param iconOverlay - The icon overlay to add
      */
     public void addIconOverlay(IconOverlay iconOverlay) {
-        mapView.getOverlays().add(iconOverlay);
-        mapView.invalidate();
+        this.activity.runOnUiThread(() -> {
+            mapView.getOverlays().add(iconOverlay);
+            mapView.invalidate();
+        });
     }
 
     /**
@@ -56,8 +62,10 @@ public class ImageOverlayView {
      * @param iconOverlay - The icon overlay to remove
      */
     public void removeIconOverlay(IconOverlay iconOverlay) {
-        mapView.getOverlays().remove(iconOverlay);
-        mapView.invalidate();
+        this.activity.runOnUiThread(() -> {
+            mapView.getOverlays().remove(iconOverlay);
+            mapView.invalidate();
+        });
     }
 
     /**
