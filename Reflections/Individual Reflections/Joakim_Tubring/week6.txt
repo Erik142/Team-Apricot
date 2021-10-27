@@ -1,0 +1,13 @@
+  • Individual reflection
+      
+What do I want to learn or understand better?
+I wan't to learn how threads are handled in android we are getting errors reffering to running tasks on the main thread this week. Might help to learn about these things.
+
+How can I help someone else, or the entire team, to learn something new?
+I can probably lend some assistance regarding the database itself because i have worked with serverbased databases before.
+
+What is my contribution towards the team’s use of Scrum?
+Participated in the sprint planning and end meeting. Do not now if i have contributed more have been focusing on finishing my task for the most of the time.
+
+What is my contribution towards the team’s deliveries?
+We finally got the database working have been writing the classes to mirror and some of the base code for creating the database.
