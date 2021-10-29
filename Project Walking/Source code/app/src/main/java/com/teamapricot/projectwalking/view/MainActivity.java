@@ -58,7 +58,6 @@ public class MainActivity extends AppCompatActivity {
 
     private IMapController mapController;
     private MyLocationNewOverlay locationOverlay;
-    private NotificationController notificationController;
     private NavigationModel navigationModel;
 
     private ToolbarController toolbarController;
@@ -141,8 +140,6 @@ public class MainActivity extends AppCompatActivity {
         initToolbar();
         initNavigation();
         initCamera();
-        notificationController = new NotificationController(getApplicationContext());
-        notificationController.SendNotification(false);
         initImageOverlay();
         initCameraButtonVisibility();
         // GetDistance();
